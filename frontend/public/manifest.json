@@ -1,9 +1,0 @@
-{
-  "name": "CarCare Manager",
-  "short_name": "CarCare",
-  "start_url": ".",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "description": "Gérez vos entretiens de véhicule facilement.",
-  "icons": []
-}

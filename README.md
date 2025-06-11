@@ -1,17 +1,17 @@
 # CarCare Manager
 
-Application PWA pour la gestion des entretiens de véhicules.
+Application PWA multi-véhicules avec authentification utilisateur.
 
-## 📦 Installation
+## 🔧 Backend
 
-### Backend
 ```bash
 cd backend
 npm install
 node server.js
 ```
 
-### Frontend
+## 💻 Frontend
+
 ```bash
 cd frontend
 npm install
