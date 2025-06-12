@@ -7,6 +7,9 @@ import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import AddVehicle from './pages/AddVehicle'; // <-- ajout de la page
 import VehicleDetails from './pages/VehicleDetails';
+import AddExpense from './pages/AddExpense';
+import VehicleExpenses from './pages/VehicleExpenses';
+
 
 
 function App() {
@@ -18,6 +21,8 @@ function App() {
           <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/add-vehicle" element={<ProtectedRoute> <AddVehicle /> </ProtectedRoute>} />
           <Route path="/vehicle/:id" element={<ProtectedRoute> <VehicleDetails /> </ProtectedRoute>} />
+          <Route path="/vehicle/:id/add-expense" element={<ProtectedRoute> <AddExpense  /> </ProtectedRoute>} />
+          <Route path="/vehicle/:id/expenses" element={<ProtectedRoute> <VehicleExpenses   /> </ProtectedRoute>} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
         </Routes>
