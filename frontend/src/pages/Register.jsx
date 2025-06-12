@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { API_URL } from '../../src/config';
 
 export default function Register() {
   const [form, setForm] = useState({ email: '', password: '', name: '' });
@@ -10,7 +11,7 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/auth/register', form);
+      await axios.post(`${API_URL}/api/auth/register`, form);
       setMessage('✅ Inscription réussie !');
     } catch (err) {
       setMessage('❌ Erreur lors de l’inscription');

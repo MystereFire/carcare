@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
+import { API_URL } from '../../src/config';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -16,7 +17,7 @@ export default function Login() {
     setIsLoading(true);
     setMessage('');
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', form);
+      const res = await axios.post(`${API_URL}/api/auth/login`, form);
       localStorage.setItem('token', res.data.token);
       setMessage('✅ Connexion réussie !');
       setTimeout(() => navigate('/'), 1000);

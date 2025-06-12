@@ -3,17 +3,8 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import PageTransition from '../components/PageTransition';
 import { useNavigate } from 'react-router-dom';
-import {
-    KmOverTimeChart,
-    ExpenseTypePieChart,
-    CumulativeExpenseChart,
-    CostPer100KmChart,
-    MonthlyExpenseBarChart,
-    ExpenseTypeCountChart,
-    AverageKmCard,
-    AnnualBudgetEstimate
-} from '../components/Charts';
-
+import { KmOverTimeChart, ExpenseTypePieChart, CumulativeExpenseChart, CostPer100KmChart, MonthlyExpenseBarChart, ExpenseTypeCountChart, AverageKmCard, AnnualBudgetEstimate } from '../components/Charts';
+import { API_URL } from '../../src/config';
 
 export default function VehicleDetails() {
     const { id } = useParams();
@@ -26,10 +17,10 @@ export default function VehicleDetails() {
             try {
                 const token = localStorage.getItem('token');
                 const [vehRes, expRes] = await Promise.all([
-                    axios.get(`http://localhost:5000/api/vehicles/${id}`, {
+                    axios.get(`${API_URL}/api/vehicles/${id}`, {
                         headers: { Authorization: `Bearer ${token}` },
                     }),
-                    axios.get(`http://localhost:5000/api/expenses/${id}`, {
+                    axios.get(`${API_URL}/api/expenses/${id}`, {
                         headers: { Authorization: `Bearer ${token}` },
                     }),
                 ]);
@@ -92,7 +83,7 @@ export default function VehicleDetails() {
                     {vehicle.image && (
                         <div>
                             <img
-                                src={`http://localhost:5000${vehicle.image}`}
+                                src={`${API_URL}${vehicle.image}`}
                                 alt={vehicle.name}
                                 className="w-full h-auto rounded-lg object-cover shadow"
                             />

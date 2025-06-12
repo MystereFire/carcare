@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import PageTransition from '../components/PageTransition';
+import { API_URL } from '../../src/config';
 
 export default function AddExpense() {
   const { id } = useParams(); // vehicleId
@@ -23,7 +24,7 @@ export default function AddExpense() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/expenses', {
+      await axios.post(`${API_URL}/api/expenses`, {
         ...expense,
         vehicleId: id,
       }, {

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import PageTransition from '../components/PageTransition';
 import EditExpenseModal from '../components/EditExpenseModal';
+import { API_URL } from '../../src/config';
 
 
 export default function VehicleExpenses() {
@@ -16,7 +17,7 @@ export default function VehicleExpenses() {
     const handleDelete = async (expenseId) => {
         if (!window.confirm('Supprimer cette dépense ?')) return;
         try {
-            await axios.delete(`http://localhost:5000/api/expenses/${expenseId}`, {
+            await axios.delete(`${API_URL}/api/expenses/${expenseId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
             setExpenses((prev) => prev.filter((e) => e._id !== expenseId));
@@ -32,10 +33,10 @@ export default function VehicleExpenses() {
             try {
                 const token = localStorage.getItem('token');
                 const [vehRes, expRes] = await Promise.all([
-                    axios.get(`http://localhost:5000/api/vehicles/${id}`, {
+                    axios.get(`${API_URL}/api/vehicles/${id}`, {
                         headers: { Authorization: `Bearer ${token}` },
                     }),
-                    axios.get(`http://localhost:5000/api/expenses/${id}`, {
+                    axios.get(`${API_URL}/api/expenses/${id}`, {
                         headers: { Authorization: `Bearer ${token}` },
                     }),
                 ]);
@@ -130,7 +131,7 @@ export default function VehicleExpenses() {
                         onSave={async (updated) => {
                             try {
                                 const res = await axios.put(
-                                    `http://localhost:5000/api/expenses/${updated._id}`,
+                                    `${API_URL}/api/expenses/${updated._id}`,
                                     updated,
                                     {
                                         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },

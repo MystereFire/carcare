@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
+import { API_URL } from '../../src/config';
 
 export default function AddVehicle() {
   const [vehicle, setVehicle] = useState({
@@ -37,7 +38,7 @@ export default function AddVehicle() {
         formData.append('image', file);
       }
 
-      await axios.post('http://localhost:5000/api/vehicles', formData, {
+      await axios.post(`${API_URL}/api/vehicles`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'multipart/form-data',
