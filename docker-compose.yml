@@ -15,7 +15,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: https://carcare.api.ligma.fr   # 👈 ton IP locale ici
+        VITE_API_URL: https://api.ligma.fr/carcare   # 👈 ton IP locale ici
     env_file:
       - ./frontend/.env.production
     ports:
