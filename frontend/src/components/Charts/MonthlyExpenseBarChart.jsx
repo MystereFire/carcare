@@ -2,10 +2,14 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function MonthlyExpenseBarChart({ data }) {
-  // Regrouper les dépenses par mois et type
+  // Regrouper les dépenses par mois et type (filtrées sur 2025)
   const grouped = {};
+
   data.forEach((e) => {
-    const month = new Date(e.date).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
+    const date = new Date(e.date);
+    if (date.getFullYear() !== 2025) return; // ✅ ne garde que 2025
+
+    const month = date.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
     if (!grouped[month]) grouped[month] = {};
     grouped[month][e.type] = (grouped[month][e.type] || 0) + e.amount;
   });
