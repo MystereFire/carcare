@@ -22,5 +22,27 @@ app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/uploads', express.static('uploads'));
 
+app.get('/health', async (req, res) => {
+  const health = {
+    status: 'ok',
+    uptime: process.uptime(),
+    timestamp: Date.now(),
+    db: 'unknown',
+  };
+
+  try {
+    // Exemple MongoDB
+    await mongoose.connection.db.admin().ping();
+    health.db = 'ok';
+  } catch (e) {
+    health.db = 'down';
+    health.status = 'error';
+    return res.status(500).json(health);
+  }
+
+  res.status(200).json(health);
+});
+
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
