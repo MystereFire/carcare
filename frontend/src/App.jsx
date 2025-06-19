@@ -9,6 +9,7 @@ import AddVehicle from './pages/AddVehicle'; // <-- ajout de la page
 import VehicleDetails from './pages/VehicleDetails';
 import AddExpense from './pages/AddExpense';
 import VehicleExpenses from './pages/VehicleExpenses';
+import Profile from './pages/Profile';
 
 
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="/vehicle/:id" element={<ProtectedRoute> <VehicleDetails /> </ProtectedRoute>} />
           <Route path="/vehicle/:id/add-expense" element={<ProtectedRoute> <AddExpense  /> </ProtectedRoute>} />
           <Route path="/vehicle/:id/expenses" element={<ProtectedRoute> <VehicleExpenses   /> </ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
         </Routes>
