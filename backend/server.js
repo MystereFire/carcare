@@ -44,6 +44,12 @@ app.get('/health', async (req, res) => {
   res.status(200).json(health);
 });
 
+// 404 handler
+app.use((req, res, next) => {
+  console.debug(`Not Found: ${req.originalUrl}`);
+  res.status(404).json({ error: 'Not Found' });
+});
+
 app.use(errorHandler);
 
 
