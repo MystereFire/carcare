@@ -20,12 +20,15 @@ export default function Navbar() {
             <Link to="/register" className="text-blue-500 hover:underline">Register</Link>
           </>
         ) : (
-          <button
-            onClick={handleLogout}
-            className="text-red-500 hover:underline"
-          >
-            Déconnexion
-          </button>
+          <>
+            <Link to="/profile" className="text-blue-500 hover:underline">Profil</Link>
+            <button
+              onClick={handleLogout}
+              className="text-red-500 hover:underline"
+            >
+              Déconnexion
+            </button>
+          </>
         )}
       </div>
     </nav>
