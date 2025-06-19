@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import api from '../../src/api';
 import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
-import { API_URL } from '../../src/config';
 
 export default function AddVehicle() {
   const [vehicle, setVehicle] = useState({

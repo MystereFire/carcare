@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
 import EditExpenseModal from '../components/EditExpenseModal';
-import { API_URL } from '../../src/config';
 
 
 export default function VehicleExpenses() {

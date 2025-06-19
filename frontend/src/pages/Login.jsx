@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import api from '../../src/api';
 import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
-import { API_URL } from '../../src/config';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
