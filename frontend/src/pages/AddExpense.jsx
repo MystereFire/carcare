@@ -12,12 +12,18 @@ export default function AddExpense() {
     amount: '',
     date: '',
     km: '',
+    liters: '',
     notes: ''
   });
   const [message, setMessage] = useState('');
 
   const handleChange = (e) => {
-    setExpense({ ...expense, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    const updated = { ...expense, [name]: value };
+    if (name === 'type' && value !== 'fuel') {
+      updated.liters = '';
+    }
+    setExpense(updated);
   };
 
   const handleSubmit = async (e) => {
@@ -53,6 +59,17 @@ export default function AddExpense() {
           <input type="number" inputMode="decimal" step="0.01" name="amount" placeholder="Montant (€)" onChange={handleChange} className="w-full p-2 border rounded" required />
           <input type="date" name="date" onChange={handleChange} className="w-full p-2 border rounded" required />
           <input type="number" name="km" placeholder="Kilométrage" onChange={handleChange} className="w-full p-2 border rounded" required />
+          {expense.type === 'fuel' && (
+            <input
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              name="liters"
+              placeholder="Litres"
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+            />
+          )}
           <textarea name="notes" placeholder="Notes (facultatif)" onChange={handleChange} className="w-full p-2 border rounded" />
 
           <div className="flex gap-2">
