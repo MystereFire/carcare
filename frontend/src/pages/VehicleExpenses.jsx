@@ -124,7 +124,8 @@ export default function VehicleExpenses() {
                         ))}
                     </ul>
 
-                )},{editExpense && (
+                )}
+                {editExpense && (
                     <EditExpenseModal
                         expense={editExpense}
                         onClose={() => setEditExpense(null)}
