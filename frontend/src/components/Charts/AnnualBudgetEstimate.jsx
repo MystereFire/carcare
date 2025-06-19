@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 export default function AnnualBudgetEstimate({ data }) {
   const [filter, setFilter] = useState("all");
 
-  const filteredData = filter === "all" ? data : data.filter(e => e.type === filter);
+  const cleaned = data.filter(e => e.type !== 'acquisition');
+  const filteredData = filter === "all" ? cleaned : cleaned.filter(e => e.type === filter);
 
   if (!filteredData || filteredData.length < 2) {
     return (
