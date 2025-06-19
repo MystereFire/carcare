@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
 import { API_URL } from '../../src/config';
 
@@ -11,11 +11,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const res = await axios.get(`${API_URL}/api/vehicles`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        const res = await api.get('/api/vehicles');
         setVehicles(res.data);
       } catch (err) {
         console.error('Erreur chargement véhicules :', err);

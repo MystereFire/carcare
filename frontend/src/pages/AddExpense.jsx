@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
 import { API_URL } from '../../src/config';
 
@@ -24,11 +24,9 @@ export default function AddExpense() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/api/expenses`, {
+      await api.post('/api/expenses', {
         ...expense,
         vehicleId: id,
-      }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 
       setMessage('✅ Dépense enregistrée');

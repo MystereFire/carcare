@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
 const vehicleRoutes = require('./routes/vehicle');
 const expenseRoutes = require('./routes/expense');
+const errorHandler = require('./middleware/errorHandler');
 
 
 dotenv.config();
@@ -42,6 +43,8 @@ app.get('/health', async (req, res) => {
 
   res.status(200).json(health);
 });
+
+app.use(errorHandler);
 
 
 const PORT = process.env.PORT || 5000;

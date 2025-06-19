@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../../src/api';
 import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
 import { API_URL } from '../../src/config';
@@ -38,9 +38,8 @@ export default function AddVehicle() {
         formData.append('image', file);
       }
 
-      await axios.post(`${API_URL}/api/vehicles`, formData, {
+      await api.post('/api/vehicles', formData, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'multipart/form-data',
         },
       });

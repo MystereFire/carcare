@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
 import EditExpenseModal from '../components/EditExpenseModal';
 import { API_URL } from '../../src/config';
@@ -17,9 +17,7 @@ export default function VehicleExpenses() {
     const handleDelete = async (expenseId) => {
         if (!window.confirm('Supprimer cette dépense ?')) return;
         try {
-            await axios.delete(`${API_URL}/api/expenses/${expenseId}`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-            });
+            await api.delete(`/api/expenses/${expenseId}`);
             setExpenses((prev) => prev.filter((e) => e._id !== expenseId));
         } catch (err) {
             console.error('Erreur suppression :', err);
@@ -31,14 +29,9 @@ export default function VehicleExpenses() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem('token');
                 const [vehRes, expRes] = await Promise.all([
-                    axios.get(`${API_URL}/api/vehicles/${id}`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }),
-                    axios.get(`${API_URL}/api/expenses/${id}`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }),
+                    api.get(`/api/vehicles/${id}`),
+                    api.get(`/api/expenses/${id}`),
                 ]);
                 setVehicle(vehRes.data);
                 setExpenses(expRes.data.reverse()); // + récent en haut
@@ -131,12 +124,9 @@ export default function VehicleExpenses() {
                         onClose={() => setEditExpense(null)}
                         onSave={async (updated) => {
                             try {
-                                const res = await axios.put(
-                                    `${API_URL}/api/expenses/${updated._id}`,
-                                    updated,
-                                    {
-                                        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-                                    }
+                                const res = await api.put(
+                                    `/api/expenses/${updated._id}`,
+                                    updated
                                 );
                                 setExpenses((prev) =>
                                     prev.map((e) => (e._id === updated._id ? res.data : e))
