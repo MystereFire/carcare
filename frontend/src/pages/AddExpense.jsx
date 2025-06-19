@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
-import { API_URL } from '../../src/config';
 
 export default function AddExpense() {
   const { id } = useParams(); // vehicleId
