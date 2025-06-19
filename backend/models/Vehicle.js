@@ -10,6 +10,7 @@ const vehicleSchema = new mongoose.Schema({
     vin: String,
     image: String,
     initialKm: Number,
+    acquisitionDate: Date,
     createdAt: { type: Date, default: Date.now }
 });
 

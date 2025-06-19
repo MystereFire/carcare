@@ -44,12 +44,20 @@ export default function VehicleDetails() {
                         <p className="text-sm text-gray-500 mb-4">
                             Km initial : {vehicle.initialKm}
                         </p>
-                        <button
-                            onClick={() => navigate(`/vehicle/${vehicle._id}/add-expense`)}
-                            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                        >
-                            + Ajouter une dépense
-                        </button>
+                        <div className="flex gap-2 mt-4">
+                            <button
+                                onClick={() => navigate(`/vehicle/${vehicle._id}/add-expense`)}
+                                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                            >
+                                + Ajouter une dépense
+                            </button>
+                            <button
+                                onClick={() => navigate(`/vehicle/${vehicle._id}/edit`)}
+                                className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition"
+                            >
+                                Modifier
+                            </button>
+                        </div>
 
                         <h2 className="text-xl font-semibold mb-3">Dernière dépense</h2>
                         {expenses.length === 0 ? (

@@ -11,7 +11,8 @@ export default function AddVehicle() {
     year: '',
     plate: '',
     vin: '',
-    initialKm: ''
+    initialKm: '',
+    acquisitionDate: ''
   });
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
@@ -60,6 +61,7 @@ export default function AddVehicle() {
           <input name="brand" placeholder="Marque" onChange={handleChange} className="w-full p-2 border rounded" required />
           <input name="model" placeholder="Modèle" onChange={handleChange} className="w-full p-2 border rounded" required />
           <input name="year" type="number" placeholder="Année" onChange={handleChange} className="w-full p-2 border rounded" required />
+          <input name="acquisitionDate" type="date" onChange={handleChange} className="w-full p-2 border rounded" />
           <input name="plate" placeholder="Plaque (optionnel)" onChange={handleChange} className="w-full p-2 border rounded" />
           <input name="vin" placeholder="VIN (optionnel)" onChange={handleChange} className="w-full p-2 border rounded" />
           <input name="initialKm" type="number" placeholder="Kilométrage initial" onChange={handleChange} className="w-full p-2 border rounded" required />

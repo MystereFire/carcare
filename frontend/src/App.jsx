@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import AddVehicle from './pages/AddVehicle'; // <-- ajout de la page
+import EditVehicle from './pages/EditVehicle';
 import VehicleDetails from './pages/VehicleDetails';
 import AddExpense from './pages/AddExpense';
 import VehicleExpenses from './pages/VehicleExpenses';
@@ -22,6 +23,7 @@ function App() {
           <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/add-vehicle" element={<ProtectedRoute> <AddVehicle /> </ProtectedRoute>} />
           <Route path="/vehicle/:id" element={<ProtectedRoute> <VehicleDetails /> </ProtectedRoute>} />
+          <Route path="/vehicle/:id/edit" element={<ProtectedRoute> <EditVehicle /> </ProtectedRoute>} />
           <Route path="/vehicle/:id/add-expense" element={<ProtectedRoute> <AddExpense  /> </ProtectedRoute>} />
           <Route path="/vehicle/:id/expenses" element={<ProtectedRoute> <VehicleExpenses   /> </ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
