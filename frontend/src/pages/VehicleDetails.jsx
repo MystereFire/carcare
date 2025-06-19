@@ -10,6 +10,7 @@ export default function VehicleDetails() {
     const { id } = useParams();
     const [vehicle, setVehicle] = useState(null);
     const [expenses, setExpenses] = useState([]);
+    const [expensesWithAcquisition, setExpensesWithAcquisition] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -21,11 +22,13 @@ export default function VehicleDetails() {
                 ]);
 
                 const veh = vehRes.data;
-                let exp = expRes.data;
+                const expensesFromApi = expRes.data;
+
+                let withAcquisition = [...expensesFromApi];
 
                 if (veh.acquisitionDate) {
-                    exp = [
-                        ...exp,
+                    withAcquisition = [
+                        ...withAcquisition,
                         {
                             _id: `acquisition-${veh._id}`,
                             type: 'acquisition',
@@ -37,10 +40,11 @@ export default function VehicleDetails() {
                     ];
                 }
 
-                exp.sort((a, b) => new Date(a.date) - new Date(b.date));
+                withAcquisition.sort((a, b) => new Date(a.date) - new Date(b.date));
 
                 setVehicle(veh);
-                setExpenses(exp);
+                setExpenses(expensesFromApi.sort((a, b) => new Date(a.date) - new Date(b.date)));
+                setExpensesWithAcquisition(withAcquisition);
             } catch (err) {
                 console.error('Erreur de chargement :', err);
             }
@@ -114,12 +118,12 @@ export default function VehicleDetails() {
                     )}
                 </div>
                 <div className="mb-6 pt-4"></div>
-                <KmOverTimeChart data={expenses} />
+                <KmOverTimeChart data={expensesWithAcquisition} />
                 <ExpenseTypePieChart data={expenses} />
                 <CumulativeExpenseChart data={expenses} />
                 <CostPer100KmChart data={expenses} />
                 <MonthlyExpenseBarChart data={expenses} />
-                <AverageKmCard data={expenses} />
+                <AverageKmCard data={expensesWithAcquisition} />
                 <AnnualBudgetEstimate data={expenses} />
 
             </div>
