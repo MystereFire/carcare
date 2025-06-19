@@ -2,10 +2,11 @@ import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function CumulativeExpenseChart({ data }) {
+  const filtered = data.filter(e => e.type !== 'acquisition');
   // Regrouper les montants par date (ISO)
   const amountPerDate = {};
 
-  data.forEach((entry) => {
+  filtered.forEach((entry) => {
     const dateKey = new Date(entry.date).toISOString().split('T')[0];
     amountPerDate[dateKey] = (amountPerDate[dateKey] || 0) + entry.amount;
   });
