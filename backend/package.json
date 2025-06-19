@@ -8,5 +8,13 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.1",
     "multer": "^2.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^9.10.1",
+    "supertest": "^6.3.3"
+  },
+  "scripts": {
+    "test": "jest"
   }
 }
