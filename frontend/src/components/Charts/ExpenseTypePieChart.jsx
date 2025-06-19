@@ -14,10 +14,9 @@ export default function ExpenseTypePieChart({ data }) {
     return acc;
   }, {});
 
-  const totalByType = Object.entries(grouped).map(([name, value]) => ({
-    name,
-    value,
-  }));
+  const totalByType = Object.entries(grouped)
+    .map(([name, value]) => ({ name, value }))
+    .filter((d) => d.value > 0);
 
   return (
     <div className="mb-6">

@@ -47,3 +47,12 @@ lancez l'application avec :
 ```bash
 docker-compose up --build
 ```
+
+## 🧪 Tests
+
+Pour exécuter les tests du backend :
+
+```bash
+cd backend
+npm test
+```
