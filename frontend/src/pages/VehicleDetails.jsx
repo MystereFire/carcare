@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
 import { useNavigate } from 'react-router-dom';
 import { KmOverTimeChart, ExpenseTypePieChart, CumulativeExpenseChart, CostPer100KmChart, MonthlyExpenseBarChart, AverageKmCard, AnnualBudgetEstimate } from '../components/Charts';
@@ -15,14 +15,9 @@ export default function VehicleDetails() {
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                const token = localStorage.getItem('token');
                 const [vehRes, expRes] = await Promise.all([
-                    axios.get(`${API_URL}/api/vehicles/${id}`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }),
-                    axios.get(`${API_URL}/api/expenses/${id}`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }),
+                    api.get(`/api/vehicles/${id}`),
+                    api.get(`/api/expenses/${id}`),
                 ]);
                 setVehicle(vehRes.data);
                 setExpenses(expRes.data);
