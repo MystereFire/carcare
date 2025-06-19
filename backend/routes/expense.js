@@ -4,7 +4,10 @@ const Expense = require('../models/Expense');
 const auth = require('../middleware/auth');
 
 router.get('/:vehicleId', auth, async (req, res) => {
-    const expenses = await Expense.find({ vehicleId: req.params.vehicleId });
+    const expenses = await Expense.find({
+        vehicleId: req.params.vehicleId,
+        userId: req.user._id,
+    });
     res.json(expenses);
 });
 
