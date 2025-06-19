@@ -14,4 +14,17 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const errResponse = error.response;
+    if (errResponse && (errResponse.status === 401 || errResponse.status === 400)) {
+      // Token invalide ou expiré : on supprime le jeton et on redirige vers la page de connexion
+      localStorage.removeItem('token');
+      window.location = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;
