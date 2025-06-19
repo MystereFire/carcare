@@ -19,8 +19,28 @@ export default function VehicleDetails() {
                     api.get(`/api/vehicles/${id}`),
                     api.get(`/api/expenses/${id}`),
                 ]);
-                setVehicle(vehRes.data);
-                setExpenses(expRes.data);
+
+                const veh = vehRes.data;
+                let exp = expRes.data;
+
+                if (veh.acquisitionDate) {
+                    exp = [
+                        ...exp,
+                        {
+                            _id: `acquisition-${veh._id}`,
+                            type: 'acquisition',
+                            label: 'Acquisition',
+                            amount: 0,
+                            km: veh.initialKm,
+                            date: veh.acquisitionDate,
+                        },
+                    ];
+                }
+
+                exp.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                setVehicle(veh);
+                setExpenses(exp);
             } catch (err) {
                 console.error('Erreur de chargement :', err);
             }
