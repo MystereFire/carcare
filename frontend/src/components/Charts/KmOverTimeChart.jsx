@@ -16,7 +16,8 @@ export default function KmOverTimeChart({ data }) {
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .map(d => ({
       ...d,
-      date: new Date(d.date).toLocaleDateString('fr-FR')
+      timestamp: new Date(d.date).getTime(),
+      displayDate: new Date(d.date).toLocaleDateString('fr-FR')
     }));
 
   return (
@@ -24,9 +25,15 @@ export default function KmOverTimeChart({ data }) {
       <h3 className="text-lg font-semibold mb-2">📈 Évolution du kilométrage</h3>
       <ResponsiveContainer width="100%" height={250}>
         <LineChart data={filteredData}>
-          <XAxis dataKey="date" />
+          <XAxis
+            dataKey="timestamp"
+            type="number"
+            domain={['dataMin', 'dataMax']}
+            ticks={filteredData.map(d => d.timestamp)}
+            tickFormatter={t => new Date(t).toLocaleDateString('fr-FR')}
+          />
           <YAxis dataKey="km" />
-          <Tooltip />
+          <Tooltip labelFormatter={t => new Date(t).toLocaleDateString('fr-FR')} />
           <Line type="monotone" dataKey="km" stroke="#8884d8" strokeWidth={2} />
         </LineChart>
       </ResponsiveContainer>
