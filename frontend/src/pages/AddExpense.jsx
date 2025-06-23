@@ -10,7 +10,7 @@ export default function AddExpense() {
     type: 'fuel',
     label: '',
     amount: '',
-    date: '',
+    date: new Date().toISOString().slice(0, 10),
     km: '',
     liters: '',
     notes: ''
@@ -57,7 +57,14 @@ export default function AddExpense() {
           </select>
           <input type="text" name="label" placeholder="Libellé" onChange={handleChange} className="w-full p-2 border rounded" required />
           <input type="number" inputMode="decimal" step="0.01" name="amount" placeholder="Montant (€)" onChange={handleChange} className="w-full p-2 border rounded" required />
-          <input type="date" name="date" onChange={handleChange} className="w-full p-2 border rounded" required />
+          <input
+            type="date"
+            name="date"
+            value={expense.date}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            required
+          />
           <input type="number" name="km" placeholder="Kilométrage" onChange={handleChange} className="w-full p-2 border rounded" required />
           {expense.type === 'fuel' && (
             <input
