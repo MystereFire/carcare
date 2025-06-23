@@ -5,3 +5,4 @@ export { default as CostPer100KmChart } from './CostPer100KmChart';
 export { default as MonthlyExpenseBarChart } from './MonthlyExpenseBarChart';
 export { default as AverageKmCard } from './AverageKmCard';
 export { default as AnnualBudgetEstimate } from './AnnualBudgetEstimate';
+export { default as CostPerLiterChart } from './CostPerLiterChart';

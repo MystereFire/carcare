@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
 import { useNavigate } from 'react-router-dom';
-import { KmOverTimeChart, ExpenseTypePieChart, CumulativeExpenseChart, CostPer100KmChart, MonthlyExpenseBarChart, AverageKmCard, AnnualBudgetEstimate } from '../components/Charts';
+import { KmOverTimeChart, ExpenseTypePieChart, CumulativeExpenseChart, CostPer100KmChart, CostPerLiterChart, MonthlyExpenseBarChart, AverageKmCard, AnnualBudgetEstimate } from '../components/Charts';
 import { API_URL } from '../../src/config';
 
 export default function VehicleDetails() {
@@ -122,6 +122,7 @@ export default function VehicleDetails() {
                 <ExpenseTypePieChart data={expenses} />
                 <CumulativeExpenseChart data={expenses} />
                 <CostPer100KmChart data={expenses} />
+                <CostPerLiterChart data={expenses} />
                 <MonthlyExpenseBarChart data={expenses} />
                 <AverageKmCard data={expensesWithAcquisition} />
                 <AnnualBudgetEstimate data={expenses} />
