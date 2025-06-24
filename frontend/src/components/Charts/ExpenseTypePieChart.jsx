@@ -16,7 +16,9 @@ export default function ExpenseTypePieChart({ data }) {
 
   // Agréger les dépenses par type
   const grouped = filtered.reduce((acc, curr) => {
-    acc[curr.type] = (acc[curr.type] || 0) + parseFloat(curr.amount || 0);
+    const prev = acc[curr.type] || 0;
+    const amt = parseFloat(curr.amount || 0);
+    acc[curr.type] = parseFloat((prev + amt).toFixed(2));
     return acc;
   }, {});
 

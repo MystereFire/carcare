@@ -13,7 +13,8 @@ export default function MonthlyExpenseBarChart({ data }) {
 
     const month = date.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
     if (!grouped[month]) grouped[month] = {};
-    grouped[month][e.type] = (grouped[month][e.type] || 0) + e.amount;
+    const prev = grouped[month][e.type] || 0;
+    grouped[month][e.type] = parseFloat((prev + e.amount).toFixed(2));
   });
 
   const chartData = Object.entries(grouped).map(([month, types]) => ({
