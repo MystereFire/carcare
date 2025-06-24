@@ -1,5 +1,5 @@
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 
 export default function CostPerLiterChart({ data }) {
   const grouped = {};
@@ -19,6 +19,10 @@ export default function CostPerLiterChart({ data }) {
     }))
     .sort((a, b) => a.timestamp - b.timestamp);
 
+  const avg =
+    chartData.reduce((sum, d) => sum + d.costPerLiter, 0) /
+    (chartData.length || 1);
+
   return (
     <div className="mb-6">
       <h3 className="text-lg font-semibold mb-2">⛽ Coût au litre (€)</h3>
@@ -35,6 +39,12 @@ export default function CostPerLiterChart({ data }) {
           <Tooltip
             labelFormatter={t => new Date(t).toLocaleDateString('fr-FR')}
             formatter={val => `${val} €/L`}
+          />
+          <ReferenceLine
+            y={avg.toFixed(2)}
+            stroke="red"
+            strokeDasharray="3 3"
+            label={{ value: `Moyenne ${avg.toFixed(2)} €/L`, position: 'insideTopRight' }}
           />
           <Line type="monotone" dataKey="costPerLiter" stroke="#ef4444" strokeWidth={2} />
         </LineChart>
