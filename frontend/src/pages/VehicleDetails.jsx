@@ -118,15 +118,17 @@ export default function VehicleDetails() {
                     )}
                 </div>
                 <div className="mb-6 pt-4"></div>
-                <KmOverTimeChart data={expensesWithAcquisition} />
-                <ExpenseTypePieChart data={expenses} />
-                <CumulativeExpenseChart data={expenses} />
-                <CostPer100KmChart data={expenses} />
-                <CostPerLiterChart data={expenses} />
-                <AverageConsumptionChart data={expenses} />
-                <MonthlyExpenseBarChart data={expenses} />
-                <AverageKmCard data={expensesWithAcquisition} />
-                <AnnualBudgetEstimate data={expenses} />
+                <div className="grid gap-6 md:grid-cols-2">
+                    <KmOverTimeChart data={expensesWithAcquisition} />
+                    <ExpenseTypePieChart data={expenses} />
+                    <CumulativeExpenseChart data={expenses} />
+                    <CostPer100KmChart data={expenses} />
+                    <CostPerLiterChart data={expenses} />
+                    <AverageConsumptionChart data={expenses} />
+                    <MonthlyExpenseBarChart data={expenses} />
+                    <AverageKmCard data={expensesWithAcquisition} />
+                    <AnnualBudgetEstimate data={expenses} />
+                </div>
 
             </div>
         </PageTransition>
