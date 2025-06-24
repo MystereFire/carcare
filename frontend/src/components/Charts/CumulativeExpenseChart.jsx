@@ -8,7 +8,8 @@ export default function CumulativeExpenseChart({ data }) {
 
   filtered.forEach((entry) => {
     const dateKey = new Date(entry.date).toISOString().split('T')[0];
-    amountPerDate[dateKey] = (amountPerDate[dateKey] || 0) + entry.amount;
+    const prev = amountPerDate[dateKey] || 0;
+    amountPerDate[dateKey] = parseFloat((prev + entry.amount).toFixed(2));
   });
 
   // Transformer en tableau trié
@@ -23,7 +24,7 @@ export default function CumulativeExpenseChart({ data }) {
   // Calcul du total cumulé
   let total = 0;
   const cumulative = groupedSortedData.map((d) => {
-    total += d.amount;
+    total = parseFloat((total + d.amount).toFixed(2));
     return {
       ...d,
       total,
