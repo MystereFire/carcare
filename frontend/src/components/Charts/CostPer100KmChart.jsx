@@ -1,5 +1,5 @@
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 
 export default function CostPer100KmChart({ data }) {
   const sortedData = [...data]
@@ -17,6 +17,10 @@ export default function CostPer100KmChart({ data }) {
     });
   }
 
+  const avg =
+    costPer100Km.reduce((sum, c) => sum + c.costPer100, 0) /
+    (costPer100Km.length || 1);
+
   return (
     <div className="mb-6">
       <h3 className="text-lg font-semibold mb-2">💰 Coût moyen aux 100 km (€)</h3>
@@ -25,6 +29,12 @@ export default function CostPer100KmChart({ data }) {
           <XAxis dataKey="date" />
           <YAxis />
           <Tooltip formatter={(val) => `${val} €/100km`} />
+          <ReferenceLine
+            y={avg.toFixed(2)}
+            stroke="red"
+            strokeDasharray="3 3"
+            label={{ value: `Moyenne ${avg.toFixed(2)} €`, position: 'insideTopRight' }}
+          />
           <Line type="monotone" dataKey="costPer100" stroke="#f59e0b" strokeWidth={2} />
         </LineChart>
       </ResponsiveContainer>
