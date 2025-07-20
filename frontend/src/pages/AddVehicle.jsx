@@ -11,6 +11,7 @@ export default function AddVehicle() {
     year: '',
     plate: '',
     vin: '',
+    tankSize: '',
     initialKm: '',
     acquisitionDate: ''
   });
@@ -64,6 +65,7 @@ export default function AddVehicle() {
           <input name="acquisitionDate" type="date" onChange={handleChange} className="w-full p-2 border rounded" />
           <input name="plate" placeholder="Plaque (optionnel)" onChange={handleChange} className="w-full p-2 border rounded" />
           <input name="vin" placeholder="VIN (optionnel)" onChange={handleChange} className="w-full p-2 border rounded" />
+          <input name="tankSize" type="number" placeholder="Capacité réservoir (L)" onChange={handleChange} className="w-full p-2 border rounded" />
           <input name="initialKm" type="number" placeholder="Kilométrage initial" onChange={handleChange} className="w-full p-2 border rounded" required />
           <button className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Ajouter</button>
           <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files[0])} className="w-full" />

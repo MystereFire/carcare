@@ -12,6 +12,7 @@ export default function EditVehicle() {
     year: '',
     plate: '',
     vin: '',
+    tankSize: '',
     initialKm: '',
     acquisitionDate: ''
   });
@@ -30,6 +31,7 @@ export default function EditVehicle() {
           year: res.data.year || '',
           plate: res.data.plate || '',
           vin: res.data.vin || '',
+          tankSize: res.data.tankSize || '',
           initialKm: res.data.initialKm || '',
           acquisitionDate: res.data.acquisitionDate ? res.data.acquisitionDate.slice(0,10) : ''
         });
@@ -86,6 +88,7 @@ export default function EditVehicle() {
           <input name="acquisitionDate" value={vehicle.acquisitionDate} type="date" onChange={handleChange} className="w-full p-2 border rounded" />
           <input name="plate" value={vehicle.plate} placeholder="Plaque (optionnel)" onChange={handleChange} className="w-full p-2 border rounded" />
           <input name="vin" value={vehicle.vin} placeholder="VIN (optionnel)" onChange={handleChange} className="w-full p-2 border rounded" />
+          <input name="tankSize" value={vehicle.tankSize} type="number" placeholder="Capacité réservoir (L)" onChange={handleChange} className="w-full p-2 border rounded" />
           <input name="initialKm" value={vehicle.initialKm} type="number" placeholder="Kilométrage initial" onChange={handleChange} className="w-full p-2 border rounded" required />
           <button className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Enregistrer</button>
           <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files[0])} className="w-full" />

@@ -25,7 +25,7 @@ router.get('/', auth, async (req, res) => {
 
 router.post('/', auth, upload.single('image'), async (req, res) => {
   try {
-    const { name, brand, model, year, plate, vin, initialKm, acquisitionDate } = req.body;
+    const { name, brand, model, year, plate, vin, tankSize, initialKm, acquisitionDate } = req.body;
     const image = req.file ? `/uploads/${req.file.filename}` : null;
 
     const vehicle = new Vehicle({
@@ -36,6 +36,7 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
       year,
       plate,
       vin,
+      tankSize,
       initialKm,
       acquisitionDate,
       image,
@@ -68,13 +69,14 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
       return res.status(404).json({ error: 'Véhicule introuvable ou non autorisé' });
     }
 
-    const { name, brand, model, year, plate, vin, initialKm, acquisitionDate } = req.body;
+    const { name, brand, model, year, plate, vin, tankSize, initialKm, acquisitionDate } = req.body;
     if (name !== undefined) vehicle.name = name;
     if (brand !== undefined) vehicle.brand = brand;
     if (model !== undefined) vehicle.model = model;
     if (year !== undefined) vehicle.year = year;
     if (plate !== undefined) vehicle.plate = plate;
     if (vin !== undefined) vehicle.vin = vin;
+    if (tankSize !== undefined) vehicle.tankSize = tankSize;
     if (initialKm !== undefined) vehicle.initialKm = initialKm;
     if (acquisitionDate !== undefined) vehicle.acquisitionDate = acquisitionDate;
     if (req.file) vehicle.image = `/uploads/${req.file.filename}`;

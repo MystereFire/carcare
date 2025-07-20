@@ -8,6 +8,7 @@ const vehicleSchema = new mongoose.Schema({
     year: Number,
     plate: String,
     vin: String,
+    tankSize: Number,
     image: String,
     initialKm: Number,
     acquisitionDate: Date,
