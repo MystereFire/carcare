@@ -59,11 +59,12 @@ it('POST /api/vehicles creates a vehicle for the user', async () => {
   const res = await request(app)
     .post('/api/vehicles')
     .set('Authorization', `Bearer ${token}`)
-    .send({ name: 'New Car' });
+    .send({ name: 'New Car', tankSize: 50 });
 
   expect(res.status).toBe(201);
   expect(res.body.userId).toBe(String(user._id));
   expect(res.body.name).toBe('New Car');
+  expect(res.body.tankSize).toBe(50);
 
   const count = await Vehicle.countDocuments({ userId: user._id });
   expect(count).toBe(1);

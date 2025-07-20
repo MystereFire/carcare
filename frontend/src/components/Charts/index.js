@@ -7,3 +7,4 @@ export { default as AverageKmCard } from './AverageKmCard';
 export { default as AnnualBudgetEstimate } from './AnnualBudgetEstimate';
 export { default as CostPerLiterChart } from './CostPerLiterChart';
 export { default as AverageConsumptionChart } from './AverageConsumptionChart';
+export { default as TankRangeCard } from './TankRangeCard';
