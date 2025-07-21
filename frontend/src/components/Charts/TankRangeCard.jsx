@@ -8,8 +8,8 @@ export default function TankRangeCard({ data, tankSize }) {
   if (fuels.length < 2 || !tankSize) {
     return (
       <div className="bg-white p-4 rounded shadow mb-4">
-        <h3 className="text-lg font-semibold">\u26FD\uFE0F Autonomie plein</h3>
-        <p className="text-gray-500">Pas assez de donn\u00e9es</p>
+        <h3 className="text-lg font-semibold">⛽️ Autonomie plein</h3>
+        <p className="text-gray-500">Pas assez de données</p>
       </div>
     );
   }
@@ -29,7 +29,7 @@ export default function TankRangeCard({ data, tankSize }) {
 
   return (
     <div className="bg-white p-4 rounded shadow mb-4">
-      <h3 className="text-lg font-semibold">\u26FD\uFE0F Autonomie plein</h3>
+      <h3 className="text-lg font-semibold">⛽️ Autonomie plein</h3>
       <p className="text-2xl font-bold">{range} km</p>
     </div>
   );
