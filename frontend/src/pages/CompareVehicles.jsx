@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
+import { ComparisonBarChart } from '../components/Charts';
 
 export default function CompareVehicles() {
   const [vehicles, setVehicles] = useState([]);
@@ -39,8 +40,26 @@ export default function CompareVehicles() {
     const { vehicle, expenses } = data;
     const totalExpense = expenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
 
+    const fuelExpense = expenses
+      .filter(e => e.type === 'fuel')
+      .reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+    const maintenanceExpense = expenses
+      .filter(e => e.type === 'maintenance')
+      .reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+    const repairExpense = expenses
+      .filter(e => e.type === 'repair')
+      .reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+
     const fuels = expenses.filter(e => e.type === 'fuel' && e.liters && e.km);
     const sortedFuel = [...fuels].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    const allKm = expenses
+      .filter(e => typeof e.km === 'number')
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+    const distanceKm =
+      allKm.length >= 2 ? allKm[allKm.length - 1].km - allKm[0].km : 0;
+
+    const totalLiters = fuels.reduce((sum, e) => sum + (parseFloat(e.liters) || 0), 0);
 
     let avgCons = null;
     let distance = 0;
@@ -60,6 +79,7 @@ export default function CompareVehicles() {
     }
 
     const costPerKm = distance > 0 ? (totalExpense / distance).toFixed(2) : null;
+    const avgCostPerLiter = totalLiters > 0 ? (fuelExpense / totalLiters).toFixed(2) : null;
 
     return {
       name: vehicle.name,
@@ -67,8 +87,13 @@ export default function CompareVehicles() {
       model: vehicle.model,
       year: vehicle.year,
       totalExpense: totalExpense.toFixed(2),
+      fuelExpense: fuelExpense.toFixed(2),
+      maintenanceExpense: maintenanceExpense.toFixed(2),
+      repairExpense: repairExpense.toFixed(2),
       avgConsumption: avgCons,
       costPerKm,
+      distance: distanceKm,
+      avgCostPerLiter,
     };
   };
 
@@ -136,6 +161,21 @@ export default function CompareVehicles() {
                   <td className="p-2 border">{metrics2.totalExpense}</td>
                 </tr>
                 <tr>
+                  <td className="p-2 border font-semibold">Carburant (€)</td>
+                  <td className="p-2 border">{metrics1.fuelExpense}</td>
+                  <td className="p-2 border">{metrics2.fuelExpense}</td>
+                </tr>
+                <tr>
+                  <td className="p-2 border font-semibold">Maintenance (€)</td>
+                  <td className="p-2 border">{metrics1.maintenanceExpense}</td>
+                  <td className="p-2 border">{metrics2.maintenanceExpense}</td>
+                </tr>
+                <tr>
+                  <td className="p-2 border font-semibold">Réparations (€)</td>
+                  <td className="p-2 border">{metrics1.repairExpense}</td>
+                  <td className="p-2 border">{metrics2.repairExpense}</td>
+                </tr>
+                <tr>
                   <td className="p-2 border font-semibold">Consommation moyenne (L/100km)</td>
                   <td className="p-2 border">{metrics1.avgConsumption || 'N/A'}</td>
                   <td className="p-2 border">{metrics2.avgConsumption || 'N/A'}</td>
@@ -145,9 +185,20 @@ export default function CompareVehicles() {
                   <td className="p-2 border">{metrics1.costPerKm || 'N/A'}</td>
                   <td className="p-2 border">{metrics2.costPerKm || 'N/A'}</td>
                 </tr>
+                <tr>
+                  <td className="p-2 border font-semibold">Coût moyen au litre (€)</td>
+                  <td className="p-2 border">{metrics1.avgCostPerLiter || 'N/A'}</td>
+                  <td className="p-2 border">{metrics2.avgCostPerLiter || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td className="p-2 border font-semibold">Distance enregistrée (km)</td>
+                  <td className="p-2 border">{metrics1.distance}</td>
+                  <td className="p-2 border">{metrics2.distance}</td>
+                </tr>
               </tbody>
             </table>
           </div>
+          <ComparisonBarChart metrics1={metrics1} metrics2={metrics2} />
         )}
       </div>
     </PageTransition>
