@@ -130,8 +130,9 @@ export default function CompareVehicles() {
         </div>
 
         {metrics1 && metrics2 && (
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white rounded shadow">
+          <>
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white rounded shadow">
               <thead>
                 <tr>
                   <th className="p-2 border" />
@@ -198,7 +199,8 @@ export default function CompareVehicles() {
               </tbody>
             </table>
           </div>
-          <ComparisonBarChart metrics1={metrics1} metrics2={metrics2} />
+            <ComparisonBarChart metrics1={metrics1} metrics2={metrics2} />
+          </>
         )}
       </div>
     </PageTransition>
