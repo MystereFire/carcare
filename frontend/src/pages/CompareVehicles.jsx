@@ -130,77 +130,79 @@ export default function CompareVehicles() {
         </div>
 
         {metrics1 && metrics2 && (
-          <>
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white rounded shadow">
-              <thead>
-                <tr>
-                  <th className="p-2 border" />
-                  <th className="p-2 border text-left">{metrics1.name}</th>
-                  <th className="p-2 border text-left">{metrics2.name}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="p-2 border font-semibold">Marque</td>
-                  <td className="p-2 border">{metrics1.brand}</td>
-                  <td className="p-2 border">{metrics2.brand}</td>
-                </tr>
-                <tr>
-                  <td className="p-2 border font-semibold">Modèle</td>
-                  <td className="p-2 border">{metrics1.model}</td>
-                  <td className="p-2 border">{metrics2.model}</td>
-                </tr>
-                <tr>
-                  <td className="p-2 border font-semibold">Année</td>
-                  <td className="p-2 border">{metrics1.year}</td>
-                  <td className="p-2 border">{metrics2.year}</td>
-                </tr>
-                <tr>
-                  <td className="p-2 border font-semibold">Dépenses totales (€)</td>
-                  <td className="p-2 border">{metrics1.totalExpense}</td>
-                  <td className="p-2 border">{metrics2.totalExpense}</td>
-                </tr>
-                <tr>
-                  <td className="p-2 border font-semibold">Carburant (€)</td>
-                  <td className="p-2 border">{metrics1.fuelExpense}</td>
-                  <td className="p-2 border">{metrics2.fuelExpense}</td>
-                </tr>
-                <tr>
-                  <td className="p-2 border font-semibold">Maintenance (€)</td>
-                  <td className="p-2 border">{metrics1.maintenanceExpense}</td>
-                  <td className="p-2 border">{metrics2.maintenanceExpense}</td>
-                </tr>
-                <tr>
-                  <td className="p-2 border font-semibold">Réparations (€)</td>
-                  <td className="p-2 border">{metrics1.repairExpense}</td>
-                  <td className="p-2 border">{metrics2.repairExpense}</td>
-                </tr>
-                <tr>
-                  <td className="p-2 border font-semibold">Consommation moyenne (L/100km)</td>
-                  <td className="p-2 border">{metrics1.avgConsumption || 'N/A'}</td>
-                  <td className="p-2 border">{metrics2.avgConsumption || 'N/A'}</td>
-                </tr>
-                <tr>
-                  <td className="p-2 border font-semibold">Coût par km (€)</td>
-                  <td className="p-2 border">{metrics1.costPerKm || 'N/A'}</td>
-                  <td className="p-2 border">{metrics2.costPerKm || 'N/A'}</td>
-                </tr>
-                <tr>
-                  <td className="p-2 border font-semibold">Coût moyen au litre (€)</td>
-                  <td className="p-2 border">{metrics1.avgCostPerLiter || 'N/A'}</td>
-                  <td className="p-2 border">{metrics2.avgCostPerLiter || 'N/A'}</td>
-                </tr>
-                <tr>
-                  <td className="p-2 border font-semibold">Distance enregistrée (km)</td>
-                  <td className="p-2 border">{metrics1.distance}</td>
-                  <td className="p-2 border">{metrics2.distance}</td>
-                </tr>
-              </tbody>
-            </table>
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="overflow-x-auto bg-white rounded-lg shadow">
+              <table className="min-w-full text-sm divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="p-3" />
+                    <th className="p-3 text-left font-semibold">{metrics1.name}</th>
+                    <th className="p-3 text-left font-semibold">{metrics2.name}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  <tr className="odd:bg-white even:bg-gray-50">
+                    <td className="p-2 font-semibold">Marque</td>
+                    <td className="p-2">{metrics1.brand}</td>
+                    <td className="p-2">{metrics2.brand}</td>
+                  </tr>
+                  <tr className="odd:bg-white even:bg-gray-50">
+                    <td className="p-2 font-semibold">Modèle</td>
+                    <td className="p-2">{metrics1.model}</td>
+                    <td className="p-2">{metrics2.model}</td>
+                  </tr>
+                  <tr className="odd:bg-white even:bg-gray-50">
+                    <td className="p-2 font-semibold">Année</td>
+                    <td className="p-2">{metrics1.year}</td>
+                    <td className="p-2">{metrics2.year}</td>
+                  </tr>
+                  <tr className="odd:bg-white even:bg-gray-50">
+                    <td className="p-2 font-semibold">Dépenses totales (€)</td>
+                    <td className="p-2">{metrics1.totalExpense}</td>
+                    <td className="p-2">{metrics2.totalExpense}</td>
+                  </tr>
+                  <tr className="odd:bg-white even:bg-gray-50">
+                    <td className="p-2 font-semibold">Carburant (€)</td>
+                    <td className="p-2">{metrics1.fuelExpense}</td>
+                    <td className="p-2">{metrics2.fuelExpense}</td>
+                  </tr>
+                  <tr className="odd:bg-white even:bg-gray-50">
+                    <td className="p-2 font-semibold">Maintenance (€)</td>
+                    <td className="p-2">{metrics1.maintenanceExpense}</td>
+                    <td className="p-2">{metrics2.maintenanceExpense}</td>
+                  </tr>
+                  <tr className="odd:bg-white even:bg-gray-50">
+                    <td className="p-2 font-semibold">Réparations (€)</td>
+                    <td className="p-2">{metrics1.repairExpense}</td>
+                    <td className="p-2">{metrics2.repairExpense}</td>
+                  </tr>
+                  <tr className="odd:bg-white even:bg-gray-50">
+                    <td className="p-2 font-semibold">Consommation moyenne (L/100km)</td>
+                    <td className="p-2">{metrics1.avgConsumption || 'N/A'}</td>
+                    <td className="p-2">{metrics2.avgConsumption || 'N/A'}</td>
+                  </tr>
+                  <tr className="odd:bg-white even:bg-gray-50">
+                    <td className="p-2 font-semibold">Coût par km (€)</td>
+                    <td className="p-2">{metrics1.costPerKm || 'N/A'}</td>
+                    <td className="p-2">{metrics2.costPerKm || 'N/A'}</td>
+                  </tr>
+                  <tr className="odd:bg-white even:bg-gray-50">
+                    <td className="p-2 font-semibold">Coût moyen au litre (€)</td>
+                    <td className="p-2">{metrics1.avgCostPerLiter || 'N/A'}</td>
+                    <td className="p-2">{metrics2.avgCostPerLiter || 'N/A'}</td>
+                  </tr>
+                  <tr className="odd:bg-white even:bg-gray-50">
+                    <td className="p-2 font-semibold">Distance enregistrée (km)</td>
+                    <td className="p-2">{metrics1.distance}</td>
+                    <td className="p-2">{metrics2.distance}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <ComparisonBarChart metrics1={metrics1} metrics2={metrics2} />
+            </div>
           </div>
-            <ComparisonBarChart metrics1={metrics1} metrics2={metrics2} />
-          </>
         )}
       </div>
     </PageTransition>
