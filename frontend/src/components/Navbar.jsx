@@ -21,6 +21,7 @@ export default function Navbar() {
           </>
         ) : (
           <>
+            <Link to="/compare" className="text-blue-500 hover:underline">Comparer</Link>
             <Link to="/profile" className="text-blue-500 hover:underline">Profil</Link>
             <button
               onClick={handleLogout}

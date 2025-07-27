@@ -6,12 +6,13 @@ import Dashboard from './pages/Dashboard';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
-import AddVehicle from './pages/AddVehicle'; // <-- ajout de la page
+import AddVehicle from './pages/AddVehicle';
 import EditVehicle from './pages/EditVehicle';
 import VehicleDetails from './pages/VehicleDetails';
 import AddExpense from './pages/AddExpense';
 import VehicleExpenses from './pages/VehicleExpenses';
 import Profile from './pages/Profile';
+import CompareVehicles from './pages/CompareVehicles';
 
 
 
@@ -45,6 +46,10 @@ function App() {
             <Route
               path="/vehicle/:id/expenses"
               element={<ProtectedRoute><VehicleExpenses /></ProtectedRoute>}
+            />
+            <Route
+              path="/compare"
+              element={<ProtectedRoute><CompareVehicles /></ProtectedRoute>}
             />
             <Route
               path="/profile"
