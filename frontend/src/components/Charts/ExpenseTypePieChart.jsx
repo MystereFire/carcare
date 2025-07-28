@@ -48,13 +48,13 @@ export default function ExpenseTypePieChart({ data }) {
       </div>
       <div className="flex items-center justify-center h-[180px]">
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
+          <PieChart margin={{ bottom: 40 }}>
             <Pie
               data={totalByType}
               dataKey="value"
               nameKey="name"
-              innerRadius="70%"
-              outerRadius="100%"
+              innerRadius={70}
+              outerRadius={90}
             >
               {totalByType.map((entry, i) => (
                 <Cell key={i} fill={COLORS[entry.name] || '#ccc'} />
