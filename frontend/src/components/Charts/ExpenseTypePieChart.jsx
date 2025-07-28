@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer, Legend } from 'recharts';
 
 const COLORS = {
   fuel: '#8884d8',
@@ -53,7 +53,7 @@ export default function ExpenseTypePieChart({ data }) {
               data={totalByType}
               dataKey="value"
               nameKey="name"
-              innerRadius={50}
+              innerRadius={60}
               outerRadius={80}
             >
               {totalByType.map((entry, i) => (
@@ -61,19 +61,14 @@ export default function ExpenseTypePieChart({ data }) {
               ))}
             </Pie>
             <Tooltip formatter={(val) => `${val} €`} />
+            <Legend
+              layout="horizontal"
+              verticalAlign="bottom"
+              align="center"
+              formatter={(value, entry) => `${entry.payload.name} ${entry.payload.value} €`}
+            />
           </PieChart>
         </ResponsiveContainer>
-        <div className="ml-4 space-y-1">
-          {totalByType.map((entry, i) => (
-            <div key={i} className="flex items-center text-sm">
-              <span
-                className="w-3 h-3 mr-2 rounded"
-                style={{ backgroundColor: COLORS[entry.name] || '#ccc' }}
-              ></span>
-              {entry.name}
-            </div>
-          ))}
-        </div>
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <span className="font-semibold">{total.toFixed(2)} €</span>
         </div>

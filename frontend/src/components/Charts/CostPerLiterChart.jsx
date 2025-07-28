@@ -42,16 +42,17 @@ export default function CostPerLiterChart({ data }) {
             ticks={chartData.map(d => d.timestamp)}
             tickFormatter={t => new Date(t).toLocaleDateString('fr-FR')}
           />
-          <YAxis />
+          <YAxis padding={{ top: 10 }} />
           <Tooltip
             labelFormatter={t => new Date(t).toLocaleDateString('fr-FR')}
             formatter={val => `${val} €/L`}
           />
           <ReferenceLine
             y={avg.toFixed(2)}
-            stroke="red"
-            strokeDasharray="3 3"
-            label={{ value: `Moyenne ${avg.toFixed(2)} €/L`, position: 'insideTopRight' }}
+            stroke="#f87171"
+            strokeWidth={1}
+            strokeDasharray="4 2"
+            label={{ position: "top", value: `Moyenne ${avg.toFixed(2)}`, fontSize: 12, fill: "#f87171" }}
           />
           <Area
             type="monotone"
@@ -59,7 +60,7 @@ export default function CostPerLiterChart({ data }) {
             stroke="#ef4444"
             fill="url(#costLiter)"
             strokeWidth={2}
-            dot={{ r: 3 }}
+            dot={{ r: 3, stroke: 'white' }}
             activeDot={{ r: 5 }}
           />
         </AreaChart>
