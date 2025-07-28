@@ -7,7 +7,7 @@ export default function TankRangeCard({ data, tankSize }) {
 
   if (fuels.length < 2 || !tankSize) {
     return (
-      <div className="bg-white p-4 rounded shadow mb-4">
+      <div className="p-4 rounded-xl shadow-md border border-gray-100 bg-white h-40 flex flex-col justify-center">
         <h3 className="text-lg font-semibold">⛽️ Autonomie plein</h3>
         <p className="text-gray-500">Pas assez de données</p>
       </div>
@@ -28,9 +28,9 @@ export default function TankRangeCard({ data, tankSize }) {
   const range = (avgKmPerLiter * tankSize).toFixed(2);
 
   return (
-    <div className="bg-white p-4 rounded shadow mb-4">
+    <div className="p-4 rounded-xl shadow-md border border-gray-100 bg-white h-40 flex flex-col justify-center">
       <h3 className="text-lg font-semibold">⛽️ Autonomie plein</h3>
-      <p className="text-2xl font-bold">{range} km</p>
+      <p className="text-3xl font-bold">{range} km</p>
     </div>
   );
 }

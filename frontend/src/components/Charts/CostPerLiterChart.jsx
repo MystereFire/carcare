@@ -1,5 +1,5 @@
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, CartesianGrid } from 'recharts';
 
 export default function CostPerLiterChart({ data }) {
   const grouped = {};
@@ -24,10 +24,17 @@ export default function CostPerLiterChart({ data }) {
     (chartData.length || 1);
 
   return (
-    <div className="mb-6">
+    <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 h-64">
       <h3 className="text-lg font-semibold mb-2">⛽ Coût au litre (€)</h3>
-      <ResponsiveContainer width="100%" height={250}>
-        <LineChart data={chartData}>
+      <ResponsiveContainer width="100%" height={180}>
+        <AreaChart data={chartData}>
+          <defs>
+            <linearGradient id="costLiter" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ef4444" stopOpacity={0.4} />
+              <stop offset="100%" stopColor="#ef4444" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="timestamp"
             type="number"
@@ -46,8 +53,16 @@ export default function CostPerLiterChart({ data }) {
             strokeDasharray="3 3"
             label={{ value: `Moyenne ${avg.toFixed(2)} €/L`, position: 'insideTopRight' }}
           />
-          <Line type="monotone" dataKey="costPerLiter" stroke="#ef4444" strokeWidth={2} />
-        </LineChart>
+          <Area
+            type="monotone"
+            dataKey="costPerLiter"
+            stroke="#ef4444"
+            fill="url(#costLiter)"
+            strokeWidth={2}
+            dot={{ r: 3 }}
+            activeDot={{ r: 5 }}
+          />
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );

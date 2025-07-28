@@ -57,8 +57,8 @@ export default function VehicleDetails() {
 
     return (
         <PageTransition>
-            <div className="max-w-5xl mx-auto mt-10 px-4">
-                <div className="bg-white rounded-lg shadow p-6 grid md:grid-cols-2 gap-6 items-center">
+            <div className="max-w-5xl mx-auto mt-10 px-4 space-y-10">
+                <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 grid md:grid-cols-2 gap-6 items-center">
                     {/* Colonne Infos */}
                     <div>
                         <h1 className="text-3xl font-bold mb-2">{vehicle.name}</h1>
@@ -71,15 +71,15 @@ export default function VehicleDetails() {
                         <div className="flex gap-2 mt-4">
                             <button
                                 onClick={() => navigate(`/vehicle/${vehicle._id}/add-expense`)}
-                                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                                className="flex items-center gap-1 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg px-4 py-2 transition"
                             >
-                                + Ajouter une dépense
+                                <span>➕</span> Ajouter une dépense
                             </button>
                             <button
                                 onClick={() => navigate(`/vehicle/${vehicle._id}/edit`)}
-                                className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition"
+                                className="flex items-center gap-1 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg px-4 py-2 transition"
                             >
-                                Modifier
+                                <span>✏️</span> Modifier
                             </button>
                         </div>
 
@@ -118,18 +118,28 @@ export default function VehicleDetails() {
                     )}
                 </div>
                 <div className="mb-6 pt-4"></div>
-                <div className="grid gap-6 md:grid-cols-2">
-                    <KmOverTimeChart data={expensesWithAcquisition} />
-                    <ExpenseTypePieChart data={expenses} />
-                    <CumulativeExpenseChart data={expenses} />
-                    <CostPer100KmChart data={expenses} />
-                    <CostPerLiterChart data={expenses} />
-                    <AverageConsumptionChart data={expenses} />
-                    <TankRangeCard data={expenses} tankSize={vehicle.tankSize} />
-                    <MonthlyExpenseBarChart data={expenses} />
-                    <AverageKmCard data={expensesWithAcquisition} />
-                    <AnnualBudgetEstimate data={expenses} />
-                </div>
+
+                <section>
+                    <h2 className="text-2xl font-semibold mb-4">Données carburant / entretien</h2>
+                    <div className="grid gap-6 md:grid-cols-2">
+                        <CostPerLiterChart data={expenses} />
+                        <CostPer100KmChart data={expenses} />
+                        <CumulativeExpenseChart data={expenses} />
+                        <MonthlyExpenseBarChart data={expenses} />
+                        <ExpenseTypePieChart data={expenses} />
+                    </div>
+                </section>
+
+                <section className="pt-8">
+                    <h2 className="text-2xl font-semibold mb-4">Analyse & prévision</h2>
+                    <div className="grid gap-6 md:grid-cols-2">
+                        <AverageConsumptionChart data={expenses} />
+                        <TankRangeCard data={expenses} tankSize={vehicle.tankSize} />
+                        <AnnualBudgetEstimate data={expenses} />
+                        <AverageKmCard data={expensesWithAcquisition} />
+                        <KmOverTimeChart data={expensesWithAcquisition} />
+                    </div>
+                </section>
 
             </div>
         </PageTransition>
