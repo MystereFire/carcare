@@ -28,11 +28,11 @@ export default function MonthlyExpenseBarChart({ data }) {
     <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 h-64">
       <h3 className="text-lg font-semibold mb-2">💸 Dépenses mensuelles par type</h3>
       <ResponsiveContainer width="100%" height={180}>
-        <BarChart data={chartData} barGap={4}>
+        <BarChart data={chartData} barGap={4} margin={{ top: 30 }}>
           <XAxis dataKey="month" />
           <YAxis />
           <Tooltip formatter={(v) => `${v} €`} />
-          <Legend />
+          <Legend verticalAlign="top" align="center" />
           <Bar dataKey="fuel" stackId="a" fill="#a5b4fc" animationDuration={600}>
             <LabelList dataKey="fuel" position="top" formatter={(v) => v ? `${v} €` : ''} />
           </Bar>

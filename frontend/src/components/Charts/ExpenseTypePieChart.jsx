@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer, Legend } from 'recharts';
 
 const COLORS = {
-  fuel: '#8884d8',
-  maintenance: '#82ca9d',
-  repair: '#ffc658'
+  fuel: '#3B82F6',
+  maintenance: '#10B981',
+  repair: '#FACC15'
 };
 
 export default function ExpenseTypePieChart({ data }) {
@@ -47,14 +47,14 @@ export default function ExpenseTypePieChart({ data }) {
         )}
       </div>
       <div className="flex items-center justify-center h-[180px]">
-        <ResponsiveContainer width="60%" height="100%">
+        <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={totalByType}
               dataKey="value"
               nameKey="name"
-              innerRadius={60}
-              outerRadius={80}
+              innerRadius="70%"
+              outerRadius="100%"
             >
               {totalByType.map((entry, i) => (
                 <Cell key={i} fill={COLORS[entry.name] || '#ccc'} />
@@ -65,12 +65,13 @@ export default function ExpenseTypePieChart({ data }) {
               layout="horizontal"
               verticalAlign="bottom"
               align="center"
+              wrapperStyle={{ marginTop: 10 }}
               formatter={(value, entry) => `${entry.payload.name} ${entry.payload.value} €`}
             />
           </PieChart>
         </ResponsiveContainer>
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span className="font-semibold">{total.toFixed(2)} €</span>
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-xl font-bold">
+          <span>{total.toFixed(2)} €</span>
         </div>
       </div>
     </div>
