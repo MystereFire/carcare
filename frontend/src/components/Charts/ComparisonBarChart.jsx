@@ -1,8 +1,40 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  LabelList,
+} from 'recharts';
 
 export default function ComparisonBarChart({ metrics1, metrics2 }) {
   if (!metrics1 || !metrics2) return null;
+
+  const units = {
+    'Dépense totale': '€',
+    'Distance (km)': 'km',
+    'Conso L/100km': 'L/100km',
+    'Coût par km': '€/km',
+  };
+
+  const renderLabel = (key) => (props) => {
+    const { x, y, width, height, value, index } = props;
+    return (
+      <text
+        x={x + width - 4}
+        y={y + height / 2}
+        fill="white"
+        textAnchor="end"
+        dominantBaseline="middle"
+        fontSize={12}
+      >
+        {value} {units[data[index].metric]}
+      </text>
+    );
+  };
 
   const data = [
     {
@@ -29,18 +61,18 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
 
   return (
     <div className="mb-6">
-      <h3 className="text-lg font-semibold text-center mb-2">Comparaison des indicateurs</h3>
+      <h3 className="text-2xl font-semibold text-center mb-4">📊 Comparaison des indicateurs</h3>
       <ResponsiveContainer width="100%" height={320}>
         <BarChart layout="vertical" data={data} margin={{ left: 40 }} barGap={12}>
           <XAxis type="number" />
           <YAxis dataKey="metric" type="category" width={140} />
           <Tooltip />
-          <Legend />
-          <Bar dataKey="veh1" name={metrics1.name} fill="#3b82f6" barSize={18}>
-            <LabelList dataKey="veh1" position="right" />
+          <Legend iconType="circle" />
+          <Bar dataKey="veh1" name={metrics1.name} fill="#60a5fa" barSize={18} radius={6}>
+            <LabelList dataKey="veh1" content={renderLabel('veh1')} />
           </Bar>
-          <Bar dataKey="veh2" name={metrics2.name} fill="#10b981" barSize={18}>
-            <LabelList dataKey="veh2" position="right" />
+          <Bar dataKey="veh2" name={metrics2.name} fill="#34d399" barSize={18} radius={6}>
+            <LabelList dataKey="veh2" content={renderLabel('veh2')} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
