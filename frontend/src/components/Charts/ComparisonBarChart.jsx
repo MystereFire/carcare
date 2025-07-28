@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
 
 export default function ComparisonBarChart({ metrics1, metrics2 }) {
   if (!metrics1 || !metrics2) return null;
@@ -29,15 +29,19 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
 
   return (
     <div className="mb-6">
-      <h3 className="text-lg font-semibold mb-2">Comparaison visuelle</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart layout="vertical" data={data} margin={{ left: 40 }}>
+      <h3 className="text-lg font-semibold text-center mb-2">Comparaison des indicateurs</h3>
+      <ResponsiveContainer width="100%" height={320}>
+        <BarChart layout="vertical" data={data} margin={{ left: 40 }} barGap={12}>
           <XAxis type="number" />
-          <YAxis dataKey="metric" type="category" width={120} />
+          <YAxis dataKey="metric" type="category" width={140} />
           <Tooltip />
           <Legend />
-          <Bar dataKey="veh1" name={metrics1.name} fill="#8884d8" />
-          <Bar dataKey="veh2" name={metrics2.name} fill="#82ca9d" />
+          <Bar dataKey="veh1" name={metrics1.name} fill="#3b82f6" barSize={18}>
+            <LabelList dataKey="veh1" position="right" />
+          </Bar>
+          <Bar dataKey="veh2" name={metrics2.name} fill="#10b981" barSize={18}>
+            <LabelList dataKey="veh2" position="right" />
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
