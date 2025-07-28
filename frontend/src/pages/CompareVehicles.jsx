@@ -100,16 +100,37 @@ export default function CompareVehicles() {
   const metrics1 = computeMetrics(firstData);
   const metrics2 = computeMetrics(secondData);
 
+  let better;
+  if (metrics1 && metrics2 && metrics1.costPerKm && metrics2.costPerKm) {
+    better = parseFloat(metrics1.costPerKm) < parseFloat(metrics2.costPerKm)
+      ? metrics1.name
+      : metrics2.name;
+  }
+
+  const cost1 = metrics1?.costPerKm ? parseFloat(metrics1.costPerKm) : null;
+  const cost2 = metrics2?.costPerKm ? parseFloat(metrics2.costPerKm) : null;
+  const diffThreshold = 0.15; // 15%
+  const showDiff1 = cost1 && cost2 && cost1 > cost2 * (1 + diffThreshold);
+  const showDiff2 = cost1 && cost2 && cost2 > cost1 * (1 + diffThreshold);
+
   return (
     <PageTransition>
-      <div className="max-w-4xl mx-auto mt-10 px-4">
-        <h1 className="text-3xl font-bold mb-6">Comparer deux véhicules</h1>
+      <div className="bg-gray-100 min-h-screen py-10">
+        <div className="max-w-5xl mx-auto px-4">
+          <h1 className="text-3xl font-bold mb-4 text-center">Comparer deux véhicules</h1>
+          {better && (
+            <div className="text-center mb-6">
+              <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                🚀 {better} est plus économique
+              </span>
+            </div>
+          )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 justify-items-center">
           <select
             value={firstId}
             onChange={(e) => setFirstId(e.target.value)}
-            className="p-2 border rounded"
+            className="p-2 border rounded w-full max-w-xs"
           >
             <option value="">-- Choisir le premier véhicule --</option>
             {vehicles.map(v => (
@@ -120,7 +141,7 @@ export default function CompareVehicles() {
           <select
             value={secondId}
             onChange={(e) => setSecondId(e.target.value)}
-            className="p-2 border rounded"
+            className="p-2 border rounded w-full max-w-xs"
           >
             <option value="">-- Choisir le second véhicule --</option>
             {vehicles.map(v => (
@@ -131,39 +152,48 @@ export default function CompareVehicles() {
 
         {metrics1 && metrics2 ? (
           <div className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="bg-white p-4 rounded-lg shadow space-y-2">
+            <div className="grid gap-6 md:grid-cols-2 justify-items-center">
+              <div className="bg-white p-4 rounded-lg shadow space-y-2 w-full max-w-md">
                 <h2 className="text-xl font-semibold mb-2">{metrics1.name}</h2>
-                <p><span className="font-semibold">Marque:</span> {metrics1.brand}</p>
-                <p><span className="font-semibold">Modèle:</span> {metrics1.model}</p>
-                <p><span className="font-semibold">Année:</span> {metrics1.year}</p>
-                <p><span className="font-semibold">Dépenses totales (€):</span> {metrics1.totalExpense}</p>
-                <p><span className="font-semibold">Carburant (€):</span> {metrics1.fuelExpense}</p>
-                <p><span className="font-semibold">Maintenance (€):</span> {metrics1.maintenanceExpense}</p>
-                <p><span className="font-semibold">Réparations (€):</span> {metrics1.repairExpense}</p>
-                <p><span className="font-semibold">Consommation moyenne (L/100km):</span> {metrics1.avgConsumption || 'N/A'}</p>
-                <p><span className="font-semibold">Coût par km (€):</span> {metrics1.costPerKm || 'N/A'}</p>
-                <p><span className="font-semibold">Coût moyen au litre (€):</span> {metrics1.avgCostPerLiter || 'N/A'}</p>
-                <p><span className="font-semibold">Distance enregistrée (km):</span> {metrics1.distance}</p>
+                <p><span className="font-semibold">Marque :</span> {metrics1.brand}</p>
+                <p><span className="font-semibold">🚗 Modèle :</span> {metrics1.model}</p>
+                <p><span className="font-semibold">📅 Année :</span> {metrics1.year}</p>
+                <p><span className="font-semibold">💶 Dépenses totales :</span> {metrics1.totalExpense}</p>
+                <p><span className="font-semibold">⛽ Carburant :</span> {metrics1.fuelExpense}</p>
+                <p><span className="font-semibold">🔧 Maintenance :</span> {metrics1.maintenanceExpense}</p>
+                <p><span className="font-semibold">🛠️ Réparations :</span> {metrics1.repairExpense}</p>
+                <p><span className="font-semibold">⚙️ Consommation (L/100km) :</span> {metrics1.avgConsumption || 'N/A'}</p>
+                <p><span className="font-semibold">💰 Coût par km :</span> {metrics1.costPerKm || 'N/A'}
+                  {showDiff1 && (
+                    <span className="ml-2 text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">plus cher</span>
+                  )}
+                </p>
+                <p><span className="font-semibold">💵 Coût moyen au litre :</span> {metrics1.avgCostPerLiter || 'N/A'}</p>
+                <p><span className="font-semibold">🛣️ Distance enregistrée :</span> {metrics1.distance} km</p>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow space-y-2">
+              <div className="bg-white p-4 rounded-lg shadow space-y-2 w-full max-w-md">
                 <h2 className="text-xl font-semibold mb-2">{metrics2.name}</h2>
-                <p><span className="font-semibold">Marque:</span> {metrics2.brand}</p>
-                <p><span className="font-semibold">Modèle:</span> {metrics2.model}</p>
-                <p><span className="font-semibold">Année:</span> {metrics2.year}</p>
-                <p><span className="font-semibold">Dépenses totales (€):</span> {metrics2.totalExpense}</p>
-                <p><span className="font-semibold">Carburant (€):</span> {metrics2.fuelExpense}</p>
-                <p><span className="font-semibold">Maintenance (€):</span> {metrics2.maintenanceExpense}</p>
-                <p><span className="font-semibold">Réparations (€):</span> {metrics2.repairExpense}</p>
-                <p><span className="font-semibold">Consommation moyenne (L/100km):</span> {metrics2.avgConsumption || 'N/A'}</p>
-                <p><span className="font-semibold">Coût par km (€):</span> {metrics2.costPerKm || 'N/A'}</p>
-                <p><span className="font-semibold">Coût moyen au litre (€):</span> {metrics2.avgCostPerLiter || 'N/A'}</p>
-                <p><span className="font-semibold">Distance enregistrée (km):</span> {metrics2.distance}</p>
+                <p><span className="font-semibold">Marque :</span> {metrics2.brand}</p>
+                <p><span className="font-semibold">🚗 Modèle :</span> {metrics2.model}</p>
+                <p><span className="font-semibold">📅 Année :</span> {metrics2.year}</p>
+                <p><span className="font-semibold">💶 Dépenses totales :</span> {metrics2.totalExpense}</p>
+                <p><span className="font-semibold">⛽ Carburant :</span> {metrics2.fuelExpense}</p>
+                <p><span className="font-semibold">🔧 Maintenance :</span> {metrics2.maintenanceExpense}</p>
+                <p><span className="font-semibold">🛠️ Réparations :</span> {metrics2.repairExpense}</p>
+                <p><span className="font-semibold">⚙️ Consommation (L/100km) :</span> {metrics2.avgConsumption || 'N/A'}</p>
+                <p><span className="font-semibold">💰 Coût par km :</span> {metrics2.costPerKm || 'N/A'}
+                  {showDiff2 && (
+                    <span className="ml-2 text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">plus cher</span>
+                  )}
+                </p>
+                <p><span className="font-semibold">💵 Coût moyen au litre :</span> {metrics2.avgCostPerLiter || 'N/A'}</p>
+                <p><span className="font-semibold">🛣️ Distance enregistrée :</span> {metrics2.distance} km</p>
               </div>
             </div>
             <ComparisonBarChart metrics1={metrics1} metrics2={metrics2} />
           </div>
         ) : null}
+        </div>
       </div>
     </PageTransition>
   );
