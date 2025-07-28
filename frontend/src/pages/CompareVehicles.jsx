@@ -129,7 +129,7 @@ export default function CompareVehicles() {
           </select>
         </div>
 
-        {metrics1 && metrics2 && (
+        {metrics1 && metrics2 ? (
           <div className="grid gap-6 md:grid-cols-2">
             <div className="overflow-x-auto bg-white rounded-lg shadow">
               <table className="min-w-full text-sm divide-y divide-gray-200">
@@ -203,7 +203,7 @@ export default function CompareVehicles() {
               <ComparisonBarChart metrics1={metrics1} metrics2={metrics2} />
             </div>
           </div>
-        )}
+        ) : null}
       </div>
     </PageTransition>
   );
