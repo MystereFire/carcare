@@ -60,7 +60,7 @@ export default function VehicleDetails() {
             <div className="max-w-5xl mx-auto mt-10 px-4 space-y-10">
                 <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 grid md:grid-cols-2 gap-6 items-center">
                     {/* Colonne Infos */}
-                    <div>
+                    <div className="flex flex-col justify-center">
                         <h1 className="text-3xl font-bold mb-2">{vehicle.name}</h1>
                         <p className="text-gray-700 text-lg mb-1">
                             {vehicle.brand} {vehicle.model} ({vehicle.year})
@@ -87,20 +87,24 @@ export default function VehicleDetails() {
                         {expenses.length === 0 ? (
                             <p className="text-gray-600">Aucune dépense enregistrée.</p>
                         ) : (
-                            <div className="bg-gray-50 p-3 rounded border-l-4 border-indigo-500 mb-4">
-                                <strong>{expenses[expenses.length - 1].label}</strong> — {expenses[expenses.length - 1].amount} €
+                            <div className="bg-gray-50 p-3 rounded-md shadow-sm mb-2">
+                                <div className="font-medium">
+                                    ⛽ <strong>{expenses[expenses.length - 1].label}</strong> — {expenses[expenses.length - 1].amount} €
+                                </div>
                                 <div className="text-sm text-gray-500">
                                     {expenses[expenses.length - 1].type} • {new Date(expenses[expenses.length - 1].date).toLocaleDateString()} • {expenses[expenses.length - 1].km} km
                                 </div>
                             </div>
                         )}
                         {expenses.length > 0 && (
-                            <button
-                                onClick={() => navigate(`/vehicle/${vehicle._id}/expenses`)}
-                                className="text-blue-600 hover:underline text-sm"
-                            >
-                                → Voir toutes les dépenses
-                            </button>
+                            <div className="text-right">
+                                <button
+                                    onClick={() => navigate(`/vehicle/${vehicle._id}/expenses`)}
+                                    className="text-blue-600 hover:underline text-sm"
+                                >
+                                    Voir toutes les dépenses
+                                </button>
+                            </div>
                         )}
 
 
@@ -108,7 +112,7 @@ export default function VehicleDetails() {
 
                     {/* Colonne Image */}
                     {vehicle.image && (
-                        <div>
+                        <div className="flex justify-center">
                             <img
                                 src={`${API_URL}${vehicle.image}`}
                                 alt={vehicle.name}

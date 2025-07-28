@@ -36,10 +36,16 @@ export default function AverageConsumptionChart({ data }) {
           </defs>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
-          <YAxis />
+          <YAxis padding={{ top: 10 }} />
           <Tooltip formatter={val => `${val} L/100km`} />
-          <ReferenceLine y={avg.toFixed(2)} stroke="red" strokeDasharray="3 3" label={{ value: `Moyenne ${avg.toFixed(2)} L`, position: 'insideTopRight' }} />
-          <Area type="monotone" dataKey="consumption" stroke="#10b981" fill="url(#consAvg)" strokeWidth={2} dot={{ r:3 }} activeDot={{ r:5 }} />
+          <ReferenceLine
+            y={avg.toFixed(2)}
+            stroke="#f87171"
+            strokeWidth={1}
+            strokeDasharray="4 2"
+            label={{ position: "top", value: `Moyenne ${avg.toFixed(2)}`, fontSize: 12, fill: "#f87171" }}
+          />
+          <Area type="monotone" dataKey="consumption" stroke="#10b981" fill="url(#consAvg)" strokeWidth={2} dot={{ r:3, stroke:'white' }} activeDot={{ r:5 }} />
         </AreaChart>
       </ResponsiveContainer>
     </div>

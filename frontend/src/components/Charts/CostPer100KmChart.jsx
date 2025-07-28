@@ -34,15 +34,16 @@ export default function CostPer100KmChart({ data }) {
           </defs>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
-          <YAxis />
+          <YAxis padding={{ top: 10 }} />
           <Tooltip formatter={(val) => `${val} €/100km`} />
           <ReferenceLine
             y={avg.toFixed(2)}
-            stroke="red"
-            strokeDasharray="3 3"
-            label={{ value: `Moyenne ${avg.toFixed(2)} €`, position: 'insideTopRight' }}
+            stroke="#f87171"
+            strokeWidth={1}
+            strokeDasharray="4 2"
+            label={{ position: "top", value: `Moyenne ${avg.toFixed(2)}`, fontSize: 12, fill: "#f87171" }}
           />
-          <Area type="monotone" dataKey="costPer100" stroke="#f59e0b" fill="url(#cost100)" strokeWidth={2} dot={{ r:3 }} activeDot={{ r:5 }} />
+          <Area type="monotone" dataKey="costPer100" stroke="#f59e0b" fill="url(#cost100)" strokeWidth={2} dot={{ r:3, stroke:'white' }} activeDot={{ r:5 }} />
         </AreaChart>
       </ResponsiveContainer>
     </div>
