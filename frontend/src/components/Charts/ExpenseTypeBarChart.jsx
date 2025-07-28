@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer, Legend } from 'recharts';
+import { BarChart, Bar, Tooltip, XAxis, YAxis, Legend, ResponsiveContainer, Cell, LabelList } from 'recharts';
 
 const COLORS = {
   fuel: '#3B82F6',
@@ -7,7 +7,7 @@ const COLORS = {
   repair: '#FACC15'
 };
 
-export default function ExpenseTypePieChart({ data }) {
+export default function ExpenseTypeBarChart({ data }) {
   const [month, setMonth] = useState('');
 
   const filtered = month
@@ -46,33 +46,22 @@ export default function ExpenseTypePieChart({ data }) {
           </button>
         )}
       </div>
-      <div className="flex items-center justify-center h-[180px]">
+      <div className="h-[180px]">
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart margin={{ bottom: 40 }}>
-            <Pie
-              data={totalByType}
-              dataKey="value"
-              nameKey="name"
-              innerRadius={70}
-              outerRadius={90}
-            >
+          <BarChart data={totalByType} margin={{ bottom: 20 }} barCategoryGap={20}>
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip formatter={(val) => `${val} €`} />
+            <Legend iconType="circle" />
+            <Bar dataKey="value" name="Montant" radius={8}>
+              <LabelList dataKey="value" position="top" formatter={(v) => `${v} €`} />
               {totalByType.map((entry, i) => (
                 <Cell key={i} fill={COLORS[entry.name] || '#ccc'} />
               ))}
-            </Pie>
-            <Tooltip formatter={(val) => `${val} €`} />
-            <Legend
-              layout="horizontal"
-              verticalAlign="bottom"
-              align="center"
-              wrapperStyle={{ marginTop: 10 }}
-              formatter={(value, entry) => `${entry.payload.name} ${entry.payload.value} €`}
-            />
-          </PieChart>
+            </Bar>
+          </BarChart>
         </ResponsiveContainer>
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-xl font-bold">
-          <span>{total.toFixed(2)} €</span>
-        </div>
+        <div className="text-center font-bold mt-2">{total.toFixed(2)} €</div>
       </div>
     </div>
   );
