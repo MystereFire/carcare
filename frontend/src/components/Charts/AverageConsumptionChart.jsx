@@ -1,5 +1,5 @@
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, CartesianGrid } from 'recharts';
 
 export default function AverageConsumptionChart({ data }) {
   const sortedData = [...data]
@@ -24,16 +24,23 @@ export default function AverageConsumptionChart({ data }) {
     (consumption.length || 1);
 
   return (
-    <div className="mb-6">
+    <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 h-64">
       <h3 className="text-lg font-semibold mb-2">⛽ Consommation moyenne (L/100km)</h3>
-      <ResponsiveContainer width="100%" height={250}>
-        <LineChart data={consumption}>
+      <ResponsiveContainer width="100%" height={180}>
+        <AreaChart data={consumption}>
+          <defs>
+            <linearGradient id="consAvg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#10b981" stopOpacity={0.4} />
+              <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
           <YAxis />
           <Tooltip formatter={val => `${val} L/100km`} />
           <ReferenceLine y={avg.toFixed(2)} stroke="red" strokeDasharray="3 3" label={{ value: `Moyenne ${avg.toFixed(2)} L`, position: 'insideTopRight' }} />
-          <Line type="monotone" dataKey="consumption" stroke="#10b981" strokeWidth={2} />
-        </LineChart>
+          <Area type="monotone" dataKey="consumption" stroke="#10b981" fill="url(#consAvg)" strokeWidth={2} dot={{ r:3 }} activeDot={{ r:5 }} />
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, CartesianGrid } from 'recharts';
 
 export default function CostPer100KmChart({ data }) {
   const sortedData = [...data]
@@ -22,10 +22,17 @@ export default function CostPer100KmChart({ data }) {
     (costPer100Km.length || 1);
 
   return (
-    <div className="mb-6">
+    <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 h-64">
       <h3 className="text-lg font-semibold mb-2">💰 Coût moyen aux 100 km (€)</h3>
-      <ResponsiveContainer width="100%" height={250}>
-        <LineChart data={costPer100Km}>
+      <ResponsiveContainer width="100%" height={180}>
+        <AreaChart data={costPer100Km}>
+          <defs>
+            <linearGradient id="cost100" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.4} />
+              <stop offset="100%" stopColor="#f59e0b" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
           <YAxis />
           <Tooltip formatter={(val) => `${val} €/100km`} />
@@ -35,8 +42,8 @@ export default function CostPer100KmChart({ data }) {
             strokeDasharray="3 3"
             label={{ value: `Moyenne ${avg.toFixed(2)} €`, position: 'insideTopRight' }}
           />
-          <Line type="monotone" dataKey="costPer100" stroke="#f59e0b" strokeWidth={2} />
-        </LineChart>
+          <Area type="monotone" dataKey="costPer100" stroke="#f59e0b" fill="url(#cost100)" strokeWidth={2} dot={{ r:3 }} activeDot={{ r:5 }} />
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );

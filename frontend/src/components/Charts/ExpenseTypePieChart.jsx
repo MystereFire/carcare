@@ -25,9 +25,10 @@ export default function ExpenseTypePieChart({ data }) {
   const totalByType = Object.entries(grouped)
     .map(([name, value]) => ({ name, value }))
     .filter((d) => d.value > 0);
+  const total = totalByType.reduce((sum, d) => sum + d.value, 0);
 
   return (
-    <div className="mb-6">
+    <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 h-64 relative">
       <h3 className="text-lg font-semibold mb-2">📊 Répartition des dépenses</h3>
       <div className="mb-2">
         <input
@@ -45,24 +46,38 @@ export default function ExpenseTypePieChart({ data }) {
           </button>
         )}
       </div>
-      <ResponsiveContainer width="100%" height={250}>
-        <PieChart>
-          <Pie
-            data={totalByType}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={80}
-            label
-          >
-            {totalByType.map((entry, i) => (
-              <Cell key={i} fill={COLORS[entry.name] || '#ccc'} />
-            ))}
-          </Pie>
-          <Tooltip />
-        </PieChart>
-      </ResponsiveContainer>
+      <div className="flex items-center justify-center h-[180px]">
+        <ResponsiveContainer width="60%" height="100%">
+          <PieChart>
+            <Pie
+              data={totalByType}
+              dataKey="value"
+              nameKey="name"
+              innerRadius={50}
+              outerRadius={80}
+            >
+              {totalByType.map((entry, i) => (
+                <Cell key={i} fill={COLORS[entry.name] || '#ccc'} />
+              ))}
+            </Pie>
+            <Tooltip formatter={(val) => `${val} €`} />
+          </PieChart>
+        </ResponsiveContainer>
+        <div className="ml-4 space-y-1">
+          {totalByType.map((entry, i) => (
+            <div key={i} className="flex items-center text-sm">
+              <span
+                className="w-3 h-3 mr-2 rounded"
+                style={{ backgroundColor: COLORS[entry.name] || '#ccc' }}
+              ></span>
+              {entry.name}
+            </div>
+          ))}
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <span className="font-semibold">{total.toFixed(2)} €</span>
+        </div>
+      </div>
     </div>
   );
 }

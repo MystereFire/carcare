@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
 
 export default function MonthlyExpenseBarChart({ data }) {
   // Regrouper les dépenses par mois et type en fonction de l'année courante
@@ -25,17 +25,23 @@ export default function MonthlyExpenseBarChart({ data }) {
   }));
 
   return (
-    <div className="mb-6">
+    <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 h-64">
       <h3 className="text-lg font-semibold mb-2">💸 Dépenses mensuelles par type</h3>
-      <ResponsiveContainer width="100%" height={250}>
-        <BarChart data={chartData}>
+      <ResponsiveContainer width="100%" height={180}>
+        <BarChart data={chartData} barGap={4}>
           <XAxis dataKey="month" />
           <YAxis />
-          <Tooltip />
+          <Tooltip formatter={(v) => `${v} €`} />
           <Legend />
-          <Bar dataKey="fuel" stackId="a" fill="#8884d8" />
-          <Bar dataKey="maintenance" stackId="a" fill="#82ca9d" />
-          <Bar dataKey="repair" stackId="a" fill="#ffc658" />
+          <Bar dataKey="fuel" stackId="a" fill="#a5b4fc" animationDuration={600}>
+            <LabelList dataKey="fuel" position="top" formatter={(v) => v ? `${v} €` : ''} />
+          </Bar>
+          <Bar dataKey="maintenance" stackId="a" fill="#bbf7d0" animationDuration={600}>
+            <LabelList dataKey="maintenance" position="top" formatter={(v) => v ? `${v} €` : ''} />
+          </Bar>
+          <Bar dataKey="repair" stackId="a" fill="#fde68a" animationDuration={600}>
+            <LabelList dataKey="repair" position="top" formatter={(v) => v ? `${v} €` : ''} />
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
