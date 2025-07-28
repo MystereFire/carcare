@@ -113,6 +113,32 @@ export default function CompareVehicles() {
   const showDiff1 = cost1 && cost2 && cost1 > cost2 * (1 + diffThreshold);
   const showDiff2 = cost1 && cost2 && cost2 > cost1 * (1 + diffThreshold);
 
+  const compare = (a, b) => {
+    if (a == null || b == null) return null;
+    if (parseFloat(a) < parseFloat(b)) return 1;
+    if (parseFloat(a) > parseFloat(b)) return 2;
+    return 0;
+  };
+
+  const winners = metrics1 && metrics2 ? {
+    costPerKm: compare(metrics1.costPerKm, metrics2.costPerKm),
+    avgConsumption: compare(metrics1.avgConsumption, metrics2.avgConsumption),
+    repair: compare(metrics1.repairExpense, metrics2.repairExpense),
+    totalExpense: compare(metrics1.totalExpense, metrics2.totalExpense),
+  } : {};
+
+  const colorClass = (key, which) => {
+    const res = winners[key];
+    if (res == null || res === 0) return "";
+    return res === which ? "text-green-600" : "text-red-600";
+  };
+
+  const summary = metrics1 && metrics2 ? [
+    { label: "Coût/km", icon: "🚗", winner: winners.costPerKm === 1 ? metrics1.name : winners.costPerKm === 2 ? metrics2.name : "Égalité" },
+    { label: "Réparations", icon: "🔧", winner: winners.repair === 1 ? metrics1.name : winners.repair === 2 ? metrics2.name : "Égalité" },
+    { label: "Consommation", icon: "⛽", winner: winners.avgConsumption === 1 ? metrics1.name : winners.avgConsumption === 2 ? metrics2.name : "Égalité" },
+  ] : [];
+
   return (
     <PageTransition>
       <div className="bg-gray-100 min-h-screen py-10">
@@ -120,8 +146,8 @@ export default function CompareVehicles() {
           <h1 className="text-3xl font-bold mb-4 text-center">Comparer deux véhicules</h1>
           {better && (
             <div className="text-center mb-6">
-              <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
-                🚀 {better} est plus économique
+              <span className="inline-block bg-green-100 text-green-800 px-4 py-1 rounded-full shadow-sm text-sm animate-pulse">
+                ✅ {better} est plus économique
               </span>
             </div>
           )}
@@ -152,45 +178,59 @@ export default function CompareVehicles() {
 
         {metrics1 && metrics2 ? (
           <div className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2 justify-items-center">
-              <div className="bg-white p-4 rounded-lg shadow space-y-2 w-full max-w-md">
+            <div className="flex flex-col md:flex-row gap-6 md:gap-8 justify-center flex-wrap">
+              <div className="bg-white p-4 rounded-2xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all space-y-2 w-full max-w-md">
                 <h2 className="text-xl font-semibold mb-2">{metrics1.name}</h2>
                 <p><span className="font-semibold">Marque :</span> {metrics1.brand}</p>
                 <p><span className="font-semibold">🚗 Modèle :</span> {metrics1.model}</p>
                 <p><span className="font-semibold">📅 Année :</span> {metrics1.year}</p>
-                <p><span className="font-semibold">💶 Dépenses totales :</span> {metrics1.totalExpense}</p>
-                <p><span className="font-semibold">⛽ Carburant :</span> {metrics1.fuelExpense}</p>
-                <p><span className="font-semibold">🔧 Maintenance :</span> {metrics1.maintenanceExpense}</p>
-                <p><span className="font-semibold">🛠️ Réparations :</span> {metrics1.repairExpense}</p>
-                <p><span className="font-semibold">⚙️ Consommation (L/100km) :</span> {metrics1.avgConsumption || 'N/A'}</p>
-                <p><span className="font-semibold">💰 Coût par km :</span> {metrics1.costPerKm || 'N/A'}
+                <h3 className="font-semibold mt-2">💰 Dépenses</h3>
+                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">💶</span> <span className={`font-bold ${colorClass('totalExpense',1)}`}>{metrics1.totalExpense}</span></p>
+                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">⛽</span> {metrics1.fuelExpense}</p>
+                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">🔧</span> {metrics1.maintenanceExpense}</p>
+                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">🛠️</span> {metrics1.repairExpense}</p>
+                <h3 className="font-semibold mt-2">⛽ Carburant</h3>
+                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">⚙️</span> <span className={`font-bold ${colorClass('avgConsumption',1)}`}>{metrics1.avgConsumption || 'N/A'}</span></p>
+                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">💵</span> {metrics1.avgCostPerLiter || 'N/A'}</p>
+                <h3 className="font-semibold mt-2">🧰 Entretien / Réparation</h3>
+                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">💰</span> <span className={`font-bold ${colorClass('costPerKm',1)}`}>{metrics1.costPerKm || 'N/A'}</span>
                   {showDiff1 && (
                     <span className="ml-2 text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">plus cher</span>
                   )}
                 </p>
-                <p><span className="font-semibold">💵 Coût moyen au litre :</span> {metrics1.avgCostPerLiter || 'N/A'}</p>
-                <p><span className="font-semibold">🛣️ Distance enregistrée :</span> {metrics1.distance} km</p>
+                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">🛣️</span> {metrics1.distance} km</p>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow space-y-2 w-full max-w-md">
+              <div className="bg-white p-4 rounded-2xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all space-y-2 w-full max-w-md">
                 <h2 className="text-xl font-semibold mb-2">{metrics2.name}</h2>
                 <p><span className="font-semibold">Marque :</span> {metrics2.brand}</p>
                 <p><span className="font-semibold">🚗 Modèle :</span> {metrics2.model}</p>
                 <p><span className="font-semibold">📅 Année :</span> {metrics2.year}</p>
-                <p><span className="font-semibold">💶 Dépenses totales :</span> {metrics2.totalExpense}</p>
-                <p><span className="font-semibold">⛽ Carburant :</span> {metrics2.fuelExpense}</p>
-                <p><span className="font-semibold">🔧 Maintenance :</span> {metrics2.maintenanceExpense}</p>
-                <p><span className="font-semibold">🛠️ Réparations :</span> {metrics2.repairExpense}</p>
-                <p><span className="font-semibold">⚙️ Consommation (L/100km) :</span> {metrics2.avgConsumption || 'N/A'}</p>
-                <p><span className="font-semibold">💰 Coût par km :</span> {metrics2.costPerKm || 'N/A'}
+                <h3 className="font-semibold mt-2">💰 Dépenses</h3>
+                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">💶</span> <span className={`font-bold ${colorClass('totalExpense',2)}`}>{metrics2.totalExpense}</span></p>
+                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">⛽</span> {metrics2.fuelExpense}</p>
+                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">🔧</span> {metrics2.maintenanceExpense}</p>
+                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">🛠️</span> {metrics2.repairExpense}</p>
+                <h3 className="font-semibold mt-2">⛽ Carburant</h3>
+                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">⚙️</span> <span className={`font-bold ${colorClass('avgConsumption',2)}`}>{metrics2.avgConsumption || 'N/A'}</span></p>
+                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">💵</span> {metrics2.avgCostPerLiter || 'N/A'}</p>
+                <h3 className="font-semibold mt-2">🧰 Entretien / Réparation</h3>
+                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">💰</span> <span className={`font-bold ${colorClass('costPerKm',2)}`}>{metrics2.costPerKm || 'N/A'}</span>
                   {showDiff2 && (
                     <span className="ml-2 text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">plus cher</span>
                   )}
                 </p>
-                <p><span className="font-semibold">💵 Coût moyen au litre :</span> {metrics2.avgCostPerLiter || 'N/A'}</p>
-                <p><span className="font-semibold">🛣️ Distance enregistrée :</span> {metrics2.distance} km</p>
+                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">🛣️</span> {metrics2.distance} km</p>
               </div>
             </div>
             <ComparisonBarChart metrics1={metrics1} metrics2={metrics2} />
+            <div className="bg-white p-4 rounded-lg shadow mt-4 text-sm w-full max-w-md mx-auto">
+              <h3 className="font-semibold mb-2">Récapitulatif</h3>
+              <ul className="space-y-1">
+                {summary.map(item => (
+                  <li key={item.label}>{item.icon} {item.label} : {item.winner}</li>
+                ))}
+              </ul>
+            </div>
           </div>
         ) : null}
         </div>
