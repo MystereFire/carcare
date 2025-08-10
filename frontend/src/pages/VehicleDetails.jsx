@@ -18,11 +18,11 @@ export default function VehicleDetails() {
             try {
                 const [vehRes, expRes] = await Promise.all([
                     api.get(`/api/vehicles/${id}`),
-                    api.get(`/api/expenses/${id}`),
+                    api.get(`/api/expenses/${id}`, { params: { page: 1, limit: 1000 } }),
                 ]);
 
                 const veh = vehRes.data;
-                const expensesFromApi = expRes.data;
+                const expensesFromApi = expRes.data.data;
 
                 let withAcquisition = [...expensesFromApi];
 

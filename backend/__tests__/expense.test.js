@@ -55,6 +55,28 @@ test('user cannot access expenses of another user', async () => {
     .set('Authorization', `Bearer ${token}`);
 
   expect(res.status).toBe(200);
-  expect(Array.isArray(res.body)).toBe(true);
-  expect(res.body.length).toBe(0);
+  expect(Array.isArray(res.body.data)).toBe(true);
+  expect(res.body.data.length).toBe(0);
+});
+
+test('supports pagination for expenses', async () => {
+  const user = await User.create({ email: 'c@c.com', passwordHash: 'x', name: 'C' });
+  const vehicle = await Vehicle.create({ userId: user._id, name: 'Car' });
+  const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+
+  const expenses = [];
+  for (let i = 0; i < 15; i++) {
+    expenses.push({ userId: user._id, vehicleId: vehicle._id, type: 'fuel', amount: i });
+  }
+  await Expense.insertMany(expenses);
+
+  const res = await request(app)
+    .get(`/api/expenses/${vehicle._id}?page=2&limit=10`)
+    .set('Authorization', `Bearer ${token}`);
+
+  expect(res.status).toBe(200);
+  expect(res.body.page).toBe(2);
+  expect(res.body.totalPages).toBe(2);
+  expect(res.body.data.length).toBe(5);
+  expect(res.body.data[0].amount).toBe(10);
 });

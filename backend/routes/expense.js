@@ -4,11 +4,24 @@ const Expense = require('../models/Expense');
 const auth = require('../middleware/auth');
 
 router.get('/:vehicleId', auth, async (req, res) => {
-    const expenses = await Expense.find({
-        vehicleId: req.params.vehicleId,
-        userId: req.user._id,
-    });
-    res.json(expenses);
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+
+  const filter = {
+    vehicleId: req.params.vehicleId,
+    userId: req.user._id,
+  };
+
+  const total = await Expense.countDocuments(filter);
+  const expenses = await Expense.find(filter)
+    .skip((page - 1) * limit)
+    .limit(limit);
+
+  res.json({
+    page,
+    totalPages: Math.ceil(total / limit) || 1,
+    data: expenses,
+  });
 });
 
 router.post('/', auth, async (req, res) => {
