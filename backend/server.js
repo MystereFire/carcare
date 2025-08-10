@@ -2,6 +2,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+
+// Load environment variables before requiring modules that depend on them
+dotenv.config();
+
 const authRoutes = require('./routes/auth');
 const vehicleRoutes = require('./routes/vehicle');
 const expenseRoutes = require('./routes/expense');
@@ -11,9 +15,6 @@ const errorHandler = require('./middleware/errorHandler');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 require('./config/googleAuth');
-
-
-dotenv.config();
 
 const app = express();
 app.use(cors());
