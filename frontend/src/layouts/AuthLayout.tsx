@@ -5,12 +5,12 @@ import Footer from '../components/Footer';
 
 export default function AuthLayout() {
   return (
-    <div className="min-h-dvh flex flex-col bg-gray-50">
-      <Header variant="minimal" />
-      <main className="flex-1 grid place-items-center px-4 py-10">
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Header />
+      <main className="flex-grow grid place-items-center px-4 py-10">
         <Outlet />
       </main>
-      <Footer className="mt-auto" />
+      <Footer />
     </div>
   );
 }
