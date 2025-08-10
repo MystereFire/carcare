@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import api from '../../src/api';
+import { API_URL } from '../../src/config';
+import GoogleIcon from '../assets/google.svg';
 import { Link, useNavigate } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
 
@@ -49,6 +51,15 @@ export default function Login() {
               <h1 className="text-2xl font-bold">Connexion</h1>
               <p className="text-sm text-gray-500">Bienvenue sur CarCare</p>
             </div>
+
+            <button
+              type="button"
+              onClick={() => (window.location.href = `${API_URL}/auth/google`)}
+              className="w-full h-11 flex items-center justify-center gap-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
+            >
+              <img src={GoogleIcon} alt="" className="w-5 h-5" />
+              <span>Continuer avec Google</span>
+            </button>
 
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
               <div>

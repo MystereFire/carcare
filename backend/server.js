@@ -8,13 +8,18 @@ const expenseRoutes = require('./routes/expense');
 const maintenanceRoutes = require('./routes/maintenance');
 const statsRoutes = require('./routes/stats');
 const errorHandler = require('./middleware/errorHandler');
+const cookieParser = require('cookie-parser');
+const passport = require('passport');
+require('./config/googleAuth');
 
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
+app.use(passport.initialize());
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB connected'))
