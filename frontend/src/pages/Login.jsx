@@ -30,8 +30,8 @@ export default function Login() {
 
   return (
     <PageTransition>
-      <div className="min-h-dvh flex flex-col bg-gray-50">
-        <main className="flex-1 grid place-items-center px-4 py-8 overflow-y-auto">
+      <div className="flex flex-col min-h-full bg-gray-50">
+        <main className="flex-1 grid place-items-center px-4 py-8">
           <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-6 md:p-8 space-y-6">
             <div className="text-center space-y-2">
               <div className="flex justify-center">
