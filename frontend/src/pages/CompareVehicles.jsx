@@ -11,7 +11,10 @@ export default function CompareVehicles() {
   const [secondData, setSecondData] = useState(null);
 
   useEffect(() => {
-    api.get('/api/vehicles').then(res => setVehicles(res.data)).catch(() => {});
+    api
+      .get('/api/vehicles', { params: { page: 1, limit: 100 } })
+      .then(res => setVehicles(res.data.data))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -27,9 +30,9 @@ export default function CompareVehicles() {
     try {
       const [vehRes, expRes] = await Promise.all([
         api.get(`/api/vehicles/${id}`),
-        api.get(`/api/expenses/${id}`),
+        api.get(`/api/expenses/${id}`, { params: { page: 1, limit: 1000 } }),
       ]);
-      setter({ vehicle: vehRes.data, expenses: expRes.data });
+      setter({ vehicle: vehRes.data, expenses: expRes.data.data });
     } catch {
       setter(null);
     }

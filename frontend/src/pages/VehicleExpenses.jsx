@@ -30,10 +30,10 @@ export default function VehicleExpenses() {
             try {
                 const [vehRes, expRes] = await Promise.all([
                     api.get(`/api/vehicles/${id}`),
-                    api.get(`/api/expenses/${id}`),
+                    api.get(`/api/expenses/${id}`, { params: { page: 1, limit: 1000 } }),
                 ]);
                 setVehicle(vehRes.data);
-                setExpenses(expRes.data.reverse()); // + récent en haut
+                setExpenses(expRes.data.data.reverse()); // + récent en haut
             } catch (err) {
                 console.error('Erreur chargement données', err);
             }

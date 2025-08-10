@@ -11,8 +11,8 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const res = await api.get('/api/vehicles');
-        setVehicles(res.data);
+        const res = await api.get('/api/vehicles', { params: { page: 1, limit: 100 } });
+        setVehicles(res.data.data);
       } catch (err) {
         console.error('Erreur chargement véhicules :', err);
       }

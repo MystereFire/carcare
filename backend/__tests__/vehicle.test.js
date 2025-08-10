@@ -44,12 +44,37 @@ it('GET /api/vehicles returns only user\'s vehicles', async () => {
   await Vehicle.create({ userId: user2._id, name: 'Car B' });
 
   const token = jwt.sign({ _id: user1._id }, process.env.JWT_SECRET);
-  const res = await request(app).get('/api/vehicles').set('Authorization', `Bearer ${token}`);
+  const res = await request(app)
+    .get('/api/vehicles')
+    .set('Authorization', `Bearer ${token}`);
 
   expect(res.status).toBe(200);
-  expect(Array.isArray(res.body)).toBe(true);
-  expect(res.body.length).toBe(1);
-  expect(res.body[0].name).toBe('Car A');
+  expect(res.body.page).toBe(1);
+  expect(Array.isArray(res.body.data)).toBe(true);
+  expect(res.body.data.length).toBe(1);
+  expect(res.body.data[0].name).toBe('Car A');
+});
+
+it('supports pagination for vehicles', async () => {
+  const user = await User.create({ email: 'f@f.com', passwordHash: 'p', name: 'F' });
+  const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+
+  // create 15 vehicles
+  const vehicles = [];
+  for (let i = 0; i < 15; i++) {
+    vehicles.push({ userId: user._id, name: `Car ${i}` });
+  }
+  await Vehicle.insertMany(vehicles);
+
+  const res = await request(app)
+    .get('/api/vehicles?page=2&limit=10')
+    .set('Authorization', `Bearer ${token}`);
+
+  expect(res.status).toBe(200);
+  expect(res.body.page).toBe(2);
+  expect(res.body.totalPages).toBe(2);
+  expect(res.body.data.length).toBe(5);
+  expect(res.body.data[0].name).toBe('Car 10');
 });
 
 it('POST /api/vehicles creates a vehicle for the user', async () => {

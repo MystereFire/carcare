@@ -19,8 +19,20 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.get('/', auth, async (req, res) => {
-  const vehicles = await Vehicle.find({ userId: req.user._id });
-  res.json(vehicles);
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+
+  const filter = { userId: req.user._id };
+  const total = await Vehicle.countDocuments(filter);
+  const vehicles = await Vehicle.find(filter)
+    .skip((page - 1) * limit)
+    .limit(limit);
+
+  res.json({
+    page,
+    totalPages: Math.ceil(total / limit) || 1,
+    data: vehicles,
+  });
 });
 
 router.post('/', auth, upload.single('image'), async (req, res) => {

@@ -31,6 +31,23 @@ npm install
 node server.js
 ```
 
+### Pagination
+
+Les routes de récupération acceptent désormais les paramètres de pagination :
+
+- `GET /api/vehicles?page=1&limit=10`
+- `GET /api/expenses/:vehicleId?page=1&limit=10`
+
+La réponse renvoie un objet de la forme :
+
+```json
+{
+  "page": 1,
+  "totalPages": 3,
+  "data": [ /* éléments */ ]
+}
+```
+
 ## 💻 Frontend
 
 ```bash
