@@ -82,6 +82,12 @@ export default function VehicleDetails() {
                             >
                                 <span>✏️</span> Modifier
                             </button>
+                            <button
+                                onClick={() => navigate(`/vehicle/${vehicle._id}/maintenance`)}
+                                className="flex items-center gap-1 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg px-4 py-2 transition"
+                            >
+                                <span>🛠️</span> Carnet d'entretien
+                            </button>
                         </div>
 
                         <h2 className="text-xl font-semibold mb-3">Dernière dépense</h2>
