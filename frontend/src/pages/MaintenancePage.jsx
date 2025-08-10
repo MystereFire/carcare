@@ -63,7 +63,7 @@ export default function MaintenancePage() {
   const distanceRemaining = (t) => t.nextAtKm != null && vehicle ? t.nextAtKm - (vehicle.currentOdometer || 0) : null;
 
   return (
-    <div className="max-w-3xl mx-auto mt-10 px-4">
+    <div className="max-w-3xl mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold">Carnet d'entretien</h1>
         <button onClick={() => { setEditing(null); setFormOpen(true); }} className="bg-indigo-500 text-white px-4 py-2 rounded">

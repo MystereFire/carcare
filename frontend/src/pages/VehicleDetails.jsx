@@ -118,7 +118,7 @@ export default function VehicleDetails() {
 
   return (
     <PageTransition>
-      <div className="max-w-5xl mx-auto mt-6 px-4 space-y-16">
+      <div className="space-y-16">
         {/* Vehicle header */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-4 py-3 flex flex-col md:flex-row md:items-center gap-4">
           {vehicle.image && (

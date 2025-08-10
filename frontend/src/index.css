@@ -3,6 +3,16 @@
 @tailwind utilities;
 
 @layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  .container {
+    width: 100%;
+  }
+
   input:-webkit-autofill {
     -webkit-text-fill-color: #111827;
     box-shadow: 0 0 0 1000px #fff inset;

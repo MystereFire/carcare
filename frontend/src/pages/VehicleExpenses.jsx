@@ -45,7 +45,7 @@ export default function VehicleExpenses() {
 
     return (
         <PageTransition>
-            <div className="max-w-3xl mx-auto mt-10 px-4">
+            <div className="max-w-3xl mx-auto">
                 <button
                     onClick={() => navigate(`/vehicle/${id}`)}
                     className="mb-4 text-sm text-blue-600 hover:underline"

@@ -23,8 +23,8 @@ export default function Dashboard() {
 
   return (
     <PageTransition>
-      <div className="max-w-4xl mx-auto mt-10 px-4">
-        <div className="flex justify-between items-center mb-6">
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Mes véhicules</h1>
           <button
             onClick={() => navigate('/add-vehicle')}
@@ -37,12 +37,12 @@ export default function Dashboard() {
         {vehicles.length === 0 ? (
           <p className="text-gray-600">Aucun véhicule pour le moment.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {vehicles.map((veh) => (
               <div
                 key={veh._id}
                 onClick={() => navigate(`/vehicle/${veh._id}`)}
-                className="cursor-pointer bg-white rounded shadow p-4 border-l-4 border-blue-500 hover:shadow-md transition"
+                className="cursor-pointer bg-white rounded-2xl shadow-sm border border-gray-100 p-4 hover:shadow transition"
               >
                 <h2 className="text-xl font-semibold mb-1">{veh.name}</h2>
 
