@@ -65,7 +65,7 @@ export default function Register() {
 
   return (
     <PageTransition>
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 md:p-8 space-y-6">
+      <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-8 space-y-6">
             <div className="text-center space-y-2">
               <div className="flex justify-center">
                 <div className="p-3 bg-blue-100 rounded-full">
@@ -116,7 +116,7 @@ export default function Register() {
                     required
                     value={form.name}
                     onChange={handleChange}
-                    className="w-full h-11 rounded-xl border border-gray-300 bg-white pl-10 pr-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full h-11 rounded-xl border border-gray-300 bg-white pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 {errors.name && (
@@ -149,7 +149,7 @@ export default function Register() {
                     required
                     value={form.email}
                     onChange={handleChange}
-                    className="w-full h-11 rounded-xl border border-gray-300 bg-white pl-10 pr-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full h-11 rounded-xl border border-gray-300 bg-white pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 {errors.email && (
@@ -182,7 +182,7 @@ export default function Register() {
                     required
                     value={form.password}
                     onChange={handleChange}
-                    className="w-full h-11 rounded-xl border border-gray-300 bg-white pl-10 pr-10 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full h-11 rounded-xl border border-gray-300 bg-white pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                   <button
                     type="button"
@@ -267,7 +267,7 @@ export default function Register() {
               <button
                 type="submit"
                 disabled={isDisabled}
-                className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {isLoading ? (
                   <svg
