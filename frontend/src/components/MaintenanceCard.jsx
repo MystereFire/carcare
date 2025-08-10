@@ -38,36 +38,28 @@ export default function MaintenanceCard({ vehicleId }) {
   const daysRemaining = task.nextAtDate ? Math.ceil((new Date(task.nextAtDate) - new Date()) / 86400000) : null;
 
   const styles = {
-    OK: {
-      bg: 'bg-blue-50',
-      badge: 'bg-blue-200 text-blue-800'
-    },
-    SOON: {
-      bg: 'bg-yellow-50',
-      badge: 'bg-yellow-200 text-yellow-800'
-    },
-    DUE: {
-      bg: 'bg-red-50',
-      badge: 'bg-red-200 text-red-800'
-    }
+    OK: 'bg-blue-200 text-blue-800',
+    SOON: 'bg-yellow-200 text-yellow-800',
+    DUE: 'bg-red-200 text-red-800'
   };
-  const style = styles[task.status] || styles.OK;
+  const badgeClass = styles[task.status] || styles.OK;
 
   return (
-    <div className={`${style.bg} rounded-xl shadow-md border border-gray-100 p-4`}>
+    <div className="bg-blue-50 rounded-2xl shadow-sm border border-gray-100 p-4 flex flex-col h-full">
       <div className="flex justify-between items-start">
-        <h3 className="text-lg font-semibold flex items-center gap-2">🛠️ Entretien</h3>
-        <span className={`px-2 py-1 rounded text-xs font-bold ${style.badge}`}>{task.status}</span>
+        <h3 className="text-lg font-semibold flex items-center gap-2" title="Prochaine tâche d'entretien">🛠️ Entretien</h3>
+        <span className={`px-2 py-1 rounded text-xs font-bold ${badgeClass}`}>{task.status}</span>
       </div>
       <p className="mt-2 text-gray-800">{task.title}</p>
-      <p className="text-sm text-gray-600 mt-1">
-        {distanceRemaining != null ? `${distanceRemaining} km` : ''}{distanceRemaining != null && daysRemaining != null ? ' • ' : ''}{daysRemaining != null ? `${daysRemaining} jours` : ''}
-      </p>
-      <div className="text-right mt-4">
+      <div className="mt-1 text-sm text-gray-600">
+        {distanceRemaining != null && <p>{distanceRemaining} km</p>}
+        {daysRemaining != null && <p>{daysRemaining} jours</p>}
+      </div>
+      <div className="mt-auto text-right">
         <button
           onClick={() => navigate(`/vehicle/${vehicleId}/maintenance`)}
           aria-label="Voir le carnet d'entretien"
-          className="text-blue-600 hover:underline"
+          className="text-blue-600 hover:underline text-sm"
         >
           Voir le carnet
         </button>

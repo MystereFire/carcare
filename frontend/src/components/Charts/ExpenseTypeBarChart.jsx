@@ -28,8 +28,8 @@ export default function ExpenseTypeBarChart({ data }) {
   const total = totalByType.reduce((sum, d) => sum + d.value, 0);
 
   return (
-    <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 h-64 relative">
-      <h3 className="text-lg font-semibold mb-2">📊 Répartition des dépenses</h3>
+    <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 h-64 relative">
+      <h3 className="text-lg font-semibold mb-2" title="Répartition des dépenses">📊 Répartition des dépenses</h3>
       <div className="mb-2">
         <input
           type="month"

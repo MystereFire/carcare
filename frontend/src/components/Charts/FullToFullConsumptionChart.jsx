@@ -27,8 +27,8 @@ export default function FullToFullConsumptionChart({ data }) {
   };
 
   return (
-    <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 h-64">
-      <h3 className="text-lg font-semibold mb-2">⛽ Consommation full-to-full (L/100km)</h3>
+    <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 h-64">
+      <h3 className="text-lg font-semibold mb-2" title="Consommation full-to-full">⛽ Consommation full-to-full (L/100km)</h3>
       <ResponsiveContainer width="100%" height={180}>
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />

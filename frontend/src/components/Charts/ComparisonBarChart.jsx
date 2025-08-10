@@ -66,8 +66,8 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold mb-2 text-center">📊 Indicateurs financiers &amp; distance</h3>
+      <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+        <h3 className="text-lg font-semibold mb-2 text-center" title="Indicateurs financiers et distance">📊 Indicateurs financiers &amp; distance</h3>
         <ResponsiveContainer width="100%" height={260}>
           <BarChart layout="vertical" data={financeData} margin={{ left: 40 }} barGap={12}>
             <XAxis type="number" />
@@ -84,8 +84,8 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
         </ResponsiveContainer>
       </div>
 
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold mb-2 text-center">⚙️ Indicateurs de performance</h3>
+      <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+        <h3 className="text-lg font-semibold mb-2 text-center" title="Indicateurs de performance">⚙️ Indicateurs de performance</h3>
         <ResponsiveContainer width="100%" height={260}>
           <BarChart layout="vertical" data={perfData} margin={{ left: 40 }} barGap={12}>
             <XAxis type="number" />

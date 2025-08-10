@@ -118,23 +118,25 @@ export default function VehicleDetails() {
 
   return (
     <PageTransition>
-      <div className="max-w-5xl mx-auto mt-6 px-4 space-y-8">
+      <div className="max-w-5xl mx-auto mt-6 px-4 space-y-12">
         {/* Vehicle header */}
-        <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 flex flex-col md:flex-row items-center gap-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex flex-col md:flex-row items-center gap-4">
           {vehicle.image && (
             <img
               src={`${API_URL}${vehicle.image}`}
-              alt={vehicle.name}
-              className="w-full md:w-1/2 h-64 object-cover rounded-lg"
+              alt={`${vehicle.name} ${vehicle.model} (${vehicle.year})`}
+              className="w-full md:w-1/2 h-56 object-cover rounded-lg"
             />
           )}
-          <div className="flex-1 w-full">
-            <h1 className="text-4xl font-bold text-gray-900">
-              {vehicle.name} {vehicle.model}{' '}
-              <span className="text-gray-500">({vehicle.year})</span>
-            </h1>
-            <p className="text-sm text-gray-500 mt-1">Km initial : {vehicle.initialKm}</p>
-            <div className="flex flex-wrap gap-2 mt-4">
+          <div className="flex-1 w-full flex flex-col justify-center gap-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+                {vehicle.name} {vehicle.model}{' '}
+                <span className="text-gray-500">({vehicle.year})</span>
+              </h1>
+              <p className="text-sm text-gray-500">Km initial : {vehicle.initialKm}</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => navigate(`/vehicle/${vehicle._id}/add-expense`)}
                 className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg px-3 py-2"
@@ -165,9 +167,9 @@ export default function VehicleDetails() {
 
         {/* KPI cards */}
         <div className="grid gap-4 sm:grid-cols-3">
-          <KpiCard label="Coût /100 km" value={`${costPer100} €`} colorClass="text-blue-600" />
-          <KpiCard label="Consommation moyenne" value={`${avgCons} L/100km`} colorClass="text-green-600" />
-          <KpiCard label="Budget annuel estimé" value={`${annualBudget} €`} colorClass="text-purple-600" />
+          <KpiCard label="Coût /100 km" value={`${costPer100} €`} colorClass="text-blue-700" bgClass="bg-blue-50" />
+          <KpiCard label="Consommation moyenne" value={`${avgCons} L/100km`} colorClass="text-green-700" bgClass="bg-green-50" />
+          <KpiCard label="Budget annuel estimé" value={`${annualBudget} €`} colorClass="text-purple-700" bgClass="bg-purple-50" />
         </div>
 
         {/* Last expense and maintenance */}
@@ -190,7 +192,7 @@ export default function VehicleDetails() {
         </section>
 
         {/* Analysis section */}
-        <section className="pt-8">
+        <section>
           <h2 className="text-2xl font-semibold mb-4">Analyse &amp; prévision</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <AverageConsumptionChart data={expenses} />
