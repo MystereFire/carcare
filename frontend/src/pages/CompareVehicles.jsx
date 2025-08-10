@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
 import { ComparisonBarChart } from '../components/Charts';
+import { API_URL } from '../../src/config';
 
 export default function CompareVehicles() {
+  const navigate = useNavigate();
   const [vehicles, setVehicles] = useState([]);
   const [firstId, setFirstId] = useState('');
   const [secondId, setSecondId] = useState('');
@@ -89,6 +92,7 @@ export default function CompareVehicles() {
       brand: vehicle.brand,
       model: vehicle.model,
       year: vehicle.year,
+      image: vehicle.image,
       totalExpense: totalExpense.toFixed(2),
       fuelExpense: fuelExpense.toFixed(2),
       maintenanceExpense: maintenanceExpense.toFixed(2),
@@ -104,138 +108,153 @@ export default function CompareVehicles() {
   const metrics2 = computeMetrics(secondData);
 
   let better;
-  if (metrics1 && metrics2 && metrics1.costPerKm && metrics2.costPerKm) {
-    better = parseFloat(metrics1.costPerKm) < parseFloat(metrics2.costPerKm)
-      ? metrics1.name
-      : metrics2.name;
+  let diffPercent;
+  let bestTotalId;
+  if (metrics1 && metrics2) {
+    if (metrics1.costPerKm && metrics2.costPerKm) {
+      const c1 = parseFloat(metrics1.costPerKm);
+      const c2 = parseFloat(metrics2.costPerKm);
+      if (c1 !== c2) {
+        better = c1 < c2 ? metrics1.name : metrics2.name;
+        diffPercent = Math.abs(c2 - c1) / Math.max(c1, c2) * 100;
+        diffPercent = diffPercent.toFixed(0);
+      }
+    }
+    bestTotalId = parseFloat(metrics1.totalExpense) <= parseFloat(metrics2.totalExpense) ? firstId : secondId;
   }
 
   const cost1 = metrics1?.costPerKm ? parseFloat(metrics1.costPerKm) : null;
   const cost2 = metrics2?.costPerKm ? parseFloat(metrics2.costPerKm) : null;
-  const diffThreshold = 0.15; // 15%
-  const showDiff1 = cost1 && cost2 && cost1 > cost2 * (1 + diffThreshold);
-  const showDiff2 = cost1 && cost2 && cost2 > cost1 * (1 + diffThreshold);
 
   const compare = (a, b) => {
-    if (a == null || b == null) return null;
-    if (parseFloat(a) < parseFloat(b)) return 1;
-    if (parseFloat(a) > parseFloat(b)) return 2;
-    return 0;
-  };
-
-  const winners = metrics1 && metrics2 ? {
-    costPerKm: compare(metrics1.costPerKm, metrics2.costPerKm),
-    avgConsumption: compare(metrics1.avgConsumption, metrics2.avgConsumption),
-    repair: compare(metrics1.repairExpense, metrics2.repairExpense),
-    totalExpense: compare(metrics1.totalExpense, metrics2.totalExpense),
-  } : {};
-
-  const colorClass = (key, which) => {
-    const res = winners[key];
-    if (res == null || res === 0) return "";
-    return res === which ? "text-green-600" : "text-red-600";
+    if (a == null || b == null) return 'Égalité';
+    const pa = parseFloat(a);
+    const pb = parseFloat(b);
+    if (pa < pb) return metrics1.name;
+    if (pa > pb) return metrics2.name;
+    return 'Égalité';
   };
 
   const summary = metrics1 && metrics2 ? [
-    { label: "Coût/km", icon: "🚗", winner: winners.costPerKm === 1 ? metrics1.name : winners.costPerKm === 2 ? metrics2.name : "Égalité" },
-    { label: "Réparations", icon: "🔧", winner: winners.repair === 1 ? metrics1.name : winners.repair === 2 ? metrics2.name : "Égalité" },
-    { label: "Consommation", icon: "⛽", winner: winners.avgConsumption === 1 ? metrics1.name : winners.avgConsumption === 2 ? metrics2.name : "Égalité" },
+    { label: 'Dépenses', icon: '💶', winner: compare(metrics1.totalExpense, metrics2.totalExpense) },
+    { label: 'Consommation', icon: '⛽', winner: compare(metrics1.avgConsumption, metrics2.avgConsumption) },
+    { label: 'Coût/km', icon: '🚗', winner: compare(metrics1.costPerKm, metrics2.costPerKm) },
   ] : [];
+
+  const diffBadge = (a, b, color) => {
+    if (a == null || b == null) return null;
+    const pa = parseFloat(a);
+    const pb = parseFloat(b);
+    const cls = color === 'blue' ? 'text-blue-600' : 'text-emerald-600';
+    if (pa > pb) return <span className={`ml-2 text-xs ${cls}`}>↑ plus cher</span>;
+    if (pa < pb) return <span className={`ml-2 text-xs ${cls}`}>↓ moins cher</span>;
+    return null;
+  };
+
+  const VehicleCard = ({ metrics, compareTo, color }) => {
+    if (!metrics) return null;
+    const titleColor = color === 'blue' ? 'text-blue-600' : 'text-emerald-600';
+    const imgSrc = metrics.image ? `${API_URL}${metrics.image}` : 'https://via.placeholder.com/150';
+    const alt = `Photo ${metrics.brand} ${metrics.model}`;
+    return (
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-2 flex flex-col">
+        <img src={imgSrc} alt={alt} className="w-full h-32 object-cover rounded-md" />
+        <h2 className={`text-xl font-semibold mb-1 ${titleColor}`}>{metrics.name}</h2>
+        <p><span className="font-semibold">Marque :</span> {metrics.brand}</p>
+        <p><span className="font-semibold">Modèle :</span> {metrics.model}</p>
+        <p><span className="font-semibold">Année :</span> {metrics.year}</p>
+        <h3 className="font-semibold mt-2">Dépenses</h3>
+        <p className="flex items-center"><span className="mr-2">💶</span><span className="font-bold">{metrics.totalExpense}</span>{diffBadge(metrics.totalExpense, compareTo.totalExpense, color)}</p>
+        <p className="flex items-center"><span className="mr-2">⛽</span>{metrics.fuelExpense}</p>
+        <p className="flex items-center"><span className="mr-2">🔧</span>{metrics.maintenanceExpense}</p>
+        <p className="flex items-center"><span className="mr-2">🛠️</span>{metrics.repairExpense}</p>
+        <h3 className="font-semibold mt-2">Carburant</h3>
+        <p className="flex items-center"><span className="mr-2">⚙️</span><span className="font-bold">{metrics.avgConsumption || 'N/A'}</span>{diffBadge(metrics.avgConsumption, compareTo.avgConsumption, color)}</p>
+        <p className="flex items-center"><span className="mr-2">💵</span>{metrics.avgCostPerLiter || 'N/A'}</p>
+        <h3 className="font-semibold mt-2">Coût</h3>
+        <p className="flex items-center"><span className="mr-2">💰</span><span className="font-bold">{metrics.costPerKm || 'N/A'}</span>{diffBadge(metrics.costPerKm, compareTo.costPerKm, color)}</p>
+        <p className="flex items-center"><span className="mr-2">🛣️</span>{metrics.distance} km</p>
+      </div>
+    );
+  };
 
   return (
     <PageTransition>
       <div className="bg-gray-100 min-h-screen py-10">
         <div className="max-w-5xl mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-4 text-center">Comparer deux véhicules</h1>
+          <h1 className="text-3xl font-bold mb-2 text-center">Comparer deux véhicules</h1>
+          <p className="text-center text-gray-600 mb-6">Comparez les performances et coûts de vos véhicules.</p>
           {better && (
             <div className="text-center mb-6">
-              <span className="inline-block bg-green-100 text-green-800 px-4 py-1 rounded-full shadow-sm text-sm animate-pulse">
-                ✅ {better} est plus économique
+              <span className="inline-flex items-center gap-1 bg-green-100 text-green-800 px-4 py-1 rounded-full shadow-sm text-sm">
+                <span>✅</span>
+                <span>Véhicule {better} est plus économique (−{diffPercent}%)</span>
               </span>
             </div>
           )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 justify-items-center">
-          <select
-            value={firstId}
-            onChange={(e) => setFirstId(e.target.value)}
-            className="p-2 border rounded w-full max-w-xs"
-          >
-            <option value="">-- Choisir le premier véhicule --</option>
-            {vehicles.map(v => (
-              <option key={v._id} value={v._id}>{v.name}</option>
-            ))}
-          </select>
-
-          <select
-            value={secondId}
-            onChange={(e) => setSecondId(e.target.value)}
-            className="p-2 border rounded w-full max-w-xs"
-          >
-            <option value="">-- Choisir le second véhicule --</option>
-            {vehicles.map(v => (
-              <option key={v._id} value={v._id}>{v.name}</option>
-            ))}
-          </select>
-        </div>
-
-        {metrics1 && metrics2 ? (
-          <div className="space-y-6">
-            <div className="flex flex-col md:flex-row gap-6 md:gap-8 justify-center flex-wrap">
-              <div className="bg-white p-4 rounded-2xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all space-y-2 w-full max-w-md">
-                <h2 className="text-xl font-semibold mb-2">{metrics1.name}</h2>
-                <p><span className="font-semibold">Marque :</span> {metrics1.brand}</p>
-                <p><span className="font-semibold">🚗 Modèle :</span> {metrics1.model}</p>
-                <p><span className="font-semibold">📅 Année :</span> {metrics1.year}</p>
-                <h3 className="font-semibold mt-2">💰 Dépenses</h3>
-                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">💶</span> <span className={`font-bold ${colorClass('totalExpense',1)}`}>{metrics1.totalExpense}</span></p>
-                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">⛽</span> {metrics1.fuelExpense}</p>
-                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">🔧</span> {metrics1.maintenanceExpense}</p>
-                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">🛠️</span> {metrics1.repairExpense}</p>
-                <h3 className="font-semibold mt-2">⛽ Carburant</h3>
-                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">⚙️</span> <span className={`font-bold ${colorClass('avgConsumption',1)}`}>{metrics1.avgConsumption || 'N/A'}</span></p>
-                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">💵</span> {metrics1.avgCostPerLiter || 'N/A'}</p>
-                <h3 className="font-semibold mt-2">🧰 Entretien / Réparation</h3>
-                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">💰</span> <span className={`font-bold ${colorClass('costPerKm',1)}`}>{metrics1.costPerKm || 'N/A'}</span>
-                  {showDiff1 && (
-                    <span className="ml-2 text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">plus cher</span>
-                  )}
-                </p>
-                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">🛣️</span> {metrics1.distance} km</p>
-              </div>
-              <div className="bg-white p-4 rounded-2xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all space-y-2 w-full max-w-md">
-                <h2 className="text-xl font-semibold mb-2">{metrics2.name}</h2>
-                <p><span className="font-semibold">Marque :</span> {metrics2.brand}</p>
-                <p><span className="font-semibold">🚗 Modèle :</span> {metrics2.model}</p>
-                <p><span className="font-semibold">📅 Année :</span> {metrics2.year}</p>
-                <h3 className="font-semibold mt-2">💰 Dépenses</h3>
-                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">💶</span> <span className={`font-bold ${colorClass('totalExpense',2)}`}>{metrics2.totalExpense}</span></p>
-                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">⛽</span> {metrics2.fuelExpense}</p>
-                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">🔧</span> {metrics2.maintenanceExpense}</p>
-                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">🛠️</span> {metrics2.repairExpense}</p>
-                <h3 className="font-semibold mt-2">⛽ Carburant</h3>
-                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">⚙️</span> <span className={`font-bold ${colorClass('avgConsumption',2)}`}>{metrics2.avgConsumption || 'N/A'}</span></p>
-                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">💵</span> {metrics2.avgCostPerLiter || 'N/A'}</p>
-                <h3 className="font-semibold mt-2">🧰 Entretien / Réparation</h3>
-                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">💰</span> <span className={`font-bold ${colorClass('costPerKm',2)}`}>{metrics2.costPerKm || 'N/A'}</span>
-                  {showDiff2 && (
-                    <span className="ml-2 text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">plus cher</span>
-                  )}
-                </p>
-                <p className="flex items-center"><span className="bg-gray-100 p-1 rounded-full mr-2">🛣️</span> {metrics2.distance} km</p>
-              </div>
-            </div>
-            <ComparisonBarChart metrics1={metrics1} metrics2={metrics2} />
-            <div className="bg-white p-4 rounded-lg shadow mt-4 text-sm w-full max-w-md mx-auto">
-              <h3 className="font-semibold mb-2">Récapitulatif</h3>
-              <ul className="space-y-1">
-                {summary.map(item => (
-                  <li key={item.label}>{item.icon} {item.label} : {item.winner}</li>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div className="flex flex-col">
+              <label htmlFor="vehA" className="font-medium mb-1">Véhicule A</label>
+              <select
+                id="vehA"
+                aria-label="Sélectionner véhicule A"
+                value={firstId}
+                onChange={(e) => setFirstId(e.target.value)}
+                className="p-2 border rounded w-full"
+              >
+                <option value="">-- Choisir le véhicule --</option>
+                {vehicles.map(v => (
+                  <option key={v._id} value={v._id}>{v.name}</option>
                 ))}
-              </ul>
+              </select>
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="vehB" className="font-medium mb-1">Véhicule B</label>
+              <select
+                id="vehB"
+                aria-label="Sélectionner véhicule B"
+                value={secondId}
+                onChange={(e) => setSecondId(e.target.value)}
+                className="p-2 border rounded w-full"
+              >
+                <option value="">-- Choisir le véhicule --</option>
+                {vehicles.map(v => (
+                  <option key={v._id} value={v._id}>{v.name}</option>
+                ))}
+              </select>
             </div>
           </div>
-        ) : null}
+
+          {metrics1 && metrics2 && (
+            <div className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                <VehicleCard metrics={metrics1} compareTo={metrics2} color="blue" />
+                <VehicleCard metrics={metrics2} compareTo={metrics1} color="emerald" />
+              </div>
+              <ComparisonBarChart metrics1={metrics1} metrics2={metrics2} />
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-sm w-full max-w-md mx-auto">
+                <h3 className="font-semibold mb-4 text-center">Récapitulatif</h3>
+                <ul className="space-y-2">
+                  {summary.map(item => (
+                    <li key={item.label} className="flex justify-between">
+                      <span className="flex items-center gap-2">{item.icon} {item.label}</span>
+                      <span className="font-medium">{item.winner}</span>
+                    </li>
+                  ))}
+                </ul>
+                {bestTotalId && (
+                  <button
+                    onClick={() => navigate(`/vehicle/${bestTotalId}`)}
+                    className="mt-4 w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-lg"
+                    aria-label="Voir le véhicule gagnant"
+                  >
+                    Voir le véhicule gagnant
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </PageTransition>
