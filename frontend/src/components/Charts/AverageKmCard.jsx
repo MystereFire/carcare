@@ -3,7 +3,7 @@ import React from 'react';
 export default function AverageKmCard({ data }) {
   if (!data || data.length < 2) {
     return (
-      <div className="p-4 rounded-2xl shadow-sm border border-gray-100 bg-blue-50 text-center h-40 flex flex-col justify-center">
+      <div className="p-4 rounded-2xl shadow-sm border border-gray-100 bg-white text-center h-64 flex flex-col justify-center">
         <h3 className="text-lg font-semibold" title="Moyenne km par jour">🚗 Moyenne km/jour</h3>
         <p className="text-gray-500">Pas assez de données</p>
       </div>
@@ -16,7 +16,7 @@ export default function AverageKmCard({ data }) {
   const avg = days > 0 ? (km / days).toFixed(2) : 0;
 
   return (
-    <div className="p-4 rounded-2xl shadow-sm border border-gray-100 bg-blue-50 text-center h-40 flex flex-col justify-center">
+    <div className="p-4 rounded-2xl shadow-sm border border-gray-100 bg-white text-center h-64 flex flex-col justify-center">
       <h3 className="text-lg font-semibold mb-1" title="Moyenne km par jour">🚗 Moyenne km/jour</h3>
       <p className="text-3xl font-bold">{avg} km</p>
     </div>

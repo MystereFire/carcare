@@ -118,13 +118,13 @@ export default function VehicleDetails() {
 
   return (
     <PageTransition>
-      <div className="max-w-5xl mx-auto mt-6 px-4 space-y-12">
+      <div className="max-w-5xl mx-auto mt-6 px-4 space-y-16">
         {/* Vehicle header */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex flex-col md:flex-row items-center gap-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-4 py-3 flex flex-col md:flex-row md:items-center gap-4">
           {vehicle.image && (
             <img
               src={`${API_URL}${vehicle.image}`}
-              alt={`${vehicle.name} ${vehicle.model} (${vehicle.year})`}
+              alt={`Photo du véhicule ${vehicle.name} ${vehicle.model} (${vehicle.year})`}
               className="w-full md:w-1/2 h-56 object-cover rounded-lg"
             />
           )}
@@ -166,22 +166,22 @@ export default function VehicleDetails() {
         </div>
 
         {/* KPI cards */}
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-3 auto-rows-fr">
           <KpiCard label="Coût /100 km" value={`${costPer100} €`} colorClass="text-blue-700" bgClass="bg-blue-50" />
           <KpiCard label="Consommation moyenne" value={`${avgCons} L/100km`} colorClass="text-green-700" bgClass="bg-green-50" />
-          <KpiCard label="Budget annuel estimé" value={`${annualBudget} €`} colorClass="text-purple-700" bgClass="bg-purple-50" />
+          <KpiCard label="Budget annuel" value={`${annualBudget} €`} colorClass="text-purple-700" bgClass="bg-purple-50" />
         </div>
 
         {/* Last expense and maintenance */}
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 auto-rows-fr">
           <LastExpenseCard expense={lastExpense} onViewAll={() => navigate(`/vehicle/${vehicle._id}/expenses`)} />
           <MaintenanceCard vehicleId={vehicle._id} />
         </div>
 
         {/* Charts section */}
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">Données carburant / entretien</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold mb-6 px-4 py-2 bg-gray-50 rounded-2xl shadow-sm">Données carburant / entretien</h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
             <CostPerLiterChart data={expenses} />
             <CostPer100KmChart data={expenses} />
             <CumulativeExpenseChart data={expenses} />
@@ -192,9 +192,9 @@ export default function VehicleDetails() {
         </section>
 
         {/* Analysis section */}
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">Analyse &amp; prévision</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold mb-6 px-4 py-2 bg-gray-50 rounded-2xl shadow-sm">Analyse &amp; prévision</h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
             <AverageConsumptionChart data={expenses} />
             <TankRangeCard data={expenses} tankSize={vehicle.tankSize} />
             <AnnualBudgetEstimate data={expenses} />

@@ -3,7 +3,7 @@ import React from 'react';
 export default function LastExpenseCard({ expense, onViewAll }) {
   if (!expense) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center justify-center h-full">
         <p className="text-gray-600">Aucune dépense enregistrée.</p>
       </div>
     );
@@ -18,7 +18,7 @@ export default function LastExpenseCard({ expense, onViewAll }) {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex flex-col h-full">
-      <h3 className="text-lg font-semibold flex items-center gap-2 mb-2" title="Dernière dépense">⛽ Dernière dépense</h3>
+      <h3 className="text-lg font-semibold flex items-center gap-2 mb-2" title="Dernière dépense">💧 Dernière dépense</h3>
       <p className="text-gray-700">{expense.label}</p>
       <p className="text-3xl font-bold mt-2">{parseFloat(expense.amount).toFixed(2)} €</p>
       <p className={`${color} font-medium capitalize`}>{expense.type}</p>
