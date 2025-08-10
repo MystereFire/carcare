@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import api from '../../src/api';
 import { Link, useNavigate } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -32,10 +30,7 @@ export default function Login() {
 
   return (
     <PageTransition>
-      <div className="min-h-dvh flex flex-col bg-gray-50">
-        <Navbar />
-        <main className="flex-1 grid place-items-center px-4 py-8 overflow-y-auto">
-          <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-6 md:p-8 space-y-6">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-6 md:p-8 space-y-6">
             <div className="text-center space-y-2">
               <div className="flex justify-center">
                 <div className="p-3 bg-blue-100 rounded-full">
@@ -224,9 +219,6 @@ export default function Login() {
               Créer un compte
             </Link>
           </p>
-        </div>
-        </main>
-        <Footer className="mt-auto" />
       </div>
     </PageTransition>
   );
