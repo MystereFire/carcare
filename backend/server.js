@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
 const vehicleRoutes = require('./routes/vehicle');
 const expenseRoutes = require('./routes/expense');
+const maintenanceRoutes = require('./routes/maintenance');
 const errorHandler = require('./middleware/errorHandler');
 
 
@@ -21,6 +22,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/expenses', expenseRoutes);
+app.use('/api/maintenance', maintenanceRoutes);
 app.use('/uploads', express.static('uploads'));
 
 app.get('/health', async (req, res) => {

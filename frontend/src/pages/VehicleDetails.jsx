@@ -5,6 +5,7 @@ import PageTransition from '../components/PageTransition';
 import { useNavigate } from 'react-router-dom';
 import { KmOverTimeChart, ExpenseTypeBarChart, CumulativeExpenseChart, CostPer100KmChart, CostPerLiterChart, MonthlyExpenseBarChart, AverageKmCard, AnnualBudgetEstimate, AverageConsumptionChart, TankRangeCard } from '../components/Charts';
 import { API_URL } from '../../src/config';
+import MaintenanceCard from '../components/MaintenanceCard';
 
 export default function VehicleDetails() {
     const { id } = useParams();
@@ -121,6 +122,7 @@ export default function VehicleDetails() {
                         </div>
                     )}
                 </div>
+                <MaintenanceCard vehicleId={vehicle._id} />
                 <div className="mb-6 pt-4"></div>
 
                 <section>
