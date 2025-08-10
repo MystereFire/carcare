@@ -1,10 +1,12 @@
 import React from 'react';
 
-export default function KpiCard({ label, value, colorClass = 'text-blue-600' }) {
+export default function KpiCard({ label, value, colorClass = 'text-blue-600', bgClass = 'bg-white' }) {
   return (
-    <div className="bg-white rounded-xl shadow-md border border-gray-100 p-4 text-center">
-      <p className={`text-3xl font-bold ${colorClass}`}>{value}</p>
-      <p className="text-sm text-gray-500 mt-1">{label}</p>
+    <div
+      className={`${bgClass} rounded-2xl shadow-sm border border-gray-100 p-4 text-center flex flex-col justify-center h-full`}
+    >
+      <p className={`font-bold ${colorClass} text-2xl md:text-3xl`}>{value}</p>
+      <p className="text-xs text-gray-600 mt-1">{label}</p>
     </div>
   );
 }

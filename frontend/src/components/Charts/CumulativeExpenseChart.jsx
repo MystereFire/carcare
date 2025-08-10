@@ -33,8 +33,8 @@ export default function CumulativeExpenseChart({ data }) {
   });
 
   return (
-    <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 h-64">
-      <h3 className="text-lg font-semibold mb-2">💶 Dépenses cumulées</h3>
+    <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 h-64">
+      <h3 className="text-lg font-semibold mb-2" title="Dépenses cumulées">💶 Dépenses cumulées</h3>
       <ResponsiveContainer width="100%" height={180}>
         <AreaChart data={cumulative}>
           <defs>

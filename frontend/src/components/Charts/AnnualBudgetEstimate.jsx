@@ -8,8 +8,8 @@ export default function AnnualBudgetEstimate({ data }) {
 
   if (!filteredData || filteredData.length < 2) {
     return (
-      <div className="p-4 rounded-xl shadow-md border border-gray-100 bg-gradient-to-r from-indigo-500 to-purple-500 text-white h-40 flex flex-col justify-center">
-        <h3 className="text-lg font-semibold mb-2">💰 Estimation budget annuel</h3>
+      <div className="p-4 rounded-2xl shadow-sm border border-gray-100 bg-gradient-to-r from-indigo-500 to-purple-500 text-white h-40 flex flex-col justify-center">
+        <h3 className="text-lg font-semibold mb-2" title="Estimation budget annuel">💰 Estimation budget annuel</h3>
         <FilterButtons filter={filter} setFilter={setFilter} />
         <p className="text-sm text-white/80">Pas assez de données</p>
       </div>
@@ -26,8 +26,8 @@ export default function AnnualBudgetEstimate({ data }) {
   const estimate = days > 0 ? (total * factor).toFixed(2) : total;
 
   return (
-    <div className="p-4 rounded-xl shadow-md border border-gray-100 bg-gradient-to-r from-indigo-500 to-purple-500 text-white h-40 flex flex-col justify-center">
-      <h3 className="text-lg font-semibold mb-2">💰 Estimation budget annuel</h3>
+    <div className="p-4 rounded-2xl shadow-sm border border-gray-100 bg-gradient-to-r from-indigo-500 to-purple-500 text-white h-40 flex flex-col justify-center">
+      <h3 className="text-lg font-semibold mb-2" title="Estimation budget annuel">💰 Estimation budget annuel</h3>
       <FilterButtons filter={filter} setFilter={setFilter} />
       <p className="text-3xl font-bold">{estimate} €</p>
       <p className="text-xs opacity-80 mt-1">

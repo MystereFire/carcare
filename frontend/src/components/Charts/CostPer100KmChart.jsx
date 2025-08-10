@@ -22,8 +22,8 @@ export default function CostPer100KmChart({ data }) {
     (costPer100Km.length || 1);
 
   return (
-    <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 h-64">
-      <h3 className="text-lg font-semibold mb-2">💰 Coût moyen aux 100 km (€)</h3>
+    <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 h-64">
+      <h3 className="text-lg font-semibold mb-2" title="Coût moyen aux 100 km">💰 Coût moyen aux 100 km (€)</h3>
       <ResponsiveContainer width="100%" height={180}>
         <AreaChart data={costPer100Km}>
           <defs>
