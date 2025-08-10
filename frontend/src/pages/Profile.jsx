@@ -51,7 +51,7 @@ export default function Profile() {
 
   return (
     <PageTransition>
-      <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow">
+      <div className="max-w-md mx-auto p-6 bg-white rounded shadow">
         <h2 className="text-2xl font-bold mb-4">Mon profil</h2>
         {user && (
           <div className="mb-6">

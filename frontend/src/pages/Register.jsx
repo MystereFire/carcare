@@ -65,7 +65,7 @@ export default function Register() {
 
   return (
     <PageTransition>
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-6 md:p-8 space-y-6">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 md:p-8 space-y-6">
             <div className="text-center space-y-2">
               <div className="flex justify-center">
                 <div className="p-3 bg-blue-100 rounded-full">

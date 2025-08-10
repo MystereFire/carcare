@@ -180,10 +180,9 @@ export default function CompareVehicles() {
 
   return (
     <PageTransition>
-      <div className="bg-gray-100 min-h-screen py-10">
-        <div className="max-w-5xl mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-2 text-center">Comparer deux véhicules</h1>
-          <p className="text-center text-gray-600 mb-6">Comparez les performances et coûts de vos véhicules.</p>
+      <div className="space-y-6 max-w-5xl mx-auto">
+          <h1 className="text-3xl font-bold text-center">Comparer deux véhicules</h1>
+          <p className="text-center text-gray-600">Comparez les performances et coûts de vos véhicules.</p>
           {better && (
             <div className="text-center mb-6">
               <span className="inline-flex items-center gap-1 bg-green-100 text-green-800 px-4 py-1 rounded-full shadow-sm text-sm">
@@ -255,7 +254,6 @@ export default function CompareVehicles() {
               </div>
             </div>
           )}
-        </div>
       </div>
     </PageTransition>
   );

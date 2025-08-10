@@ -55,7 +55,7 @@ export default function AddVehicle() {
 
   return (
     <PageTransition>
-      <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow">
+      <div className="max-w-md mx-auto p-6 bg-white rounded shadow">
         <h2 className="text-2xl font-bold mb-4">Ajouter un véhicule</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input name="name" placeholder="Nom du véhicule" onChange={handleChange} className="w-full p-2 border rounded" required />
