@@ -109,7 +109,8 @@ router.get(
     const token = jwt.sign({ _id: req.user._id }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
-    res.redirect(`${process.env.FRONTEND_URL}/oauth2?token=${token}`);
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    res.redirect(`${frontendUrl}/oauth2?token=${token}`);
   }
 );
 

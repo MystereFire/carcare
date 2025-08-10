@@ -15,6 +15,7 @@ renommez-les en `.env` pour définir vos variables d'environnement.
 MONGO_URI=mongodb://localhost:27017/carcare
 JWT_SECRET=your_jwt_secret
 # PORT=5000 # optionnel
+FRONTEND_URL=http://localhost:5173
 ```
 
 #### Frontend
