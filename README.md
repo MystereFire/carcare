@@ -37,6 +37,7 @@ Les routes de récupération acceptent désormais les paramètres de pagination 
 
 - `GET /api/vehicles?page=1&limit=10`
 - `GET /api/expenses/:vehicleId?page=1&limit=10`
+- `GET /api/maintenance/:vehicleId`
 
 La réponse renvoie un objet de la forme :
 

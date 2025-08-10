@@ -13,6 +13,7 @@ import AddExpense from './pages/AddExpense';
 import VehicleExpenses from './pages/VehicleExpenses';
 import Profile from './pages/Profile';
 import CompareVehicles from './pages/CompareVehicles';
+import MaintenancePage from './pages/MaintenancePage';
 
 
 
@@ -46,6 +47,10 @@ function App() {
             <Route
               path="/vehicle/:id/expenses"
               element={<ProtectedRoute><VehicleExpenses /></ProtectedRoute>}
+            />
+            <Route
+              path="/vehicle/:id/maintenance"
+              element={<ProtectedRoute><MaintenancePage /></ProtectedRoute>}
             />
             <Route
               path="/compare"
