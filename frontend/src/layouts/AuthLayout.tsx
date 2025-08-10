@@ -7,10 +7,10 @@ export default function AuthLayout() {
   return (
     <div className="min-h-dvh flex flex-col bg-gray-50">
       <Header variant="minimal" />
-      <main className="flex-1 flex items-center justify-center px-4">
+      <main className="flex-1 grid place-items-center px-4 py-10">
         <Outlet />
       </main>
-      <Footer />
+      <Footer className="mt-auto" />
     </div>
   );
 }

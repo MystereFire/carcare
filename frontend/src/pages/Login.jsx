@@ -30,7 +30,7 @@ export default function Login() {
 
   return (
     <PageTransition>
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 md:p-8 space-y-6">
+      <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-8 space-y-6">
             <div className="text-center space-y-2">
               <div className="flex justify-center">
                 <div className="p-3 bg-blue-100 rounded-full">
@@ -76,7 +76,7 @@ export default function Login() {
                     autoFocus
                     required
                     onChange={handleChange}
-                    className="w-full h-11 rounded-xl border border-gray-300 bg-white pl-10 pr-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full h-11 rounded-xl border border-gray-300 bg-white pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -107,7 +107,7 @@ export default function Login() {
                     autoComplete="current-password"
                     required
                     onChange={handleChange}
-                    className="w-full h-11 rounded-xl border border-gray-300 bg-white pl-10 pr-10 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full h-11 rounded-xl border border-gray-300 bg-white pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                   <button
                     type="button"
@@ -156,20 +156,14 @@ export default function Login() {
                 </div>
               </div>
 
-            <div className="flex items-center justify-between text-sm">
-              <label className="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="ml-2">Se souvenir de moi</span>
+            <div className="flex items-center justify-between gap-3">
+              <label className="inline-flex items-center gap-2 select-none">
+                <input type="checkbox" className="h-4 w-4 rounded border-gray-300" />
+                <span className="text-sm text-gray-700">Se souvenir de moi</span>
               </label>
-              <Link
-                to="/forgot-password"
-                className="text-blue-600 hover:underline"
-              >
+              <a href="/forgot-password" className="text-sm text-blue-600 hover:underline">
                 Mot de passe oublié ?
-              </Link>
+              </a>
             </div>
 
             {error && (
@@ -184,7 +178,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-11 rounded-xl bg-blue-600 text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
               {isLoading ? (
                 <svg
