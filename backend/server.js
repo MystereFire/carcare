@@ -6,6 +6,7 @@ const authRoutes = require('./routes/auth');
 const vehicleRoutes = require('./routes/vehicle');
 const expenseRoutes = require('./routes/expense');
 const maintenanceRoutes = require('./routes/maintenance');
+const statsRoutes = require('./routes/stats');
 const errorHandler = require('./middleware/errorHandler');
 
 
@@ -23,6 +24,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
+app.use('/api/stats', statsRoutes);
 app.use('/uploads', express.static('uploads'));
 
 app.get('/health', async (req, res) => {

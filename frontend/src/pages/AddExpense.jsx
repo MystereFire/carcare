@@ -13,17 +13,23 @@ export default function AddExpense() {
     date: new Date().toISOString().slice(0, 10),
     km: '',
     liters: '',
+    isFullFill: false,
     notes: ''
   });
   const [message, setMessage] = useState('');
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    const updated = { ...expense, [name]: value };
-    if (name === 'type' && value !== 'fuel') {
-      updated.liters = '';
+    const { name, value, type, checked } = e.target;
+    if (type === 'checkbox') {
+      setExpense({ ...expense, [name]: checked });
+    } else {
+      const updated = { ...expense, [name]: value };
+      if (name === 'type' && value !== 'fuel') {
+        updated.liters = '';
+        updated.isFullFill = false;
+      }
+      setExpense(updated);
     }
-    setExpense(updated);
   };
 
   const handleSubmit = async (e) => {
@@ -67,15 +73,26 @@ export default function AddExpense() {
           />
           <input type="number" name="km" placeholder="Kilométrage" onChange={handleChange} className="w-full p-2 border rounded" required />
           {expense.type === 'fuel' && (
-            <input
-              type="number"
-              inputMode="decimal"
-              step="0.01"
-              name="liters"
-              placeholder="Litres"
-              onChange={handleChange}
-              className="w-full p-2 border rounded"
-            />
+            <>
+              <input
+                type="number"
+                inputMode="decimal"
+                step="0.01"
+                name="liters"
+                placeholder="Litres"
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+              />
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  name="isFullFill"
+                  checked={expense.isFullFill}
+                  onChange={handleChange}
+                />
+                <span>Plein complet</span>
+              </label>
+            </>
           )}
           <textarea name="notes" placeholder="Notes (facultatif)" onChange={handleChange} className="w-full p-2 border rounded" />
 

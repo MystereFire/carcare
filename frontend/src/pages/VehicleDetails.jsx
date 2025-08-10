@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
 import { useNavigate } from 'react-router-dom';
-import { KmOverTimeChart, ExpenseTypeBarChart, CumulativeExpenseChart, CostPer100KmChart, CostPerLiterChart, MonthlyExpenseBarChart, AverageKmCard, AnnualBudgetEstimate, AverageConsumptionChart, TankRangeCard } from '../components/Charts';
+import { KmOverTimeChart, ExpenseTypeBarChart, CumulativeExpenseChart, CostPer100KmChart, CostPerLiterChart, MonthlyExpenseBarChart, AverageKmCard, AnnualBudgetEstimate, AverageConsumptionChart, TankRangeCard, FullToFullConsumptionChart } from '../components/Charts';
 import { API_URL } from '../../src/config';
 import MaintenanceCard from '../components/MaintenanceCard';
 
@@ -12,14 +12,16 @@ export default function VehicleDetails() {
     const [vehicle, setVehicle] = useState(null);
     const [expenses, setExpenses] = useState([]);
     const [expensesWithAcquisition, setExpensesWithAcquisition] = useState([]);
+    const [consumptionSegments, setConsumptionSegments] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                const [vehRes, expRes] = await Promise.all([
+                const [vehRes, expRes, consRes] = await Promise.all([
                     api.get(`/api/vehicles/${id}`),
                     api.get(`/api/expenses/${id}`, { params: { page: 1, limit: 1000 } }),
+                    api.get(`/api/stats/vehicle/${id}/consumption`),
                 ]);
 
                 const veh = vehRes.data;
@@ -46,6 +48,7 @@ export default function VehicleDetails() {
                 setVehicle(veh);
                 setExpenses(expensesFromApi.sort((a, b) => new Date(a.date) - new Date(b.date)));
                 setExpensesWithAcquisition(withAcquisition);
+                setConsumptionSegments(consRes.data);
             } catch (err) {
                 console.error('Erreur de chargement :', err);
             }
@@ -96,7 +99,8 @@ export default function VehicleDetails() {
                         ) : (
                             <div className="bg-gray-50 p-3 rounded-md shadow-sm mb-2">
                                 <div className="font-medium">
-                                    ⛽ <strong>{expenses[expenses.length - 1].label}</strong> — {expenses[expenses.length - 1].amount} €
+                                    ⛽ <strong>{expenses[expenses.length - 1].label}</strong> — {expenses[expenses.length - 1].amount} €{' '}
+                                    {expenses[expenses.length - 1].isFullFill && <span title="Plein complet">💧</span>}
                                 </div>
                                 <div className="text-sm text-gray-500">
                                     {expenses[expenses.length - 1].type} • {new Date(expenses[expenses.length - 1].date).toLocaleDateString()} • {expenses[expenses.length - 1].km} km
@@ -139,6 +143,7 @@ export default function VehicleDetails() {
                         <CumulativeExpenseChart data={expenses} />
                         <MonthlyExpenseBarChart data={expenses} />
                         <ExpenseTypeBarChart data={expenses} />
+                        <FullToFullConsumptionChart data={consumptionSegments} />
                     </div>
                 </section>
 
