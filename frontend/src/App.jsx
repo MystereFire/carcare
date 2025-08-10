@@ -14,6 +14,7 @@ import VehicleExpenses from './pages/VehicleExpenses';
 import Profile from './pages/Profile';
 import CompareVehicles from './pages/CompareVehicles';
 import MaintenancePage from './pages/MaintenancePage';
+import OAuthCallback from './pages/OAuthCallback';
 
 
 
@@ -62,6 +63,7 @@ function App() {
             />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/oauth2" element={<OAuthCallback />} />
           </Routes>
         </main>
         <Footer />

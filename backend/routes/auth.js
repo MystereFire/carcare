@@ -6,6 +6,7 @@ const { body } = require('express-validator');
 const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
 const User = require('../models/User');
+const passport = require('passport');
 
 router.post(
   '/register',
@@ -39,7 +40,12 @@ router.post(
     try {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
-      if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+      if (
+        !user ||
+        user.provider === 'google' ||
+        !user.passwordHash ||
+        !(await bcrypt.compare(password, user.passwordHash))
+      ) {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
       const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
@@ -88,6 +94,22 @@ router.put(
     } catch (err) {
       next(err);
     }
+  }
+);
+
+router.get(
+  '/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { session: false }),
+  (req, res) => {
+    const token = jwt.sign({ _id: req.user._id }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+    res.redirect(`${process.env.FRONTEND_URL}/oauth2?token=${token}`);
   }
 );
 
