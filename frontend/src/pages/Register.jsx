@@ -98,7 +98,7 @@ export default function Register() {
 
             <button
               type="button"
-              onClick={() => (window.location.href = `${API_URL}/auth/google`)}
+              onClick={() => (window.location.href = `${API_URL}/api/auth/google`)}
               className="w-full h-11 flex items-center justify-center gap-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
             >
               <img src={GoogleIcon} alt="" className="w-5 h-5" />
