@@ -16,8 +16,18 @@ export default function Navbar() {
       <div className="space-x-4">
         {!token ? (
           <>
-            <Link to="/login" className="text-blue-500 hover:underline">Login</Link>
-            <Link to="/register" className="text-blue-500 hover:underline">Register</Link>
+            <Link
+              to="/login"
+              className="text-sm text-blue-600 px-2 py-1 rounded hover:underline focus-visible:ring-2 focus-visible:ring-blue-500"
+            >
+              Login
+            </Link>
+            <Link
+              to="/register"
+              className="text-sm text-blue-600 px-2 py-1 rounded hover:underline focus-visible:ring-2 focus-visible:ring-blue-500"
+            >
+              Register
+            </Link>
           </>
         ) : (
           <>
