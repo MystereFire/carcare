@@ -92,8 +92,7 @@ export default function VehicleExpenses() {
                                 <div className="flex justify-between items-start">
                                     <div>
                                         <div className="font-medium">
-                                            {exp.label} — {exp.amount} €{' '}
-                                            {exp.type === 'fuel' && exp.isFullFill && <span title="Plein complet">💧</span>}
+                                            {exp.label} — {exp.amount} €
                                         </div>
                                         <div className="text-sm text-gray-500">
                                             {exp.type} • {new Date(exp.date).toLocaleDateString()} • {exp.km} km

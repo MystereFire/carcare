@@ -13,7 +13,7 @@ import {
   AnnualBudgetEstimate,
   AverageConsumptionChart,
   TankRangeCard,
-  FullToFullConsumptionChart
+  FuelConsumptionChart
 } from '../components/Charts';
 import { API_URL } from '../../src/config';
 import MaintenanceCard from '../components/MaintenanceCard';
@@ -187,7 +187,7 @@ export default function VehicleDetails() {
             <CumulativeExpenseChart data={expenses} />
             <MonthlyExpenseBarChart data={expenses} />
             <ExpenseTypeBarChart data={expenses} />
-            <FullToFullConsumptionChart data={consumptionSegments} />
+            <FuelConsumptionChart data={consumptionSegments} />
           </div>
         </section>
 

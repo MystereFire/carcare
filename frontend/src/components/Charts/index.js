@@ -9,4 +9,4 @@ export { default as CostPerLiterChart } from './CostPerLiterChart';
 export { default as AverageConsumptionChart } from './AverageConsumptionChart';
 export { default as TankRangeCard } from './TankRangeCard';
 export { default as ComparisonBarChart } from './ComparisonBarChart';
-export { default as FullToFullConsumptionChart } from './FullToFullConsumptionChart';
+export { default as FuelConsumptionChart } from './FuelConsumptionChart';
