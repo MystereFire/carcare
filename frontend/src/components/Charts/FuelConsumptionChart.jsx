@@ -1,7 +1,7 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
-export default function FullToFullConsumptionChart({ data }) {
+export default function FuelConsumptionChart({ data }) {
   const chartData = data.map((d, idx) => ({
     ...d,
     index: idx + 1,
@@ -12,10 +12,7 @@ export default function FullToFullConsumptionChart({ data }) {
   const variance = chartData.reduce((sum, d) => sum + Math.pow(d.consumption - mean, 2), 0) / (chartData.length || 1);
   const stdDev = Math.sqrt(variance);
 
-  chartData.forEach((d, i) => {
-    const start = Math.max(0, i - 2);
-    const subset = chartData.slice(start, i + 1);
-    d.mavg = subset.reduce((s, x) => s + x.consumption, 0) / subset.length;
+  chartData.forEach((d) => {
     d.anomaly = Math.abs(d.consumption - mean) > 2 * stdDev;
   });
 
@@ -28,7 +25,7 @@ export default function FullToFullConsumptionChart({ data }) {
 
   return (
     <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 h-64">
-      <h3 className="text-lg font-semibold mb-2" title="Consommation full-to-full">⛽ Consommation full-to-full (L/100km)</h3>
+      <h3 className="text-lg font-semibold mb-2" title="Consommation">⛽ Consommation (L/100km)</h3>
       <ResponsiveContainer width="100%" height={180}>
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
@@ -36,7 +33,7 @@ export default function FullToFullConsumptionChart({ data }) {
           <YAxis />
           <Tooltip formatter={(val) => `${val} L/100km`} />
           <Line type="monotone" dataKey="consumption" stroke="#8884d8" dot={renderDot} />
-          <Line type="monotone" dataKey="mavg" stroke="#82ca9d" />
+          <Line type="monotone" dataKey="avgConsumption" stroke="#82ca9d" />
         </LineChart>
       </ResponsiveContainer>
     </div>

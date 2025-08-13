@@ -15,7 +15,6 @@ export default function EditExpenseModal({ expense, onClose, onSave }) {
             const updated = { ...form, [name]: value };
             if (name === 'type' && value !== 'fuel') {
                 updated.liters = '';
-                updated.isFullFill = false;
             }
             setForm(updated);
         }
@@ -43,27 +42,16 @@ export default function EditExpenseModal({ expense, onClose, onSave }) {
                     <input type="date" name="date" value={form.date?.slice(0, 10)} onChange={handleChange} className="w-full p-2 border rounded" required />
                     <input type="number" name="km" value={form.km} onChange={handleChange} className="w-full p-2 border rounded" required />
                     {form.type === 'fuel' && (
-                        <>
-                            <input
-                                type="number"
-                                inputMode="decimal"
-                                step="0.01"
-                                name="liters"
-                                value={form.liters || ''}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded"
-                                placeholder="Litres"
-                            />
-                            <label className="flex items-center space-x-2">
-                                <input
-                                    type="checkbox"
-                                    name="isFullFill"
-                                    checked={form.isFullFill || false}
-                                    onChange={handleChange}
-                                />
-                                <span>Plein complet</span>
-                            </label>
-                        </>
+                        <input
+                            type="number"
+                            inputMode="decimal"
+                            step="0.01"
+                            name="liters"
+                            value={form.liters || ''}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            placeholder="Litres"
+                        />
                     )}
                     <textarea name="notes" value={form.notes || ''} onChange={handleChange} className="w-full p-2 border rounded" placeholder="Notes (optionnel)" />
                     <div className="flex justify-end gap-2">
