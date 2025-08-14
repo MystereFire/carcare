@@ -2,15 +2,12 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, LabelList } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer, ChartTooltip, ChartLegend, ChartLegendContent } from '../ui/chart';
+import { computeDomain, formatEuro, formatNumber } from '../../lib/formatters';
 
 export default function ComparisonBarChart({ metrics1, metrics2 }) {
   if (!metrics1 || !metrics2) return null;
 
-  const euro = new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR'
-  });
-  const number = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
+  const number = formatNumber;
 
   const units = {
     'Dépense totale': '€',
@@ -22,13 +19,13 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
   const formatValue = (metric, value) => {
     switch (units[metric]) {
       case '€':
-        return euro.format(value);
+        return formatEuro(value);
       case 'km':
-        return `${number.format(value)} km`;
+        return `${number(value)} km`;
       case 'L/100km':
-        return `${number.format(value)} L/100km`;
+        return `${number(value)} L/100km`;
       case '€/km':
-        return `${euro.format(value)}/km`;
+        return `${formatEuro(value)}/km`;
       default:
         return number.format(value);
     }
@@ -92,8 +89,10 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
     }
   ];
 
-  const financeMax = Math.max(...financeData.flatMap(d => [d.veh1, d.veh2]));
-  const perfMax = Math.max(...perfData.flatMap(d => [d.veh1, d.veh2]));
+  const financeVals = financeData.flatMap(d => [d.veh1, d.veh2]);
+  const perfVals = perfData.flatMap(d => [d.veh1, d.veh2]);
+  const [, financeMax] = computeDomain([0, ...financeVals]);
+  const [, perfMax] = computeDomain([0, ...perfVals]);
 
   return (
     <div className="space-y-6">
@@ -103,8 +102,8 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
         </CardHeader>
         <CardContent className="h-[260px]">
           <ChartContainer>
-            <BarChart layout="vertical" data={financeData} margin={{ left: 40 }} barGap={12}>
-              <XAxis type="number" domain={[0, financeMax * 1.1]} tickFormatter={v => number.format(v)} />
+            <BarChart layout="vertical" data={financeData} margin={{ top: 10, right: 10, bottom: 10, left: 40 }} barGap={12}>
+              <XAxis type="number" domain={[0, financeMax]} tickFormatter={v => number(v)} />
               <YAxis dataKey="metric" type="category" width={140} />
               <ChartTooltip content={<CustomTooltip />} />
               <ChartLegend content={<ChartLegendContent />} />
@@ -125,8 +124,8 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
         </CardHeader>
         <CardContent className="h-[260px]">
           <ChartContainer>
-            <BarChart layout="vertical" data={perfData} margin={{ left: 40 }} barGap={12}>
-              <XAxis type="number" domain={[0, perfMax * 1.1]} tickFormatter={v => number.format(v)} />
+            <BarChart layout="vertical" data={perfData} margin={{ top: 10, right: 10, bottom: 10, left: 40 }} barGap={12}>
+              <XAxis type="number" domain={[0, perfMax]} tickFormatter={v => number(v)} />
               <YAxis dataKey="metric" type="category" width={140} />
               <ChartTooltip content={<CustomTooltip />} />
               <ChartLegend content={<ChartLegendContent />} />

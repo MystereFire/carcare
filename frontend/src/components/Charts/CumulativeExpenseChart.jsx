@@ -2,12 +2,9 @@ import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, ReferenceLine, CartesianGrid } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
+import { formatEuro, formatDate, computeDomain } from '../../lib/formatters';
 
 export default function CumulativeExpenseChart({ data }) {
-  const euro = new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR'
-  });
 
   const filtered = data.filter(e => e.type !== 'acquisition');
   // Regrouper les montants par date (ISO)
@@ -39,8 +36,7 @@ export default function CumulativeExpenseChart({ data }) {
     };
   });
   const yVals = cumulative.map(d => d.total);
-  const minY = Math.min(...yVals);
-  const maxY = Math.max(...yVals);
+  const [minY, maxY] = computeDomain(yVals);
   const avg = yVals.reduce((s, v) => s + v, 0) / (yVals.length || 1);
 
   return (
@@ -50,7 +46,7 @@ export default function CumulativeExpenseChart({ data }) {
       </CardHeader>
       <CardContent className="h-[180px]">
         <ChartContainer>
-          <AreaChart data={cumulative}>
+          <AreaChart data={cumulative} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
           <defs>
             <linearGradient id="cumulExp" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#82ca9d" stopOpacity={0.4} />
@@ -63,24 +59,20 @@ export default function CumulativeExpenseChart({ data }) {
             type="number"
             domain={['dataMin', 'dataMax']}
             ticks={cumulative.map(d => d.timestamp)}
-            tickFormatter={(unixTime) => new Date(unixTime).toLocaleDateString('fr-FR')}
+            tickFormatter={formatDate}
             minTickGap={20}
             preserveStartEnd
           />
-          <YAxis
-            domain={[minY * 0.9, maxY * 1.1]}
-            tickFormatter={v => euro.format(v)}
-          />
+          <YAxis domain={[minY, maxY]} tickFormatter={formatEuro} />
           <ChartTooltip
-            content={<ChartTooltipContent formatter={val => euro.format(val)} />}
-            labelFormatter={(unixTime) => new Date(unixTime).toLocaleDateString('fr-FR')}
+            content={<ChartTooltipContent formatter={val => formatEuro(val)} labelFormatter={formatDate} />}
           />
           <ReferenceLine
             y={avg}
             stroke="#94a3b8"
             strokeWidth={1}
             strokeDasharray="4 2"
-            label={{ position: 'top', value: `Moyenne ${euro.format(avg)}`, fontSize: 12, fill: '#6b7280' }}
+            label={{ position: 'top', value: `Moyenne ${formatEuro(avg)}`, fontSize: 12, fill: '#6b7280', dy: -4 }}
           />
           <Area
             type="monotone"

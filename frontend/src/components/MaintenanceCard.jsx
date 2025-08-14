@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 
 export default function MaintenanceCard({ vehicleId }) {
   const [tasks, setTasks] = useState([]);
@@ -45,25 +46,27 @@ export default function MaintenanceCard({ vehicleId }) {
   const badgeClass = styles[task.status] || styles.OK;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex flex-col h-full">
-      <div className="flex justify-between items-start">
-        <h3 className="text-lg font-semibold flex items-center gap-2" title="Prochaine tâche d'entretien">🔧 Entretien</h3>
+    <Card className="h-full flex flex-col">
+      <CardHeader className="flex justify-between items-start pb-2">
+        <CardTitle title="Prochaine tâche d'entretien">🔧 Entretien</CardTitle>
         <span className={`px-2 py-1 rounded text-xs font-bold ${badgeClass}`}>{task.status}</span>
-      </div>
-      <p className="mt-2 text-gray-800">{task.title}</p>
-      <div className="mt-1 text-sm text-gray-600">
-        {distanceRemaining != null && <p>{distanceRemaining} km restants</p>}
-        {daysRemaining != null && <p>{daysRemaining} jours restants</p>}
-      </div>
-      <div className="mt-auto text-right">
-        <button
-          onClick={() => navigate(`/vehicle/${vehicleId}/maintenance`)}
-          aria-label="Voir le carnet d'entretien"
-          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm"
-        >
-          Voir le carnet
-        </button>
-      </div>
-    </div>
+      </CardHeader>
+      <CardContent className="flex flex-col flex-1 pt-0">
+        <p className="mt-2 text-gray-800">{task.title}</p>
+        <div className="mt-1 text-sm text-gray-600">
+          {distanceRemaining != null && <p>{distanceRemaining} km restants</p>}
+          {daysRemaining != null && <p>{daysRemaining} jours restants</p>}
+        </div>
+        <div className="mt-auto text-right">
+          <button
+            onClick={() => navigate(`/vehicle/${vehicleId}/maintenance`)}
+            aria-label="Voir le carnet d'entretien"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm"
+          >
+            Voir le carnet
+          </button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
