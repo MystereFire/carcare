@@ -1,9 +1,11 @@
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, ReferenceLine, CartesianGrid } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
 
 export default function KmOverTimeChart({ data }) {
+  const kmFormatter = new Intl.NumberFormat('fr-FR');
+
   // Filtrage pour ne garder que l'entrée avec le plus de km par jour
   const maxKmPerDay = {};
   data.forEach(entry => {
@@ -21,6 +23,10 @@ export default function KmOverTimeChart({ data }) {
       timestamp: new Date(d.date).getTime(),
       displayDate: new Date(d.date).toLocaleDateString('fr-FR')
     }));
+  const yVals = filteredData.map(d => d.km);
+  const minY = Math.min(...yVals);
+  const maxY = Math.max(...yVals);
+  const avg = yVals.reduce((s, v) => s + v, 0) / (yVals.length || 1);
 
   return (
     <Card className="h-64">
@@ -43,10 +49,34 @@ export default function KmOverTimeChart({ data }) {
             domain={['dataMin', 'dataMax']}
             ticks={filteredData.map(d => d.timestamp)}
             tickFormatter={t => new Date(t).toLocaleDateString('fr-FR')}
+            minTickGap={20}
+            preserveStartEnd
           />
-          <YAxis dataKey="km" />
-          <ChartTooltip content={<ChartTooltipContent />} labelFormatter={t => new Date(t).toLocaleDateString('fr-FR')} />
-          <Area type="monotone" dataKey="km" stroke="#8884d8" fill="url(#kmTime)" strokeWidth={2} dot={{ r:3 }} activeDot={{ r:5 }} />
+          <YAxis
+            dataKey="km"
+            domain={[minY * 0.9, maxY * 1.1]}
+            tickFormatter={v => kmFormatter.format(v)}
+          />
+          <ChartTooltip
+            content={<ChartTooltipContent formatter={val => `${kmFormatter.format(val)} km`} />}
+            labelFormatter={t => new Date(t).toLocaleDateString('fr-FR')}
+          />
+          <ReferenceLine
+            y={avg}
+            stroke="#94a3b8"
+            strokeWidth={1}
+            strokeDasharray="4 2"
+            label={{ position: 'top', value: `Moyenne ${kmFormatter.format(avg)} km`, fontSize: 12, fill: '#6b7280' }}
+          />
+          <Area
+            type="monotone"
+            dataKey="km"
+            stroke="#8884d8"
+            fill="url(#kmTime)"
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4 }}
+          />
         </AreaChart>
         </ChartContainer>
       </CardContent>

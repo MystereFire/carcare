@@ -1,10 +1,16 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, LabelList } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '../ui/chart';
+import { ChartContainer, ChartTooltip, ChartLegend, ChartLegendContent } from '../ui/chart';
 
 export default function ComparisonBarChart({ metrics1, metrics2 }) {
   if (!metrics1 || !metrics2) return null;
+
+  const euro = new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR'
+  });
+  const number = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
 
   const units = {
     'Dépense totale': '€',
@@ -13,9 +19,25 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
     'Coût par km': '€/km',
   };
 
+  const formatValue = (metric, value) => {
+    switch (units[metric]) {
+      case '€':
+        return euro.format(value);
+      case 'km':
+        return `${number.format(value)} km`;
+      case 'L/100km':
+        return `${number.format(value)} L/100km`;
+      case '€/km':
+        return `${euro.format(value)}/km`;
+      default:
+        return number.format(value);
+    }
+  };
+
   const renderLabel = (key, color, dataset) => (props) => {
     const { x, y, width, height, value, index } = props;
     const inside = width > 40;
+    const metric = dataset[index].metric;
     return (
       <text
         x={inside ? x + width - 4 : x + width + 4}
@@ -25,7 +47,7 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
         dominantBaseline="middle"
         fontSize={14}
       >
-        {value} {units[dataset[index].metric]}
+        {formatValue(metric, value)}
       </text>
     );
   };
@@ -33,12 +55,11 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
   const CustomTooltip = ({ active, payload }) => {
     if (!active || !payload || !payload.length) return null;
     return (
-      <div className="bg-white p-2 rounded shadow border text-sm">
+      <div className="rounded-md border bg-white/90 p-2 text-sm shadow-sm">
         {payload.map(p => {
           const name = p.dataKey === 'veh1' ? metrics1.name : metrics2.name;
-          const unit = units[p.payload.metric];
           return (
-            <div key={p.dataKey}>{`${name} — ${p.payload.metric}: ${p.value} ${unit}`}</div>
+            <div key={p.dataKey}>{`${name} — ${p.payload.metric}: ${formatValue(p.payload.metric, p.value)}`}</div>
           );
         })}
       </div>
@@ -71,6 +92,9 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
     }
   ];
 
+  const financeMax = Math.max(...financeData.flatMap(d => [d.veh1, d.veh2]));
+  const perfMax = Math.max(...perfData.flatMap(d => [d.veh1, d.veh2]));
+
   return (
     <div className="space-y-6">
       <Card>
@@ -80,7 +104,7 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
         <CardContent className="h-[260px]">
           <ChartContainer>
             <BarChart layout="vertical" data={financeData} margin={{ left: 40 }} barGap={12}>
-              <XAxis type="number" />
+              <XAxis type="number" domain={[0, financeMax * 1.1]} tickFormatter={v => number.format(v)} />
               <YAxis dataKey="metric" type="category" width={140} />
               <ChartTooltip content={<CustomTooltip />} />
               <ChartLegend content={<ChartLegendContent />} />
@@ -102,7 +126,7 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
         <CardContent className="h-[260px]">
           <ChartContainer>
             <BarChart layout="vertical" data={perfData} margin={{ left: 40 }} barGap={12}>
-              <XAxis type="number" />
+              <XAxis type="number" domain={[0, perfMax * 1.1]} tickFormatter={v => number.format(v)} />
               <YAxis dataKey="metric" type="category" width={140} />
               <ChartTooltip content={<CustomTooltip />} />
               <ChartLegend content={<ChartLegendContent />} />

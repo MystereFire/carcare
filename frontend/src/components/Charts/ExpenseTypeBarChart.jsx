@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Cell, LabelList } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Cell, LabelList, ReferenceLine } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '../ui/chart';
 
@@ -10,6 +10,10 @@ const COLORS = {
 };
 
 export default function ExpenseTypeBarChart({ data }) {
+  const euro = new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR'
+  });
   const [month, setMonth] = useState('');
 
   const filtered = month
@@ -28,6 +32,9 @@ export default function ExpenseTypeBarChart({ data }) {
     .map(([name, value]) => ({ name, value }))
     .filter((d) => d.value > 0);
   const total = totalByType.reduce((sum, d) => sum + d.value, 0);
+  const maxY = Math.max(...totalByType.map(d => d.value), 0);
+  const avg = totalByType.reduce((s, d) => s + d.value, 0) / (totalByType.length || 1);
+  const showLabels = totalByType.length <= 6;
 
   return (
     <Card className="h-64 relative">
@@ -53,19 +60,20 @@ export default function ExpenseTypeBarChart({ data }) {
         </div>
         <ChartContainer className="h-[180px]">
           <BarChart data={totalByType} margin={{ bottom: 20 }} barCategoryGap={20}>
-            <XAxis dataKey="name" />
-            <YAxis />
-            <ChartTooltip content={<ChartTooltipContent formatter={(val) => `${val} €`} />} />
+            <XAxis dataKey="name" minTickGap={20} preserveStartEnd />
+            <YAxis domain={[0, maxY * 1.1]} tickFormatter={v => euro.format(v)} />
+            <ChartTooltip content={<ChartTooltipContent formatter={(val) => euro.format(val)} />} />
             <ChartLegend content={<ChartLegendContent />} />
+            <ReferenceLine y={avg} stroke="#94a3b8" strokeDasharray="4 2" strokeWidth={1} label={{ position: 'top', value: `Moyenne ${euro.format(avg)}`, fontSize: 12, fill: '#6b7280' }} />
             <Bar dataKey="value" name="Montant" radius={8}>
-              <LabelList dataKey="value" position="top" formatter={(v) => `${v} €`} />
+              {showLabels && <LabelList dataKey="value" position="top" formatter={(v) => euro.format(v)} />}
               {totalByType.map((entry, i) => (
                 <Cell key={i} fill={COLORS[entry.name] || '#ccc'} />
               ))}
             </Bar>
           </BarChart>
         </ChartContainer>
-        <div className="text-center font-bold mt-2">{total.toFixed(2)} €</div>
+        <div className="text-center font-bold mt-2">{euro.format(total)}</div>
       </CardContent>
     </Card>
   );
