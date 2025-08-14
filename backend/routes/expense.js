@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Expense = require('../models/Expense');
+const Vehicle = require('../models/Vehicle');
 const auth = require('../middleware/auth');
 
 router.get('/:vehicleId', auth, async (req, res) => {
@@ -31,6 +32,9 @@ router.post('/', auth, async (req, res) => {
       userId: req.user._id // 👈 nécessaire ici
     });
     await expense.save();
+    if (expense.km != null) {
+      await Vehicle.findByIdAndUpdate(expense.vehicleId, { $max: { currentOdometer: expense.km } });
+    }
     res.status(201).json(expense);
   } catch (err) {
     res.status(500).json({ error: 'Erreur serveur' });
@@ -47,6 +51,9 @@ router.put('/:id', auth, async (req, res) => {
       { new: true }
     );
     if (!expense) return res.status(404).json({ error: 'Non autorisé' });
+    if (req.body.km != null) {
+      await Vehicle.findByIdAndUpdate(expense.vehicleId, { $max: { currentOdometer: req.body.km } });
+    }
     res.json(expense);
   } catch (err) {
     res.status(500).json({ error: 'Erreur serveur' });
