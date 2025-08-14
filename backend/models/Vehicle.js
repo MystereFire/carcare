@@ -11,6 +11,7 @@ const vehicleSchema = new mongoose.Schema({
     tankSize: Number,
     image: String,
     initialKm: Number,
+    currentOdometer: { type: Number, default: 0 },
     acquisitionDate: Date,
     createdAt: { type: Date, default: Date.now }
 });

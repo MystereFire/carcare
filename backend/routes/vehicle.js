@@ -50,6 +50,7 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
       vin,
       tankSize,
       initialKm,
+      currentOdometer: initialKm,
       acquisitionDate,
       image,
     });
