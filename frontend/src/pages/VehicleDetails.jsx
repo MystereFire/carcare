@@ -75,34 +75,14 @@ export default function VehicleDetails() {
   const lastExpense = expenses.length ? expenses[expenses.length - 1] : null;
 
   // KPI calculations
-  const fuelExpenses = expenses
-    .filter(e => e.type === 'fuel')
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
-
   let costPer100 = 0;
-  if (fuelExpenses.length > 1) {
-    let totalCost = 0;
-    let totalKm = 0;
-    for (let i = 1; i < fuelExpenses.length; i++) {
-      const kmDiff = fuelExpenses[i].km - fuelExpenses[i - 1].km;
-      if (kmDiff > 0) {
-        totalCost += parseFloat(fuelExpenses[i].amount || 0);
-        totalKm += kmDiff;
-      }
-    }
-    costPer100 = totalKm > 0 ? ((totalCost / totalKm) * 100).toFixed(2) : 0;
-  }
-
   let avgCons = 0;
-  const consArray = [];
-  for (let i = 1; i < fuelExpenses.length; i++) {
-    const kmDiff = fuelExpenses[i].km - fuelExpenses[i - 1].km;
-    if (kmDiff > 0 && fuelExpenses[i].liters > 0) {
-      consArray.push((fuelExpenses[i].liters / kmDiff) * 100);
-    }
-  }
-  if (consArray.length) {
-    avgCons = (consArray.reduce((a, b) => a + b, 0) / consArray.length).toFixed(2);
+  if (consumptionSegments.length) {
+    const totalKm = consumptionSegments.reduce((s, seg) => s + seg.km, 0);
+    const totalLiters = consumptionSegments.reduce((s, seg) => s + seg.liters, 0);
+    const totalCost = consumptionSegments.reduce((s, seg) => s + seg.price, 0);
+    costPer100 = totalKm > 0 ? ((totalCost * 100) / totalKm).toFixed(2) : 0;
+    avgCons = totalKm > 0 ? ((totalLiters * 100) / totalKm).toFixed(2) : 0;
   }
 
   let annualBudget = 0;
@@ -195,8 +175,8 @@ export default function VehicleDetails() {
         <section className="mb-12">
           <h2 className="text-2xl font-semibold mb-6 px-4 py-2 bg-gray-50 rounded-2xl shadow-sm">Analyse &amp; prévision</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
-            <AverageConsumptionChart data={expenses} />
-            <TankRangeCard data={expenses} tankSize={vehicle.tankSize} />
+            <AverageConsumptionChart data={consumptionSegments} />
+            <TankRangeCard data={consumptionSegments} tankSize={vehicle.tankSize} />
             <AnnualBudgetEstimate data={expenses} />
             <AverageKmCard data={expensesWithAcquisition} />
             <KmOverTimeChart data={expensesWithAcquisition} />
