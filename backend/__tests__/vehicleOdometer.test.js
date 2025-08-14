@@ -50,3 +50,17 @@ test('vehicle currentOdometer updates after expense', async () => {
   expect(vehRes.status).toBe(200);
   expect(vehRes.body.currentOdometer).toBe(1500);
 });
+
+test('vehicle currentOdometer can be manually updated', async () => {
+  const user = await User.create({ email: 'b@b.com', passwordHash: 'y', name: 'B' });
+  const vehicle = await Vehicle.create({ userId: user._id, name: 'Car', initialKm: 2000, currentOdometer: 2000 });
+  const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+
+  const updateRes = await request(app)
+    .put(`/api/vehicles/${vehicle._id}`)
+    .set('Authorization', `Bearer ${token}`)
+    .send({ currentOdometer: 2500 });
+
+  expect(updateRes.status).toBe(200);
+  expect(updateRes.body.currentOdometer).toBe(2500);
+});

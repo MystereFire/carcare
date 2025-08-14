@@ -74,6 +74,21 @@ export default function VehicleDetails() {
 
   const lastExpense = expenses.length ? expenses[expenses.length - 1] : null;
 
+  const handleOdometerUpdate = async () => {
+    const km = prompt('Entrez le kilométrage actuel', vehicle.currentOdometer || '');
+    if (km !== null && km !== '') {
+      const kmNumber = parseInt(km, 10);
+      if (!isNaN(kmNumber)) {
+        try {
+          await api.put(`/api/vehicles/${vehicle._id}`, { currentOdometer: kmNumber });
+          setVehicle(v => ({ ...v, currentOdometer: kmNumber }));
+        } catch (err) {
+          console.error('Erreur lors de la mise à jour du kilométrage', err);
+        }
+      }
+    }
+  };
+
   // KPI calculations
   let costPer100 = 0;
   let avgCons = 0;
@@ -115,6 +130,7 @@ export default function VehicleDetails() {
                 <span className="text-gray-500">({vehicle.year})</span>
               </h1>
               <p className="text-sm text-gray-500">Km initial : {vehicle.initialKm}</p>
+              <p className="text-sm text-gray-500">Km actuel : {vehicle.currentOdometer}</p>
             </div>
             <div className="flex flex-wrap gap-2">
               <button
@@ -140,6 +156,14 @@ export default function VehicleDetails() {
               >
                 <span>🛠️</span>
                 <span className="hidden sm:inline">Carnet d'entretien</span>
+              </button>
+              <button
+                onClick={handleOdometerUpdate}
+                className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg px-3 py-2"
+                aria-label="Relever le kilométrage"
+              >
+                <span>📏</span>
+                <span className="hidden sm:inline">Relevé kilométrique</span>
               </button>
             </div>
           </div>
