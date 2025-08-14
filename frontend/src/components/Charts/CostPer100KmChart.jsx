@@ -1,5 +1,7 @@
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, CartesianGrid } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, ReferenceLine, CartesianGrid } from 'recharts';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
 
 export default function CostPer100KmChart({ data }) {
   const sortedData = [...data]
@@ -22,10 +24,13 @@ export default function CostPer100KmChart({ data }) {
     (costPer100Km.length || 1);
 
   return (
-    <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 h-64">
-      <h3 className="text-lg font-semibold mb-2" title="Coût moyen aux 100 km">💰 Coût moyen aux 100 km (€)</h3>
-      <ResponsiveContainer width="100%" height={180}>
-        <AreaChart data={costPer100Km}>
+    <Card className="h-64">
+      <CardHeader className="pb-2">
+        <CardTitle title="Coût moyen aux 100 km">💰 Coût moyen aux 100 km (€)</CardTitle>
+      </CardHeader>
+      <CardContent className="h-[180px]">
+        <ChartContainer>
+          <AreaChart data={costPer100Km}>
           <defs>
             <linearGradient id="cost100" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.4} />
@@ -35,7 +40,7 @@ export default function CostPer100KmChart({ data }) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
           <YAxis padding={{ top: 10 }} />
-          <Tooltip formatter={(val) => `${val} €/100km`} />
+          <ChartTooltip content={<ChartTooltipContent formatter={val => `${val} €/100km`} />} />
           <ReferenceLine
             y={avg.toFixed(2)}
             stroke="#f87171"
@@ -45,7 +50,8 @@ export default function CostPer100KmChart({ data }) {
           />
           <Area type="monotone" dataKey="costPer100" stroke="#f59e0b" fill="url(#cost100)" strokeWidth={2} dot={{ r:3, stroke:'white' }} activeDot={{ r:5 }} />
         </AreaChart>
-      </ResponsiveContainer>
-    </div>
+        </ChartContainer>
+      </CardContent>
+    </Card>
   );
 }

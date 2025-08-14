@@ -1,12 +1,17 @@
 import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 
 export default function AverageKmCard({ data }) {
   if (!data || data.length < 2) {
     return (
-      <div className="p-4 rounded-2xl shadow-sm border border-gray-100 bg-white text-center h-64 flex flex-col justify-center">
-        <h3 className="text-lg font-semibold" title="Moyenne km par jour">🚗 Moyenne km/jour</h3>
-        <p className="text-gray-500">Pas assez de données</p>
-      </div>
+      <Card className="h-64 flex flex-col justify-center text-center">
+        <CardHeader>
+          <CardTitle title="Moyenne km par jour">🚗 Moyenne km/jour</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <p className="text-gray-500">Pas assez de données</p>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -16,9 +21,13 @@ export default function AverageKmCard({ data }) {
   const avg = days > 0 ? (km / days).toFixed(2) : 0;
 
   return (
-    <div className="p-4 rounded-2xl shadow-sm border border-gray-100 bg-white text-center h-64 flex flex-col justify-center">
-      <h3 className="text-lg font-semibold mb-1" title="Moyenne km par jour">🚗 Moyenne km/jour</h3>
-      <p className="text-3xl font-bold">{avg} km</p>
-    </div>
+    <Card className="h-64 flex flex-col justify-center text-center">
+      <CardHeader className="pb-2">
+        <CardTitle title="Moyenne km par jour">🚗 Moyenne km/jour</CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <p className="text-3xl font-bold">{avg} km</p>
+      </CardContent>
+    </Card>
   );
 }

@@ -1,5 +1,7 @@
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
 
 export default function CumulativeExpenseChart({ data }) {
   const filtered = data.filter(e => e.type !== 'acquisition');
@@ -33,10 +35,13 @@ export default function CumulativeExpenseChart({ data }) {
   });
 
   return (
-    <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 h-64">
-      <h3 className="text-lg font-semibold mb-2" title="Dépenses cumulées">💶 Dépenses cumulées</h3>
-      <ResponsiveContainer width="100%" height={180}>
-        <AreaChart data={cumulative}>
+    <Card className="h-64">
+      <CardHeader className="pb-2">
+        <CardTitle title="Dépenses cumulées">💶 Dépenses cumulées</CardTitle>
+      </CardHeader>
+      <CardContent className="h-[180px]">
+        <ChartContainer>
+          <AreaChart data={cumulative}>
           <defs>
             <linearGradient id="cumulExp" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#82ca9d" stopOpacity={0.4} />
@@ -52,10 +57,11 @@ export default function CumulativeExpenseChart({ data }) {
             tickFormatter={(unixTime) => new Date(unixTime).toLocaleDateString('fr-FR')}
           />
           <YAxis />
-          <Tooltip labelFormatter={(unixTime) => `Date: ${new Date(unixTime).toLocaleDateString('fr-FR')}`} />
+          <ChartTooltip content={<ChartTooltipContent />} labelFormatter={(unixTime) => `Date: ${new Date(unixTime).toLocaleDateString('fr-FR')}`} />
           <Area type="monotone" dataKey="total" stroke="#82ca9d" fill="url(#cumulExp)" strokeWidth={2} dot={{ r:3 }} activeDot={{ r:5 }} />
         </AreaChart>
-      </ResponsiveContainer>
-    </div>
+        </ChartContainer>
+      </CardContent>
+    </Card>
   );
 }
