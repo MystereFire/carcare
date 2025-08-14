@@ -4,8 +4,13 @@ import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
 
 export default function CostPer100KmChart({ data }) {
+  const euro = new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR'
+  });
+
   const sortedData = [...data]
-    .filter(d => d.type === 'fuel') // 👈 garder uniquement le fuel
+    .filter(d => d.type === 'fuel')
     .sort((a, b) => new Date(a.date) - new Date(b.date));
 
   const costPer100Km = [];
@@ -22,6 +27,9 @@ export default function CostPer100KmChart({ data }) {
   const avg =
     costPer100Km.reduce((sum, c) => sum + c.costPer100, 0) /
     (costPer100Km.length || 1);
+  const yVals = costPer100Km.map(d => d.costPer100);
+  const minY = Math.min(...yVals);
+  const maxY = Math.max(...yVals);
 
   return (
     <Card className="h-64">
@@ -38,17 +46,28 @@ export default function CostPer100KmChart({ data }) {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis padding={{ top: 10 }} />
-          <ChartTooltip content={<ChartTooltipContent formatter={val => `${val} €/100km`} />} />
+          <XAxis dataKey="date" minTickGap={20} preserveStartEnd />
+          <YAxis
+            domain={[minY * 0.9, maxY * 1.1]}
+            tickFormatter={v => euro.format(v)}
+          />
+          <ChartTooltip content={<ChartTooltipContent formatter={val => `${euro.format(val)}/100km`} />} />
           <ReferenceLine
-            y={avg.toFixed(2)}
-            stroke="#f87171"
+            y={avg}
+            stroke="#94a3b8"
             strokeWidth={1}
             strokeDasharray="4 2"
-            label={{ position: "top", value: `Moyenne ${avg.toFixed(2)}`, fontSize: 12, fill: "#f87171" }}
+            label={{ position: 'top', value: `Moyenne ${euro.format(avg)}`, fontSize: 12, fill: '#6b7280' }}
           />
-          <Area type="monotone" dataKey="costPer100" stroke="#f59e0b" fill="url(#cost100)" strokeWidth={2} dot={{ r:3, stroke:'white' }} activeDot={{ r:5 }} />
+          <Area
+            type="monotone"
+            dataKey="costPer100"
+            stroke="#f59e0b"
+            fill="url(#cost100)"
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4 }}
+          />
         </AreaChart>
         </ChartContainer>
       </CardContent>

@@ -4,7 +4,7 @@ import { cn } from '../../lib/utils';
 
 export function ChartContainer({ children, className, ...props }) {
   return (
-    <div className={cn('w-full h-full', className)} {...props}>
+    <div className={cn('relative w-full h-full', className)} {...props}>
       <ResponsiveContainer width="100%" height="100%">
         {children}
       </ResponsiveContainer>
@@ -13,7 +13,7 @@ export function ChartContainer({ children, className, ...props }) {
 }
 
 export const ChartTooltip = ({ content, ...props }) => (
-  <Tooltip content={content} {...props} />
+  <Tooltip content={content} wrapperStyle={{ zIndex: 1000 }} {...props} />
 );
 
 export function ChartTooltipContent({ active, payload, label, formatter }) {
@@ -31,7 +31,7 @@ export function ChartTooltipContent({ active, payload, label, formatter }) {
   );
 }
 
-export const ChartLegend = (props) => <Legend {...props} />;
+export const ChartLegend = (props) => <Legend wrapperStyle={{ paddingTop: 8 }} {...props} />;
 
 export function ChartLegendContent({ payload }) {
   if (!payload || !payload.length) return null;

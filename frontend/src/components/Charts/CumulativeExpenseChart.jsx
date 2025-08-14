@@ -1,9 +1,14 @@
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, ReferenceLine, CartesianGrid } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
 
 export default function CumulativeExpenseChart({ data }) {
+  const euro = new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR'
+  });
+
   const filtered = data.filter(e => e.type !== 'acquisition');
   // Regrouper les montants par date (ISO)
   const amountPerDate = {};
@@ -33,6 +38,10 @@ export default function CumulativeExpenseChart({ data }) {
       displayDate: new Date(d.timestamp).toLocaleDateString('fr-FR')
     };
   });
+  const yVals = cumulative.map(d => d.total);
+  const minY = Math.min(...yVals);
+  const maxY = Math.max(...yVals);
+  const avg = yVals.reduce((s, v) => s + v, 0) / (yVals.length || 1);
 
   return (
     <Card className="h-64">
@@ -55,10 +64,33 @@ export default function CumulativeExpenseChart({ data }) {
             domain={['dataMin', 'dataMax']}
             ticks={cumulative.map(d => d.timestamp)}
             tickFormatter={(unixTime) => new Date(unixTime).toLocaleDateString('fr-FR')}
+            minTickGap={20}
+            preserveStartEnd
           />
-          <YAxis />
-          <ChartTooltip content={<ChartTooltipContent />} labelFormatter={(unixTime) => `Date: ${new Date(unixTime).toLocaleDateString('fr-FR')}`} />
-          <Area type="monotone" dataKey="total" stroke="#82ca9d" fill="url(#cumulExp)" strokeWidth={2} dot={{ r:3 }} activeDot={{ r:5 }} />
+          <YAxis
+            domain={[minY * 0.9, maxY * 1.1]}
+            tickFormatter={v => euro.format(v)}
+          />
+          <ChartTooltip
+            content={<ChartTooltipContent formatter={val => euro.format(val)} />}
+            labelFormatter={(unixTime) => new Date(unixTime).toLocaleDateString('fr-FR')}
+          />
+          <ReferenceLine
+            y={avg}
+            stroke="#94a3b8"
+            strokeWidth={1}
+            strokeDasharray="4 2"
+            label={{ position: 'top', value: `Moyenne ${euro.format(avg)}`, fontSize: 12, fill: '#6b7280' }}
+          />
+          <Area
+            type="monotone"
+            dataKey="total"
+            stroke="#82ca9d"
+            fill="url(#cumulExp)"
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4 }}
+          />
         </AreaChart>
         </ChartContainer>
       </CardContent>
