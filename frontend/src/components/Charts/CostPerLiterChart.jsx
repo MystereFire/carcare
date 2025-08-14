@@ -1,5 +1,7 @@
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, CartesianGrid } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, ReferenceLine, CartesianGrid } from 'recharts';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
 
 export default function CostPerLiterChart({ data }) {
   const grouped = {};
@@ -24,10 +26,13 @@ export default function CostPerLiterChart({ data }) {
     (chartData.length || 1);
 
   return (
-    <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 h-64">
-      <h3 className="text-lg font-semibold mb-2" title="Coût au litre">⛽ Coût au litre (€)</h3>
-      <ResponsiveContainer width="100%" height={180}>
-        <AreaChart data={chartData}>
+    <Card className="h-64">
+      <CardHeader className="pb-2">
+        <CardTitle title="Coût au litre">⛽ Coût au litre (€)</CardTitle>
+      </CardHeader>
+      <CardContent className="h-[180px]">
+        <ChartContainer>
+          <AreaChart data={chartData}>
           <defs>
             <linearGradient id="costLiter" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#ef4444" stopOpacity={0.4} />
@@ -43,9 +48,9 @@ export default function CostPerLiterChart({ data }) {
             tickFormatter={t => new Date(t).toLocaleDateString('fr-FR')}
           />
           <YAxis padding={{ top: 10 }} />
-          <Tooltip
+          <ChartTooltip
+            content={<ChartTooltipContent formatter={val => `${val} €/L`} />}
             labelFormatter={t => new Date(t).toLocaleDateString('fr-FR')}
-            formatter={val => `${val} €/L`}
           />
           <ReferenceLine
             y={avg.toFixed(2)}
@@ -64,7 +69,8 @@ export default function CostPerLiterChart({ data }) {
             activeDot={{ r: 5 }}
           />
         </AreaChart>
-      </ResponsiveContainer>
-    </div>
+        </ChartContainer>
+      </CardContent>
+    </Card>
   );
 }

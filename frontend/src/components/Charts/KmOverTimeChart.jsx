@@ -1,5 +1,7 @@
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
 
 export default function KmOverTimeChart({ data }) {
   // Filtrage pour ne garder que l'entrée avec le plus de km par jour
@@ -21,10 +23,13 @@ export default function KmOverTimeChart({ data }) {
     }));
 
   return (
-    <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 h-64">
-      <h3 className="text-lg font-semibold mb-2" title="Évolution du kilométrage">📈 Évolution du kilométrage</h3>
-      <ResponsiveContainer width="100%" height={180}>
-        <AreaChart data={filteredData}>
+    <Card className="h-64">
+      <CardHeader className="pb-2">
+        <CardTitle title="Évolution du kilométrage">📈 Évolution du kilométrage</CardTitle>
+      </CardHeader>
+      <CardContent className="h-[180px]">
+        <ChartContainer>
+          <AreaChart data={filteredData}>
           <defs>
             <linearGradient id="kmTime" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#8884d8" stopOpacity={0.4} />
@@ -40,10 +45,11 @@ export default function KmOverTimeChart({ data }) {
             tickFormatter={t => new Date(t).toLocaleDateString('fr-FR')}
           />
           <YAxis dataKey="km" />
-          <Tooltip labelFormatter={t => new Date(t).toLocaleDateString('fr-FR')} />
+          <ChartTooltip content={<ChartTooltipContent />} labelFormatter={t => new Date(t).toLocaleDateString('fr-FR')} />
           <Area type="monotone" dataKey="km" stroke="#8884d8" fill="url(#kmTime)" strokeWidth={2} dot={{ r:3 }} activeDot={{ r:5 }} />
         </AreaChart>
-      </ResponsiveContainer>
-    </div>
+        </ChartContainer>
+      </CardContent>
+    </Card>
   );
 }

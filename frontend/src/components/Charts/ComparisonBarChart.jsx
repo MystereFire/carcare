@@ -1,14 +1,7 @@
 import React from 'react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  LabelList,
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, LabelList } from 'recharts';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '../ui/chart';
 
 export default function ComparisonBarChart({ metrics1, metrics2 }) {
   if (!metrics1 || !metrics2) return null;
@@ -80,41 +73,49 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-        <h3 className="text-lg font-semibold mb-2 text-center" title="Dépenses et distance parcourue">Dépenses et distance parcourue</h3>
-        <ResponsiveContainer width="100%" height={260}>
-          <BarChart layout="vertical" data={financeData} margin={{ left: 40 }} barGap={12}>
-            <XAxis type="number" />
-            <YAxis dataKey="metric" type="category" width={140} />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend iconType="circle" />
-            <Bar dataKey="veh1" name={metrics1.name} fill="#3b82f6" barSize={18} radius={8} animationDuration={800}>
-              <LabelList dataKey="veh1" content={renderLabel('veh1', '#3b82f6', financeData)} />
-            </Bar>
-            <Bar dataKey="veh2" name={metrics2.name} fill="#10b981" barSize={18} radius={8} animationDuration={800}>
-              <LabelList dataKey="veh2" content={renderLabel('veh2', '#10b981', financeData)} />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      <Card>
+        <CardHeader className="pb-2 text-center">
+          <CardTitle title="Dépenses et distance parcourue">Dépenses et distance parcourue</CardTitle>
+        </CardHeader>
+        <CardContent className="h-[260px]">
+          <ChartContainer>
+            <BarChart layout="vertical" data={financeData} margin={{ left: 40 }} barGap={12}>
+              <XAxis type="number" />
+              <YAxis dataKey="metric" type="category" width={140} />
+              <ChartTooltip content={<CustomTooltip />} />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Bar dataKey="veh1" name={metrics1.name} fill="#3b82f6" barSize={18} radius={8} animationDuration={800}>
+                <LabelList dataKey="veh1" content={renderLabel('veh1', '#3b82f6', financeData)} />
+              </Bar>
+              <Bar dataKey="veh2" name={metrics2.name} fill="#10b981" barSize={18} radius={8} animationDuration={800}>
+                <LabelList dataKey="veh2" content={renderLabel('veh2', '#10b981', financeData)} />
+              </Bar>
+            </BarChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
 
-      <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-        <h3 className="text-lg font-semibold mb-2 text-center" title="Indicateurs de performance">Indicateurs de performance</h3>
-        <ResponsiveContainer width="100%" height={260}>
-          <BarChart layout="vertical" data={perfData} margin={{ left: 40 }} barGap={12}>
-            <XAxis type="number" />
-            <YAxis dataKey="metric" type="category" width={140} />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend iconType="circle" />
-            <Bar dataKey="veh1" name={metrics1.name} fill="#3b82f6" barSize={18} radius={8} animationDuration={800}>
-              <LabelList dataKey="veh1" content={renderLabel('veh1', '#3b82f6', perfData)} />
-            </Bar>
-            <Bar dataKey="veh2" name={metrics2.name} fill="#10b981" barSize={18} radius={8} animationDuration={800}>
-              <LabelList dataKey="veh2" content={renderLabel('veh2', '#10b981', perfData)} />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      <Card>
+        <CardHeader className="pb-2 text-center">
+          <CardTitle title="Indicateurs de performance">Indicateurs de performance</CardTitle>
+        </CardHeader>
+        <CardContent className="h-[260px]">
+          <ChartContainer>
+            <BarChart layout="vertical" data={perfData} margin={{ left: 40 }} barGap={12}>
+              <XAxis type="number" />
+              <YAxis dataKey="metric" type="category" width={140} />
+              <ChartTooltip content={<CustomTooltip />} />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Bar dataKey="veh1" name={metrics1.name} fill="#3b82f6" barSize={18} radius={8} animationDuration={800}>
+                <LabelList dataKey="veh1" content={renderLabel('veh1', '#3b82f6', perfData)} />
+              </Bar>
+              <Bar dataKey="veh2" name={metrics2.name} fill="#10b981" barSize={18} radius={8} animationDuration={800}>
+                <LabelList dataKey="veh2" content={renderLabel('veh2', '#10b981', perfData)} />
+              </Bar>
+            </BarChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
     </div>
   );
 }
