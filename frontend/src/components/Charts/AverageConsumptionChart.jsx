@@ -2,22 +2,10 @@ import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, CartesianGrid } from 'recharts';
 
 export default function AverageConsumptionChart({ data }) {
-  const sortedData = [...data]
-    .filter(d => d.type === 'fuel' && d.liters > 0)
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  const consumption = [];
-
-  for (let i = 1; i < sortedData.length; i++) {
-    const kmDiff = sortedData[i].km - sortedData[i - 1].km;
-    if (kmDiff > 0) {
-      const value = (sortedData[i].liters / kmDiff) * 100;
-      consumption.push({
-        date: new Date(sortedData[i].date).toLocaleDateString('fr-FR'),
-        consumption: parseFloat(value.toFixed(2))
-      });
-    }
-  }
+  const consumption = data.map(seg => ({
+    date: new Date(seg.endDate).toLocaleDateString('fr-FR'),
+    consumption: seg.consumption
+  }));
 
   const avg =
     consumption.reduce((sum, c) => sum + c.consumption, 0) /

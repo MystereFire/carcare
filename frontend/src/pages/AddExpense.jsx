@@ -13,6 +13,7 @@ export default function AddExpense() {
     date: new Date().toISOString().slice(0, 10),
     km: '',
     liters: '',
+    isFullFill: false,
     notes: ''
   });
   const [message, setMessage] = useState('');
@@ -25,6 +26,7 @@ export default function AddExpense() {
       const updated = { ...expense, [name]: value };
       if (name === 'type' && value !== 'fuel') {
         updated.liters = '';
+        updated.isFullFill = false;
       }
       setExpense(updated);
     }
@@ -71,15 +73,26 @@ export default function AddExpense() {
           />
           <input type="number" name="km" placeholder="Kilométrage" onChange={handleChange} className="w-full p-2 border rounded" required />
           {expense.type === 'fuel' && (
-            <input
-              type="number"
-              inputMode="decimal"
-              step="0.01"
-              name="liters"
-              placeholder="Litres"
-              onChange={handleChange}
-              className="w-full p-2 border rounded"
-            />
+            <>
+              <input
+                type="number"
+                inputMode="decimal"
+                step="0.01"
+                name="liters"
+                placeholder="Litres"
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+              />
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="isFullFill"
+                  checked={expense.isFullFill || false}
+                  onChange={handleChange}
+                />
+                Plein effectué
+              </label>
+            </>
           )}
           <textarea name="notes" placeholder="Notes (facultatif)" onChange={handleChange} className="w-full p-2 border rounded" />
 

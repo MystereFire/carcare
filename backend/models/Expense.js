@@ -9,6 +9,7 @@ const expenseSchema = new mongoose.Schema({
     date: Date,
     km: Number,
     liters: Number,
+    isFullFill: { type: Boolean, default: false },
     notes: String
 });
 
