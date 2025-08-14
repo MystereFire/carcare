@@ -2,14 +2,13 @@ import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, ReferenceLine, CartesianGrid } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
+import { formatNumber, formatDate, computeDomain } from '../../lib/formatters';
 
 export default function AverageConsumptionChart({ data }) {
-  const number = new Intl.NumberFormat('fr-FR', {
-    maximumFractionDigits: 2
-  });
+  const number = formatNumber;
 
   const consumption = data.map(seg => ({
-    date: new Date(seg.endDate).toLocaleDateString('fr-FR'),
+    date: seg.endDate,
     consumption: seg.consumption
   }));
 
@@ -17,8 +16,7 @@ export default function AverageConsumptionChart({ data }) {
     consumption.reduce((sum, c) => sum + c.consumption, 0) /
     (consumption.length || 1);
   const yVals = consumption.map(d => d.consumption);
-  const minY = Math.min(...yVals);
-  const maxY = Math.max(...yVals);
+  const [minY, maxY] = computeDomain(yVals);
 
   return (
     <Card className="h-64">
@@ -27,7 +25,7 @@ export default function AverageConsumptionChart({ data }) {
       </CardHeader>
       <CardContent className="h-[180px]">
         <ChartContainer>
-          <AreaChart data={consumption}>
+          <AreaChart data={consumption} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
           <defs>
             <linearGradient id="consAvg" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#10b981" stopOpacity={0.4} />
@@ -35,18 +33,15 @@ export default function AverageConsumptionChart({ data }) {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" minTickGap={20} preserveStartEnd />
-          <YAxis
-            domain={[minY * 0.9, maxY * 1.1]}
-            tickFormatter={v => number.format(v)}
-          />
-          <ChartTooltip content={<ChartTooltipContent formatter={val => `${number.format(val)} L/100km`} />} />
+          <XAxis dataKey="date" minTickGap={20} preserveStartEnd tickFormatter={formatDate} />
+          <YAxis domain={[minY, maxY]} tickFormatter={(v) => `${number(v)} L/100km`} />
+          <ChartTooltip content={<ChartTooltipContent formatter={val => `${number(val)} L/100km`} labelFormatter={formatDate} />} />
           <ReferenceLine
             y={avg}
             stroke="#94a3b8"
             strokeWidth={1}
             strokeDasharray="4 2"
-            label={{ position: 'top', value: `Moyenne ${number.format(avg)}`, fontSize: 12, fill: '#6b7280' }}
+            label={{ position: 'top', value: `Moyenne ${number(avg)}`, fontSize: 12, fill: '#6b7280', dy: -4 }}
           />
           <Area
             type="monotone"

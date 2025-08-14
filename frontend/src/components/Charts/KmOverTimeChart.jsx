@@ -2,9 +2,9 @@ import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, ReferenceLine, CartesianGrid } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
+import { formatKm, formatDate, computeDomain } from '../../lib/formatters';
 
 export default function KmOverTimeChart({ data }) {
-  const kmFormatter = new Intl.NumberFormat('fr-FR');
 
   // Filtrage pour ne garder que l'entrée avec le plus de km par jour
   const maxKmPerDay = {};
@@ -24,8 +24,7 @@ export default function KmOverTimeChart({ data }) {
       displayDate: new Date(d.date).toLocaleDateString('fr-FR')
     }));
   const yVals = filteredData.map(d => d.km);
-  const minY = Math.min(...yVals);
-  const maxY = Math.max(...yVals);
+  const [minY, maxY] = computeDomain(yVals);
   const avg = yVals.reduce((s, v) => s + v, 0) / (yVals.length || 1);
 
   return (
@@ -35,7 +34,7 @@ export default function KmOverTimeChart({ data }) {
       </CardHeader>
       <CardContent className="h-[180px]">
         <ChartContainer>
-          <AreaChart data={filteredData}>
+          <AreaChart data={filteredData} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
           <defs>
             <linearGradient id="kmTime" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#8884d8" stopOpacity={0.4} />
@@ -48,25 +47,20 @@ export default function KmOverTimeChart({ data }) {
             type="number"
             domain={['dataMin', 'dataMax']}
             ticks={filteredData.map(d => d.timestamp)}
-            tickFormatter={t => new Date(t).toLocaleDateString('fr-FR')}
+            tickFormatter={formatDate}
             minTickGap={20}
             preserveStartEnd
           />
-          <YAxis
-            dataKey="km"
-            domain={[minY * 0.9, maxY * 1.1]}
-            tickFormatter={v => kmFormatter.format(v)}
-          />
+          <YAxis dataKey="km" domain={[minY, maxY]} tickFormatter={formatKm} />
           <ChartTooltip
-            content={<ChartTooltipContent formatter={val => `${kmFormatter.format(val)} km`} />}
-            labelFormatter={t => new Date(t).toLocaleDateString('fr-FR')}
+            content={<ChartTooltipContent formatter={(val) => formatKm(val)} labelFormatter={formatDate} />}
           />
           <ReferenceLine
             y={avg}
             stroke="#94a3b8"
             strokeWidth={1}
             strokeDasharray="4 2"
-            label={{ position: 'top', value: `Moyenne ${kmFormatter.format(avg)} km`, fontSize: 12, fill: '#6b7280' }}
+            label={{ position: 'top', value: `Moyenne ${formatKm(avg)}`, fontSize: 12, fill: '#6b7280', dy: -4 }}
           />
           <Area
             type="monotone"

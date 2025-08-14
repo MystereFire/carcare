@@ -2,14 +2,15 @@ import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ReferenceLine } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
+import { formatNumber, formatDate, computeDomain } from '../../lib/formatters';
 
 export default function FuelConsumptionChart({ data }) {
-  const number = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
+  const number = formatNumber;
 
   const chartData = data.map((d, idx) => ({
     ...d,
     index: idx + 1,
-    end: new Date(d.endDate).toLocaleDateString('fr-FR')
+    end: d.endDate
   }));
 
   const mean = chartData.reduce((sum, d) => sum + d.consumption, 0) / (chartData.length || 1);
@@ -26,8 +27,7 @@ export default function FuelConsumptionChart({ data }) {
   };
 
   const yVals = chartData.map(d => d.consumption);
-  const minY = Math.min(...yVals);
-  const maxY = Math.max(...yVals);
+  const [minY, maxY] = computeDomain(yVals);
 
   return (
     <Card className="h-64">
@@ -36,12 +36,12 @@ export default function FuelConsumptionChart({ data }) {
       </CardHeader>
       <CardContent className="h-[180px]">
         <ChartContainer>
-          <LineChart data={chartData}>
+          <LineChart data={chartData} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="end" minTickGap={20} preserveStartEnd />
-            <YAxis domain={[minY * 0.9, maxY * 1.1]} tickFormatter={v => number.format(v)} />
-            <ChartTooltip content={<ChartTooltipContent formatter={(val) => `${number.format(val)} L/100km`} />} />
-            <ReferenceLine y={mean} stroke="#94a3b8" strokeDasharray="4 2" strokeWidth={1} label={{ position: 'top', value: `Moyenne ${number.format(mean)}`, fontSize: 12, fill: '#6b7280' }} />
+            <XAxis dataKey="end" minTickGap={20} preserveStartEnd tickFormatter={formatDate} />
+            <YAxis domain={[minY, maxY]} tickFormatter={(v) => `${number(v)} L/100km`} />
+            <ChartTooltip content={<ChartTooltipContent formatter={(val) => `${number(val)} L/100km`} labelFormatter={formatDate} />} />
+            <ReferenceLine y={mean} stroke="#94a3b8" strokeDasharray="4 2" strokeWidth={1} label={{ position: 'top', value: `Moyenne ${number(mean)}`, fontSize: 12, fill: '#6b7280', dy: -4 }} />
             <Line type="monotone" dataKey="consumption" stroke="#8884d8" dot={renderDot} activeDot={{ r: 4 }} />
           </LineChart>
         </ChartContainer>

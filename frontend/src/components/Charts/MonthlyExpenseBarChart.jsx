@@ -1,14 +1,16 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, LabelList, ReferenceLine } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '../ui/chart';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent
+} from '../ui/chart';
+import { formatEuro, computeDomain, formatDate } from '../../lib/formatters';
 
 export default function MonthlyExpenseBarChart({ data }) {
-  const euro = new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR'
-  });
-
   // Regrouper les dépenses par mois et type en fonction de l'année courante
   const grouped = {};
 
@@ -18,7 +20,7 @@ export default function MonthlyExpenseBarChart({ data }) {
     const date = new Date(e.date);
     if (date.getFullYear() !== currentYear) return;
 
-    const month = date.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
+    const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-01`;
     if (!grouped[month]) grouped[month] = {};
     const prev = grouped[month][e.type] || 0;
     grouped[month][e.type] = parseFloat((prev + e.amount).toFixed(2));
@@ -32,7 +34,7 @@ export default function MonthlyExpenseBarChart({ data }) {
   }));
 
   const totals = chartData.map(d => d.fuel + d.maintenance + d.repair);
-  const maxY = Math.max(...totals, 0);
+  const [minY, maxY] = computeDomain([0, ...totals]);
   const avg = totals.reduce((s, v) => s + v, 0) / (totals.length || 1);
   const showLabels = chartData.length <= 6;
 
@@ -43,20 +45,26 @@ export default function MonthlyExpenseBarChart({ data }) {
       </CardHeader>
       <CardContent className="h-[180px]">
         <ChartContainer>
-          <BarChart data={chartData} barGap={4} margin={{ top: 20, bottom: 20 }}>
-            <XAxis dataKey="month" minTickGap={20} preserveStartEnd />
-            <YAxis domain={[0, maxY * 1.1]} tickFormatter={v => euro.format(v)} />
-            <ChartTooltip content={<ChartTooltipContent formatter={(v) => euro.format(v)} />} />
+          <BarChart data={chartData} barGap={4} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+            <XAxis dataKey="month" minTickGap={20} preserveStartEnd tickFormatter={formatDate} />
+            <YAxis domain={[minY, maxY]} tickFormatter={formatEuro} />
+            <ChartTooltip content={<ChartTooltipContent formatter={formatEuro} labelFormatter={formatDate} />} />
             <ChartLegend content={<ChartLegendContent />} />
-            <ReferenceLine y={avg} stroke="#94a3b8" strokeDasharray="4 2" strokeWidth={1} label={{ position: 'top', value: `Moyenne ${euro.format(avg)}`, fontSize: 12, fill: '#6b7280' }} />
+            <ReferenceLine
+              y={avg}
+              stroke="#94a3b8"
+              strokeDasharray="4 2"
+              strokeWidth={1}
+              label={{ position: 'top', value: `Moyenne ${formatEuro(avg)}`, fontSize: 12, fill: '#6b7280', dy: -4 }}
+            />
             <Bar dataKey="fuel" stackId="a" fill="#3B82F6" animationDuration={600}>
-              {showLabels && <LabelList dataKey="fuel" position="top" formatter={(v) => v ? euro.format(v) : ''} />}
+              {showLabels && <LabelList dataKey="fuel" position="top" formatter={(v) => v ? formatEuro(v) : ''} />}
             </Bar>
             <Bar dataKey="maintenance" stackId="a" fill="#10B981" animationDuration={600}>
-              {showLabels && <LabelList dataKey="maintenance" position="top" formatter={(v) => v ? euro.format(v) : ''} />}
+              {showLabels && <LabelList dataKey="maintenance" position="top" formatter={(v) => v ? formatEuro(v) : ''} />}
             </Bar>
             <Bar dataKey="repair" stackId="a" fill="#FACC15" animationDuration={600}>
-              {showLabels && <LabelList dataKey="repair" position="top" formatter={(v) => v ? euro.format(v) : ''} />}
+              {showLabels && <LabelList dataKey="repair" position="top" formatter={(v) => v ? formatEuro(v) : ''} />}
             </Bar>
           </BarChart>
         </ChartContainer>

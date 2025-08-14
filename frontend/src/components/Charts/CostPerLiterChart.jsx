@@ -2,12 +2,9 @@ import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, ReferenceLine, CartesianGrid } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
+import { formatEuro, formatDate, computeDomain } from '../../lib/formatters';
 
 export default function CostPerLiterChart({ data }) {
-  const euro = new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR'
-  });
 
   const grouped = {};
   data
@@ -30,8 +27,7 @@ export default function CostPerLiterChart({ data }) {
     chartData.reduce((sum, d) => sum + d.costPerLiter, 0) /
     (chartData.length || 1);
   const yVals = chartData.map(d => d.costPerLiter);
-  const minY = Math.min(...yVals);
-  const maxY = Math.max(...yVals);
+  const [minY, maxY] = computeDomain(yVals);
 
   return (
     <Card className="h-64">
@@ -40,7 +36,7 @@ export default function CostPerLiterChart({ data }) {
       </CardHeader>
       <CardContent className="h-[180px]">
         <ChartContainer>
-          <AreaChart data={chartData}>
+          <AreaChart data={chartData} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
           <defs>
             <linearGradient id="costLiter" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#ef4444" stopOpacity={0.4} />
@@ -53,24 +49,20 @@ export default function CostPerLiterChart({ data }) {
             type="number"
             domain={['dataMin', 'dataMax']}
             ticks={chartData.map(d => d.timestamp)}
-            tickFormatter={t => new Date(t).toLocaleDateString('fr-FR')}
+            tickFormatter={formatDate}
             minTickGap={20}
             preserveStartEnd
           />
-          <YAxis
-            domain={[minY * 0.9, maxY * 1.1]}
-            tickFormatter={v => euro.format(v)}
-          />
+          <YAxis domain={[minY, maxY]} tickFormatter={formatEuro} />
           <ChartTooltip
-            content={<ChartTooltipContent formatter={val => `${euro.format(val)}/L`} />}
-            labelFormatter={t => new Date(t).toLocaleDateString('fr-FR')}
+            content={<ChartTooltipContent formatter={val => `${formatEuro(val)}/L`} labelFormatter={formatDate} />}
           />
           <ReferenceLine
             y={avg}
             stroke="#94a3b8"
             strokeWidth={1}
             strokeDasharray="4 2"
-            label={{ position: 'top', value: `Moyenne ${euro.format(avg)}`, fontSize: 12, fill: '#6b7280' }}
+            label={{ position: 'top', value: `Moyenne ${formatEuro(avg)}`, fontSize: 12, fill: '#6b7280', dy: -4 }}
           />
           <Area
             type="monotone"
