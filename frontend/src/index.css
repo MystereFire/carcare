@@ -3,8 +3,17 @@
 @tailwind utilities;
 
 @layer base {
-  input:-webkit-autofill {
-    -webkit-text-fill-color: #111827;
-    box-shadow: 0 0 0 1000px #fff inset;
+  :root {
+    --background: 255 255 255;
+    --foreground: 17 24 39;
+    --muted: 249 250 251;
+  }
+  .dark {
+    --background: 17 24 39;
+    --foreground: 249 250 251;
+    --muted: 31 41 55;
+  }
+  body {
+    @apply bg-[rgb(var(--background))] text-[rgb(var(--foreground))];
   }
 }
