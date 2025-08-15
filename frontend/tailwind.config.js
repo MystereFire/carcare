@@ -1,7 +1,16 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./index.html", "./src/**/*.{js,jsx}"],
+  darkMode: ['class'],
+  content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '#6366f1',
+          foreground: '#ffffff'
+        }
+      }
+    }
   },
-  plugins: [],
+  plugins: [require('tailwindcss-animate')]
 };
