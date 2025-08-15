@@ -21,7 +21,7 @@ import OAuthCallback from './pages/OAuthCallback';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col bg-gray-100 text-gray-900">
+      <div className="min-h-screen flex flex-col bg-background text-foreground">
         <Navbar />
         <main className="flex-grow">
           <Routes>

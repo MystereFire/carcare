@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Cell, LabelList, ReferenceLine } from 'recharts';
-import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import {
   ChartContainer,
   ChartTooltip,
@@ -8,6 +7,7 @@ import {
   ChartLegend,
   ChartLegendContent
 } from '../ui/chart';
+import ChartCard from '../ChartCard';
 import { formatEuro, computeDomain } from '../../lib/formatters';
 
 const COLORS = {
@@ -41,12 +41,8 @@ export default function ExpenseTypeBarChart({ data }) {
   const showLabels = totalByType.length <= 6;
 
   return (
-    <Card className="h-64 relative">
-      <CardHeader className="pb-2">
-        <CardTitle title="Répartition des dépenses">📊 Répartition des dépenses</CardTitle>
-      </CardHeader>
-      <CardContent className="h-full">
-        <div className="mb-2">
+    <ChartCard title="📊 Répartition des dépenses" className="relative">
+      <div className="mb-2">
           <input
             type="month"
             value={month}
@@ -61,9 +57,9 @@ export default function ExpenseTypeBarChart({ data }) {
               Tout
             </button>
           )}
-        </div>
-        <ChartContainer className="h-[180px]">
-          <BarChart data={totalByType} margin={{ top: 10, right: 10, bottom: 10, left: 10 }} barCategoryGap={20}>
+      </div>
+      <ChartContainer className="h-[180px]">
+        <BarChart data={totalByType} margin={{ top: 10, right: 10, bottom: 10, left: 10 }} barCategoryGap={20}>
             <XAxis dataKey="name" minTickGap={20} preserveStartEnd />
             <YAxis domain={[minY, maxY]} tickFormatter={formatEuro} />
             <ChartTooltip content={<ChartTooltipContent formatter={formatEuro} />} />
@@ -81,10 +77,9 @@ export default function ExpenseTypeBarChart({ data }) {
                 <Cell key={i} fill={COLORS[entry.name] || '#ccc'} />
               ))}
             </Bar>
-          </BarChart>
-        </ChartContainer>
-        <div className="text-center font-bold mt-2">{formatEuro(total)}</div>
-      </CardContent>
-    </Card>
+        </BarChart>
+      </ChartContainer>
+      <div className="text-center font-bold mt-2">{formatEuro(total)}</div>
+    </ChartCard>
   );
 }

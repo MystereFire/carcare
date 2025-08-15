@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
-import { API_URL } from '../../src/config';
+import Section from '../components/Section';
+import MetricTile from '../components/MetricTile';
+import StatChip from '../components/StatChip';
+import { Skeleton } from '../components/ui/skeleton';
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [vehicles, setVehicles] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchVehicles = async () => {
@@ -15,6 +19,8 @@ export default function Dashboard() {
         setVehicles(res.data.data);
       } catch (err) {
         console.error('Erreur chargement véhicules :', err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -23,48 +29,41 @@ export default function Dashboard() {
 
   return (
     <PageTransition>
-      <div className="max-w-4xl mx-auto mt-10 px-4">
-        <div className="flex justify-between items-center mb-6">
+      <div className="container mx-auto mt-10 px-4 space-y-6">
+        <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Mes véhicules</h1>
           <button
             onClick={() => navigate('/add-vehicle')}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+            className="rounded-2xl bg-accent px-4 py-2 text-accent-foreground shadow-sm hover:bg-accent/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent"
           >
             + Ajouter un véhicule
           </button>
         </div>
 
-        {vehicles.length === 0 ? (
-          <p className="text-gray-600">Aucun véhicule pour le moment.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {vehicles.map((veh) => (
-              <div
+        <Section title="">
+          {loading ? (
+            <Skeleton className="h-24 md:col-span-3 xl:col-span-3" />
+          ) : vehicles.length === 0 ? (
+            <p className="md:col-span-6 xl:col-span-12 text-muted-foreground">
+              Aucun véhicule pour le moment.
+            </p>
+          ) : (
+            vehicles.map((veh) => (
+              <MetricTile
                 key={veh._id}
                 onClick={() => navigate(`/vehicle/${veh._id}`)}
-                className="cursor-pointer bg-white rounded shadow p-4 border-l-4 border-blue-500 hover:shadow-md transition"
+                className="cursor-pointer md:col-span-3 xl:col-span-3"
+                value={veh.name}
+                label={`${veh.brand} ${veh.model} (${veh.year})`}
               >
-                <h2 className="text-xl font-semibold mb-1">{veh.name}</h2>
-
-                {veh.image && (
-                  <img
-                    src={`${API_URL}${veh.image}`}
-                    alt={veh.name}
-                    className="w-full h-40 object-cover rounded mb-2"
-                  />
-                )}
-
-                <p className="text-gray-700">
-                  {veh.brand} {veh.model} ({veh.year})
-                </p>
-                <p className="text-sm text-gray-500">Km initial : {veh.initialKm}</p>
+                <StatChip value={veh.initialKm} label="Km init." />
                 {veh.plate && (
-                  <p className="text-sm text-gray-500">Plaque : {veh.plate}</p>
+                  <StatChip value={veh.plate} label="Plaque" className="mt-2" />
                 )}
-              </div>
-            ))}
-          </div>
-        )}
+              </MetricTile>
+            ))
+          )}
+        </Section>
       </div>
     </PageTransition>
   );

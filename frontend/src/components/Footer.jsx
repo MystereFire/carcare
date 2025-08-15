@@ -3,7 +3,7 @@ import React from 'react';
 export default function Footer({ className = '' }) {
   return (
     <footer
-      className={`bg-white text-center text-gray-500 p-4 mt-auto border-t ${className}`}
+      className={`bg-card text-center text-muted-foreground p-4 mt-auto border-t ${className}`}
     >
       &copy; {new Date().getFullYear()} CarCare
     </footer>

@@ -3,8 +3,43 @@
 @tailwind utilities;
 
 @layer base {
-  input:-webkit-autofill {
-    -webkit-text-fill-color: #111827;
-    box-shadow: 0 0 0 1000px #fff inset;
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 224 71% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
+    --primary: 24 95% 53%;
+    --primary-foreground: 0 0% 100%;
+    --accent: 142 76% 36%;
+    --accent-foreground: 0 0% 100%;
+    --warning: 43 96% 56%;
+    --destructive: 0 84% 60%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 46%;
+    --border: 214 32% 91%;
+  }
+
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 210 40% 98%;
+    --card: 224 71% 6%;
+    --card-foreground: 210 40% 98%;
+    --primary: 24 95% 53%;
+    --primary-foreground: 0 0% 100%;
+    --accent: 142 76% 36%;
+    --accent-foreground: 0 0% 100%;
+    --warning: 43 96% 56%;
+    --destructive: 0 84% 60%;
+    --muted: 217 19% 27%;
+    --muted-foreground: 215 16% 66%;
+    --border: 217 19% 27%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
   }
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
   const token = localStorage.getItem('token');
@@ -11,31 +12,32 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow p-4 flex justify-between items-center">
-      <Link to="/" className="text-xl font-bold text-blue-600">CarCare</Link>
-      <div className="space-x-4">
+    <nav className="bg-card shadow-sm p-4 flex justify-between items-center">
+      <Link to="/" className="text-xl font-bold text-primary">CarCare</Link>
+      <div className="flex items-center gap-4">
+        <ThemeToggle />
         {!token ? (
           <>
             <Link
               to="/login"
-              className="text-sm text-blue-600 px-2 py-1 rounded hover:underline focus-visible:ring-2 focus-visible:ring-blue-500"
+              className="text-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               Login
             </Link>
             <Link
               to="/register"
-              className="text-sm text-blue-600 px-2 py-1 rounded hover:underline focus-visible:ring-2 focus-visible:ring-blue-500"
+              className="text-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               Register
             </Link>
           </>
         ) : (
           <>
-            <Link to="/compare" className="text-blue-500 hover:underline">Comparer</Link>
-            <Link to="/profile" className="text-blue-500 hover:underline">Profil</Link>
+            <Link to="/compare" className="text-primary hover:underline">Comparer</Link>
+            <Link to="/profile" className="text-primary hover:underline">Profil</Link>
             <button
               onClick={handleLogout}
-              className="text-red-500 hover:underline"
+              className="text-destructive hover:underline"
             >
               Déconnexion
             </button>

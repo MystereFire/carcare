@@ -1,7 +1,7 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, ReferenceLine, CartesianGrid } from 'recharts';
-import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
+import ChartCard from '../ChartCard';
 import { formatEuro, formatDate, computeDomain } from '../../lib/formatters';
 
 export default function CostPerLiterChart({ data }) {
@@ -30,13 +30,9 @@ export default function CostPerLiterChart({ data }) {
   const [minY, maxY] = computeDomain(yVals);
 
   return (
-    <Card className="h-64">
-      <CardHeader className="pb-2">
-        <CardTitle title="Coût au litre">⛽ Coût au litre (€)</CardTitle>
-      </CardHeader>
-      <CardContent className="h-[180px]">
-        <ChartContainer>
-          <AreaChart data={chartData} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+    <ChartCard title="⛽ Coût au litre (€)">
+      <ChartContainer>
+        <AreaChart data={chartData} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
           <defs>
             <linearGradient id="costLiter" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#ef4444" stopOpacity={0.4} />
@@ -74,8 +70,7 @@ export default function CostPerLiterChart({ data }) {
             activeDot={{ r: 4 }}
           />
         </AreaChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+      </ChartContainer>
+    </ChartCard>
   );
 }
