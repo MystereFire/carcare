@@ -3,6 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
 import { ComparisonBarChart } from '../components/Charts';
+import VehicleCard from '../components/compare/VehicleCard';
+import WinnerBadge from '../components/compare/WinnerBadge';
+import CompareSummary from '../components/compare/CompareSummary';
+import VehicleSelect from '../components/compare/VehicleSelect';
+import { formatCurrency, formatL100 } from '../lib/formatters';
+import { computeBest, computeDiff } from '../lib/compare';
 import { API_URL } from '../../src/config';
 
 export default function CompareVehicles() {
@@ -46,28 +52,15 @@ export default function CompareVehicles() {
     const { vehicle, expenses } = data;
     const totalExpense = expenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
 
-    const fuelExpense = expenses
-      .filter(e => e.type === 'fuel')
-      .reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
-    const maintenanceExpense = expenses
-      .filter(e => e.type === 'maintenance')
-      .reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
-    const repairExpense = expenses
-      .filter(e => e.type === 'repair')
-      .reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
-
     const fuels = expenses.filter(e => e.type === 'fuel' && e.liters && e.km);
     const sortedFuel = [...fuels].sort((a, b) => new Date(a.date) - new Date(b.date));
 
     const allKm = expenses
       .filter(e => typeof e.km === 'number')
       .sort((a, b) => new Date(a.date) - new Date(b.date));
-    const distanceKm =
-      allKm.length >= 2 ? allKm[allKm.length - 1].km - allKm[0].km : 0;
+    const distanceKm = allKm.length >= 2 ? allKm[allKm.length - 1].km - allKm[0].km : 0;
 
-    const totalLiters = fuels.reduce((sum, e) => sum + (parseFloat(e.liters) || 0), 0);
-
-    let avgCons = null;
+    let avgCons = 0;
     let distance = 0;
     if (sortedFuel.length >= 2) {
       let totalCons = 0;
@@ -81,102 +74,90 @@ export default function CompareVehicles() {
           distance += kmDiff;
         }
       }
-      if (count > 0) avgCons = (totalCons / count).toFixed(2);
+      if (count > 0) avgCons = totalCons / count;
     }
 
-    const costPerKm = distance > 0 ? (totalExpense / distance).toFixed(2) : null;
-    const avgCostPerLiter = totalLiters > 0 ? (fuelExpense / totalLiters).toFixed(2) : null;
+    const costPerKm = distance > 0 ? totalExpense / distance : 0;
 
     return {
+      id: vehicle._id,
       name: vehicle.name,
       brand: vehicle.brand,
       model: vehicle.model,
       year: vehicle.year,
-      image: vehicle.image,
-      totalExpense: totalExpense.toFixed(2),
-      fuelExpense: fuelExpense.toFixed(2),
-      maintenanceExpense: maintenanceExpense.toFixed(2),
-      repairExpense: repairExpense.toFixed(2),
-      avgConsumption: avgCons,
-      costPerKm,
-      distance: distanceKm,
-      avgCostPerLiter,
+      photoUrl: vehicle.image,
+      totals: {
+        spendEUR: totalExpense,
+        fuelL100: avgCons,
+        costPerKm,
+        distanceKm,
+      },
     };
   };
 
   const metrics1 = computeMetrics(firstData);
   const metrics2 = computeMetrics(secondData);
 
-  let better;
-  let diffPercent;
-  let bestTotalId;
-  if (metrics1 && metrics2) {
-    if (metrics1.costPerKm && metrics2.costPerKm) {
-      const c1 = parseFloat(metrics1.costPerKm);
-      const c2 = parseFloat(metrics2.costPerKm);
-      if (c1 !== c2) {
-        better = c1 < c2 ? metrics1.name : metrics2.name;
-        diffPercent = Math.abs(c2 - c1) / Math.max(c1, c2) * 100;
-        diffPercent = diffPercent.toFixed(0);
-      }
-    }
-    bestTotalId = parseFloat(metrics1.totalExpense) <= parseFloat(metrics2.totalExpense) ? firstId : secondId;
+  const bestMap = metrics1 && metrics2 ? {
+    spendEUR: computeBest([metrics1.totals.spendEUR, metrics2.totals.spendEUR], 'min'),
+    fuelL100: computeBest([metrics1.totals.fuelL100, metrics2.totals.fuelL100], 'min'),
+    costPerKm: computeBest([metrics1.totals.costPerKm, metrics2.totals.costPerKm], 'min'),
+    distanceKm: computeBest([metrics1.totals.distanceKm, metrics2.totals.distanceKm], 'max'),
+  } : {};
+
+  let winnerName = null;
+  let savingsPercent = null;
+  if (metrics1 && metrics2 && bestMap.costPerKm != null) {
+    winnerName = bestMap.costPerKm === 0 ? metrics1.name : metrics2.name;
+    savingsPercent = computeDiff(metrics1.totals.costPerKm, metrics2.totals.costPerKm).toFixed(0);
   }
 
-  const cost1 = metrics1?.costPerKm ? parseFloat(metrics1.costPerKm) : null;
-  const cost2 = metrics2?.costPerKm ? parseFloat(metrics2.costPerKm) : null;
+  const bestId = bestMap.spendEUR != null ? (bestMap.spendEUR === 0 ? firstId : secondId) : null;
 
-  const compare = (a, b) => {
-    if (a == null || b == null) return 'Égalité';
-    const pa = parseFloat(a);
-    const pb = parseFloat(b);
-    if (pa < pb) return metrics1.name;
-    if (pa > pb) return metrics2.name;
-    return 'Égalité';
-  };
-
-  const summary = metrics1 && metrics2 ? [
-    { label: 'Dépenses', icon: '💶', winner: compare(metrics1.totalExpense, metrics2.totalExpense) },
-    { label: 'Consommation', icon: '⛽', winner: compare(metrics1.avgConsumption, metrics2.avgConsumption) },
-    { label: 'Coût/km', icon: '🚗', winner: compare(metrics1.costPerKm, metrics2.costPerKm) },
+  const summaryRows = metrics1 && metrics2 ? [
+    {
+      label: 'Dépenses',
+      winner: bestMap.spendEUR == null ? 'Égalité' : (bestMap.spendEUR === 0 ? metrics1.name : metrics2.name),
+      diffText: bestMap.spendEUR == null ? '' : `-${computeDiff(metrics1.totals.spendEUR, metrics2.totals.spendEUR).toFixed(0)}%`,
+    },
+    {
+      label: 'Consommation',
+      winner: bestMap.fuelL100 == null ? 'Égalité' : (bestMap.fuelL100 === 0 ? metrics1.name : metrics2.name),
+      diffText: bestMap.fuelL100 == null ? '' : `-${computeDiff(metrics1.totals.fuelL100, metrics2.totals.fuelL100).toFixed(0)}%`,
+    },
+    {
+      label: 'Coût/km',
+      winner: bestMap.costPerKm == null ? 'Égalité' : (bestMap.costPerKm === 0 ? metrics1.name : metrics2.name),
+      diffText: bestMap.costPerKm == null ? '' : `-${computeDiff(metrics1.totals.costPerKm, metrics2.totals.costPerKm).toFixed(0)}%`,
+    },
+    {
+      label: 'Distance',
+      winner: bestMap.distanceKm == null ? 'Égalité' : (bestMap.distanceKm === 0 ? metrics1.name : metrics2.name),
+      diffText: bestMap.distanceKm == null ? '' : `+${computeDiff(metrics1.totals.distanceKm, metrics2.totals.distanceKm).toFixed(0)}%`,
+    },
   ] : [];
 
-  const diffBadge = (a, b, color) => {
-    if (a == null || b == null) return null;
-    const pa = parseFloat(a);
-    const pb = parseFloat(b);
-    const cls = color === 'blue' ? 'text-blue-600' : 'text-emerald-600';
-    if (pa > pb) return <span className={`ml-2 text-xs ${cls}`}>↑ plus cher</span>;
-    if (pa < pb) return <span className={`ml-2 text-xs ${cls}`}>↓ moins cher</span>;
-    return null;
-  };
+  const options = vehicles.map(v => ({
+    id: v._id,
+    label: v.name,
+    brandLogoUrl: v.image ? `${API_URL}${v.image}` : null,
+  }));
 
-  const VehicleCard = ({ metrics, compareTo, color }) => {
-    if (!metrics) return null;
-    const titleColor = color === 'blue' ? 'text-blue-600' : 'text-emerald-600';
-    const imgSrc = metrics.image ? `${API_URL}${metrics.image}` : 'https://via.placeholder.com/150';
-    const alt = `Photo ${metrics.brand} ${metrics.model}`;
-    return (
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-2 flex flex-col">
-        <img src={imgSrc} alt={alt} className="w-full h-32 object-cover rounded-md" />
-        <h2 className={`text-xl font-semibold mb-1 ${titleColor}`}>{metrics.name}</h2>
-        <p><span className="font-semibold">Marque :</span> {metrics.brand}</p>
-        <p><span className="font-semibold">Modèle :</span> {metrics.model}</p>
-        <p><span className="font-semibold">Année :</span> {metrics.year}</p>
-        <h3 className="font-semibold mt-2">Dépenses</h3>
-        <p className="flex items-center"><span className="mr-2">💶</span><span className="font-bold">{metrics.totalExpense}</span>{diffBadge(metrics.totalExpense, compareTo.totalExpense, color)}</p>
-        <p className="flex items-center"><span className="mr-2">⛽</span>{metrics.fuelExpense}</p>
-        <p className="flex items-center"><span className="mr-2">🔧</span>{metrics.maintenanceExpense}</p>
-        <p className="flex items-center"><span className="mr-2">🛠️</span>{metrics.repairExpense}</p>
-        <h3 className="font-semibold mt-2">Carburant</h3>
-        <p className="flex items-center"><span className="mr-2">⚙️</span><span className="font-bold">{metrics.avgConsumption || 'N/A'}</span>{diffBadge(metrics.avgConsumption, compareTo.avgConsumption, color)}</p>
-        <p className="flex items-center"><span className="mr-2">💵</span>{metrics.avgCostPerLiter || 'N/A'}</p>
-        <h3 className="font-semibold mt-2">Coût</h3>
-        <p className="flex items-center"><span className="mr-2">💰</span><span className="font-bold">{metrics.costPerKm || 'N/A'}</span>{diffBadge(metrics.costPerKm, compareTo.costPerKm, color)}</p>
-        <p className="flex items-center"><span className="mr-2">🛣️</span>{metrics.distance} km</p>
-      </div>
-    );
-  };
+  const chartMetrics1 = metrics1 ? {
+    name: metrics1.name,
+    totalExpense: metrics1.totals.spendEUR,
+    distance: metrics1.totals.distanceKm,
+    avgConsumption: metrics1.totals.fuelL100,
+    costPerKm: metrics1.totals.costPerKm,
+  } : null;
+
+  const chartMetrics2 = metrics2 ? {
+    name: metrics2.name,
+    totalExpense: metrics2.totals.spendEUR,
+    distance: metrics2.totals.distanceKm,
+    avgConsumption: metrics2.totals.fuelL100,
+    costPerKm: metrics2.totals.costPerKm,
+  } : null;
 
   return (
     <PageTransition>
@@ -184,74 +165,54 @@ export default function CompareVehicles() {
         <div className="max-w-5xl mx-auto px-4">
           <h1 className="text-3xl font-bold mb-2 text-center">Comparer deux véhicules</h1>
           <p className="text-center text-gray-600 mb-6">Comparez les performances et coûts de vos véhicules.</p>
-          {better && (
-            <div className="text-center mb-6">
-              <span className="inline-flex items-center gap-1 bg-green-100 text-green-800 px-4 py-1 rounded-full shadow-sm text-sm">
-                <span>✅</span>
-                <span>Véhicule {better} est plus économique (−{diffPercent}%)</span>
-              </span>
-            </div>
-          )}
+
+          <WinnerBadge winnerName={winnerName} savingsPercent={savingsPercent} />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div className="flex flex-col">
-              <label htmlFor="vehA" className="font-medium mb-1">Véhicule A</label>
-              <select
-                id="vehA"
-                aria-label="Sélectionner véhicule A"
-                value={firstId}
-                onChange={(e) => setFirstId(e.target.value)}
-                className="p-2 border rounded w-full"
-              >
-                <option value="">-- Choisir le véhicule --</option>
-                {vehicles.map(v => (
-                  <option key={v._id} value={v._id}>{v.name}</option>
-                ))}
-              </select>
+              <label className="font-medium mb-1">Véhicule A</label>
+              <VehicleSelect value={firstId} onChange={setFirstId} options={options} disabledId={secondId} />
             </div>
             <div className="flex flex-col">
-              <label htmlFor="vehB" className="font-medium mb-1">Véhicule B</label>
-              <select
-                id="vehB"
-                aria-label="Sélectionner véhicule B"
-                value={secondId}
-                onChange={(e) => setSecondId(e.target.value)}
-                className="p-2 border rounded w-full"
-              >
-                <option value="">-- Choisir le véhicule --</option>
-                {vehicles.map(v => (
-                  <option key={v._id} value={v._id}>{v.name}</option>
-                ))}
-              </select>
+              <label className="font-medium mb-1">Véhicule B</label>
+              <VehicleSelect value={secondId} onChange={setSecondId} options={options} disabledId={firstId} />
             </div>
           </div>
 
           {metrics1 && metrics2 && (
             <div className="space-y-6">
-              <div className="grid gap-6 md:grid-cols-2">
-                <VehicleCard metrics={metrics1} compareTo={metrics2} color="blue" />
-                <VehicleCard metrics={metrics2} compareTo={metrics1} color="emerald" />
+              <div className="grid gap-6 lg:grid-cols-2">
+                <VehicleCard vehicle={metrics1} index={0} bestMap={bestMap} />
+                <VehicleCard vehicle={metrics2} index={1} bestMap={bestMap} />
               </div>
-              <ComparisonBarChart metrics1={metrics1} metrics2={metrics2} />
+
+              <ComparisonBarChart metrics1={chartMetrics1} metrics2={chartMetrics2} />
+
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-sm w-full max-w-md mx-auto">
                 <h3 className="font-semibold mb-4 text-center">Récapitulatif</h3>
-                <ul className="space-y-2">
-                  {summary.map(item => (
-                    <li key={item.label} className="flex justify-between">
-                      <span className="flex items-center gap-2">{item.icon} {item.label}</span>
-                      <span className="font-medium">{item.winner}</span>
-                    </li>
-                  ))}
-                </ul>
-                {bestTotalId && (
+                <CompareSummary rows={summaryRows} />
+                {bestId && (
                   <button
-                    onClick={() => navigate(`/vehicle/${bestTotalId}`)}
+                    onClick={() => navigate(`/vehicle/${bestId}`)}
                     className="mt-4 w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-lg"
-                    aria-label="Voir le véhicule gagnant"
                   >
                     Voir le véhicule gagnant
                   </button>
                 )}
+                <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
+                  <div className="flex items-center gap-1">
+                    <span className={`h-2 w-2 rounded-full ${bestMap.fuelL100 === 0 ? 'bg-green-500' : 'bg-red-500'}`} />
+                    <span>Conso {formatL100(metrics1.totals.fuelL100)}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className={`h-2 w-2 rounded-full ${bestMap.costPerKm === 0 ? 'bg-green-500' : 'bg-red-500'}`} />
+                    <span>€/km {formatCurrency(metrics1.totals.costPerKm)}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className={`h-2 w-2 rounded-full ${bestMap.spendEUR === 0 ? 'bg-green-500' : 'bg-red-500'}`} />
+                    <span>Dép. {formatCurrency(metrics1.totals.spendEUR)}</span>
+                  </div>
+                </div>
               </div>
             </div>
           )}
