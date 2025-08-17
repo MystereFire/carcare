@@ -17,7 +17,7 @@ import {
 } from '../components/Charts';
 import { API_URL } from '../../src/config';
 import MaintenanceCard from '../components/MaintenanceCard';
-import KpiCard from '../components/KpiCard';
+import StatTile from '../components/StatTile';
 import LastExpenseCard from '../components/LastExpenseCard';
 
 export default function VehicleDetails() {
@@ -169,11 +169,11 @@ export default function VehicleDetails() {
           </div>
         </div>
 
-        {/* KPI cards */}
-        <div className="grid gap-4 sm:grid-cols-3 auto-rows-fr">
-          <KpiCard label="Coût /100 km" value={`${costPer100} €`} colorClass="text-blue-700" bgClass="bg-blue-50" />
-          <KpiCard label="Consommation moyenne" value={`${avgCons} L/100km`} colorClass="text-green-700" bgClass="bg-green-50" />
-          <KpiCard label="Budget annuel" value={`${annualBudget} €`} colorClass="text-purple-700" bgClass="bg-purple-50" />
+        {/* KPI tiles */}
+        <div className="grid gap-4 sm:grid-cols-3">
+          <StatTile label="Coût /100 km" value={`${costPer100} €`} />
+          <StatTile label="Consommation moyenne" value={`${avgCons} L/100km`} />
+          <StatTile label="Budget annuel" value={`${annualBudget} €`} />
         </div>
 
         {/* Last expense and maintenance */}
