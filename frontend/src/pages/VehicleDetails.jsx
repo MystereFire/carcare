@@ -17,8 +17,20 @@ import {
 } from '../components/Charts';
 import { API_URL } from '../../src/config';
 import MaintenanceCard from '../components/MaintenanceCard';
-import StatTile from '../components/StatTile';
 import LastExpenseCard from '../components/LastExpenseCard';
+import LastFuelPriceCard from '../components/LastFuelPriceCard';
+import { StatTile } from '../components/ui/StatTile';
+import { Card } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import {
+  Plus,
+  Pencil,
+  Wrench,
+  Gauge,
+  Euro,
+  Droplet,
+  PiggyBank,
+} from 'lucide-react';
 
 export default function VehicleDetails() {
   const { id } = useParams();
@@ -115,7 +127,7 @@ export default function VehicleDetails() {
     <PageTransition>
       <div className="max-w-5xl mx-auto mt-6 px-4 space-y-16">
         {/* Vehicle header */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-4 py-3 flex flex-col md:flex-row md:items-center gap-4">
+        <Card className="flex flex-col md:flex-row md:items-center gap-4 p-4">
           {vehicle.image && (
             <img
               src={`${API_URL}${vehicle.image}`}
@@ -125,61 +137,77 @@ export default function VehicleDetails() {
           )}
           <div className="flex-1 w-full flex flex-col justify-center gap-4">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+              <h1 className="text-3xl md:text-4xl font-bold">
                 {vehicle.name} {vehicle.model}{' '}
-                <span className="text-gray-500">({vehicle.year})</span>
+                <span className="text-foreground/60">({vehicle.year})</span>
               </h1>
-              <p className="text-sm text-gray-500">Km initial : {vehicle.initialKm}</p>
-              <p className="text-sm text-gray-500">Km actuel : {vehicle.currentOdometer}</p>
+              <p className="text-sm text-foreground/60">Km initial : {vehicle.initialKm}</p>
+              <p className="text-sm text-foreground/60">Km actuel : {vehicle.currentOdometer}</p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <button
+              <Button
                 onClick={() => navigate(`/vehicle/${vehicle._id}/add-expense`)}
-                className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg px-3 py-2"
                 aria-label="Ajouter une dépense"
+                className="gap-2"
               >
-                <span>➕</span>
+                <Plus className="h-4 w-4" />
                 <span className="hidden sm:inline">Ajouter une dépense</span>
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => navigate(`/vehicle/${vehicle._id}/edit`)}
-                className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg px-3 py-2"
                 aria-label="Modifier le véhicule"
+                className="gap-2"
               >
-                <span>✏️</span>
+                <Pencil className="h-4 w-4" />
                 <span className="hidden sm:inline">Modifier</span>
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => navigate(`/vehicle/${vehicle._id}/maintenance`)}
-                className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg px-3 py-2"
                 aria-label="Ouvrir le carnet d'entretien"
+                className="gap-2"
               >
-                <span>🛠️</span>
+                <Wrench className="h-4 w-4" />
                 <span className="hidden sm:inline">Carnet d'entretien</span>
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleOdometerUpdate}
-                className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg px-3 py-2"
                 aria-label="Relever le kilométrage"
+                className="gap-2"
               >
-                <span>📏</span>
+                <Gauge className="h-4 w-4" />
                 <span className="hidden sm:inline">Relevé kilométrique</span>
-              </button>
+              </Button>
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* KPI tiles */}
         <div className="grid gap-4 sm:grid-cols-3">
-          <StatTile label="Coût /100 km" value={`${costPer100} €`} />
-          <StatTile label="Consommation moyenne" value={`${avgCons} L/100km`} />
-          <StatTile label="Budget annuel" value={`${annualBudget} €`} />
+          <StatTile
+            title="Coût /100 km"
+            value={`${costPer100} €`}
+            icon={<Euro className="h-5 w-5" />}
+            className="bg-blue-50 dark:bg-blue-950"
+          />
+          <StatTile
+            title="Consommation moyenne"
+            value={`${avgCons} L/100km`}
+            icon={<Droplet className="h-5 w-5" />}
+            className="bg-green-50 dark:bg-green-950"
+          />
+          <StatTile
+            title="Budget annuel"
+            value={`${annualBudget} €`}
+            icon={<PiggyBank className="h-5 w-5" />}
+            className="bg-amber-50 dark:bg-amber-950"
+          />
         </div>
 
-        {/* Last expense and maintenance */}
-        <div className="grid gap-6 md:grid-cols-2 auto-rows-fr">
+        {/* Last expense, maintenance, and last fuel price */}
+        <div className="grid gap-6 md:grid-cols-3 auto-rows-fr">
           <LastExpenseCard expense={lastExpense} onViewAll={() => navigate(`/vehicle/${vehicle._id}/expenses`)} />
           <MaintenanceCard vehicleId={vehicle._id} />
+          <LastFuelPriceCard expenses={expenses} />
         </div>
 
         {/* Charts section */}
