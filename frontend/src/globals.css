@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: 247 248 250;
+    --fg: 15 23 42;
+    --muted: 229 231 235;
+    --border: 203 213 225;
+    --accent: 108 124 255;
+    --success: 34 197 94;
+    --warning: 245 158 11;
+    --danger: 239 68 68;
+  }
+
+  [data-theme="dark"] {
+    --bg: 11 16 32;
+    --fg: 229 231 235;
+    --muted: 55 65 81;
+    --border: 75 85 99;
+    --accent: 142 161 255;
+    --success: 52 211 153;
+    --warning: 251 191 36;
+    --danger: 248 113 113;
+  }
+
+  body {
+    @apply bg-surface text-foreground;
+  }
+
+  input:-webkit-autofill {
+    -webkit-text-fill-color: rgb(var(--fg));
+    box-shadow: 0 0 0 1000px rgb(var(--bg)) inset;
+  }
+}
