@@ -1,10 +1,16 @@
 import React from 'react';
+import { cn } from '../lib/utils';
 
 export default function Section({ title, subtitle, actions, children, className = '' }) {
   return (
-    <section className={`rounded-xl bg-muted/50 p-4 ${className}`}>
+    <section
+      className={cn(
+        'flex flex-col rounded-lg bg-white dark:bg-muted/20 p-4 shadow-sm text-center',
+        className
+      )}
+    >
       <header className="mb-2 flex items-start justify-between">
-        <div>
+        <div className="text-left">
           <h3 className="text-lg font-semibold">{title}</h3>
           {subtitle && <p className="text-sm text-foreground/60">{subtitle}</p>}
         </div>

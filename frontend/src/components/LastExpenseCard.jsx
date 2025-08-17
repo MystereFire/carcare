@@ -4,7 +4,7 @@ import Section from './Section';
 export default function LastExpenseCard({ expense, onViewAll }) {
   if (!expense) {
     return (
-      <Section title="Dernière dépense" className="h-full flex items-center justify-center">
+      <Section title="Dernière dépense" className="h-full items-center justify-center">
         <p className="text-foreground/60">Aucune dépense enregistrée.</p>
       </Section>
     );
@@ -29,7 +29,7 @@ export default function LastExpenseCard({ expense, onViewAll }) {
           Voir toutes les dépenses
         </button>
       }
-      className="h-full flex flex-col"
+      className="h-full"
     >
       <p className="text-foreground">{expense.label}</p>
       <p className="mt-2 text-3xl font-bold">{parseFloat(expense.amount).toFixed(2)} €</p>

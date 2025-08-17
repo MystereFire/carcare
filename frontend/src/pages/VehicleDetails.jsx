@@ -212,7 +212,7 @@ export default function VehicleDetails() {
 
         {/* Charts section */}
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6 px-4 py-2 bg-gray-50 rounded-2xl shadow-sm">Données carburant / entretien</h2>
+          <h2 className="text-2xl font-semibold mb-6">Données carburant / entretien</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
             <CostPerLiterChart data={expenses} />
             <CostPer100KmChart data={expenses} />
@@ -225,7 +225,7 @@ export default function VehicleDetails() {
 
         {/* Analysis section */}
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6 px-4 py-2 bg-gray-50 rounded-2xl shadow-sm">Analyse &amp; prévision</h2>
+          <h2 className="text-2xl font-semibold mb-6">Analyse &amp; prévision</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
             <AverageConsumptionChart data={consumptionSegments} />
             <TankRangeCard data={consumptionSegments} tankSize={vehicle.tankSize} />
