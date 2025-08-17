@@ -11,7 +11,7 @@ export interface ChartCardLiteProps {
 
 export function ChartCardLite({ title, legend, footer, children, className }: ChartCardLiteProps) {
   return (
-    <div className={cn('rounded-xl border border-border/40 bg-muted/40', className)}>
+    <div className={cn('rounded-lg bg-white dark:bg-muted/20 shadow-sm', className)}>
       <div className="flex items-center justify-between p-4">
         <h4 className="text-sm font-medium">{title}</h4>
         {legend}
