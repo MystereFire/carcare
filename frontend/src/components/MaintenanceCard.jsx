@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
-import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
+import Section from './Section';
 
 export default function MaintenanceCard({ vehicleId }) {
   const [tasks, setTasks] = useState([]);
@@ -39,34 +39,32 @@ export default function MaintenanceCard({ vehicleId }) {
   const daysRemaining = task.nextAtDate ? Math.ceil((new Date(task.nextAtDate) - new Date()) / 86400000) : null;
 
   const styles = {
-    OK: 'bg-blue-200 text-blue-800',
-    SOON: 'bg-yellow-200 text-yellow-800',
-    DUE: 'bg-red-200 text-red-800'
+    OK: 'bg-success/20 text-success',
+    SOON: 'bg-warning/20 text-warning',
+    DUE: 'bg-danger/20 text-danger'
   };
   const badgeClass = styles[task.status] || styles.OK;
 
   return (
-    <Card className="h-full flex flex-col">
-      <CardHeader className="flex justify-between items-start pb-2">
-        <CardTitle title="Prochaine tâche d'entretien">🔧 Entretien</CardTitle>
-        <span className={`px-2 py-1 rounded text-xs font-bold ${badgeClass}`}>{task.status}</span>
-      </CardHeader>
-      <CardContent className="flex flex-col flex-1 pt-0">
-        <p className="mt-2 text-gray-800">{task.title}</p>
-        <div className="mt-1 text-sm text-gray-600">
-          {distanceRemaining != null && <p>{distanceRemaining} km restants</p>}
-          {daysRemaining != null && <p>{daysRemaining} jours restants</p>}
-        </div>
-        <div className="mt-auto text-right">
-          <button
-            onClick={() => navigate(`/vehicle/${vehicleId}/maintenance`)}
-            aria-label="Voir le carnet d'entretien"
-            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm"
-          >
-            Voir le carnet
-          </button>
-        </div>
-      </CardContent>
-    </Card>
+    <Section
+      title="Entretien"
+      actions={<span className={`px-2 py-1 rounded text-xs font-bold ${badgeClass}`}>{task.status}</span>}
+      className="h-full flex flex-col"
+    >
+      <p className="mt-2 text-foreground">{task.title}</p>
+      <div className="mt-1 text-sm text-foreground/60">
+        {distanceRemaining != null && <p>{distanceRemaining} km restants</p>}
+        {daysRemaining != null && <p>{daysRemaining} jours restants</p>}
+      </div>
+      <div className="mt-auto text-right">
+        <button
+          onClick={() => navigate(`/vehicle/${vehicleId}/maintenance`)}
+          aria-label="Voir le carnet d'entretien"
+          className="text-accent hover:underline text-sm"
+        >
+          Voir le carnet
+        </button>
+      </div>
+    </Section>
   );
 }
