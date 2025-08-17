@@ -1,13 +1,16 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, LabelList } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, LabelList, Cell } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
-import { ChartContainer, ChartTooltip, ChartLegend, ChartLegendContent } from '../ui/chart';
-import { computeDomain, formatEuro, formatNumber } from '../../lib/formatters';
+import { ChartContainer, ChartTooltip, ChartLegend } from '../ui/chart';
+import { computeDomain, formatCurrency, formatKm, formatL100, formatNumber } from '../../lib/formatters';
+import { computeBest } from '../../lib/compare';
 
 export default function ComparisonBarChart({ metrics1, metrics2 }) {
   if (!metrics1 || !metrics2) return null;
 
   const number = formatNumber;
+  const colorBest = '#16a34a';
+  const colorWorse = '#dc2626';
 
   const units = {
     'Dépense totale': '€',
@@ -19,13 +22,13 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
   const formatValue = (metric, value) => {
     switch (units[metric]) {
       case '€':
-        return formatEuro(value);
+        return formatCurrency(value);
       case 'km':
-        return `${number(value)} km`;
+        return formatKm(value);
       case 'L/100km':
-        return `${number(value)} L/100km`;
+        return formatL100(value);
       case '€/km':
-        return `${formatEuro(value)}/km`;
+        return `${formatCurrency(value)}/km`;
       default:
         return number.format(value);
     }
@@ -67,26 +70,30 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
     {
       metric: 'Dépense totale',
       veh1: parseFloat(metrics1.totalExpense),
-      veh2: parseFloat(metrics2.totalExpense)
+      veh2: parseFloat(metrics2.totalExpense),
+      mode: 'min',
     },
     {
       metric: 'Distance (km)',
       veh1: metrics1.distance,
-      veh2: metrics2.distance
-    }
+      veh2: metrics2.distance,
+      mode: 'max',
+    },
   ];
 
   const perfData = [
     {
       metric: 'Conso L/100km',
       veh1: metrics1.avgConsumption ? parseFloat(metrics1.avgConsumption) : 0,
-      veh2: metrics2.avgConsumption ? parseFloat(metrics2.avgConsumption) : 0
+      veh2: metrics2.avgConsumption ? parseFloat(metrics2.avgConsumption) : 0,
+      mode: 'min',
     },
     {
       metric: 'Coût par km',
       veh1: metrics1.costPerKm ? parseFloat(metrics1.costPerKm) : 0,
-      veh2: metrics2.costPerKm ? parseFloat(metrics2.costPerKm) : 0
-    }
+      veh2: metrics2.costPerKm ? parseFloat(metrics2.costPerKm) : 0,
+      mode: 'min',
+    },
   ];
 
   const financeVals = financeData.flatMap(d => [d.veh1, d.veh2]);
@@ -106,12 +113,20 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
               <XAxis type="number" domain={[0, financeMax]} tickFormatter={v => number(v)} />
               <YAxis dataKey="metric" type="category" width={140} />
               <ChartTooltip content={<CustomTooltip />} />
-              <ChartLegend content={<ChartLegendContent />} />
-              <Bar dataKey="veh1" name={metrics1.name} fill="#3b82f6" barSize={18} radius={8} animationDuration={800}>
-                <LabelList dataKey="veh1" content={renderLabel('veh1', '#3b82f6', financeData)} />
+              <ChartLegend align="right" verticalAlign="bottom" />
+              <Bar dataKey="veh1" name={metrics1.name} barSize={18} radius={8} background={{ fill: '#f1f5f9', radius: 8 }}>
+                {financeData.map((entry, index) => {
+                  const best = computeBest([entry.veh1, entry.veh2], entry.mode);
+                  return <Cell key={`f1-${index}`} fill={best === 0 ? colorBest : colorWorse} />;
+                })}
+                <LabelList dataKey="veh1" content={renderLabel('veh1', colorBest, financeData)} />
               </Bar>
-              <Bar dataKey="veh2" name={metrics2.name} fill="#10b981" barSize={18} radius={8} animationDuration={800}>
-                <LabelList dataKey="veh2" content={renderLabel('veh2', '#10b981', financeData)} />
+              <Bar dataKey="veh2" name={metrics2.name} barSize={18} radius={8} background={{ fill: '#f1f5f9', radius: 8 }}>
+                {financeData.map((entry, index) => {
+                  const best = computeBest([entry.veh1, entry.veh2], entry.mode);
+                  return <Cell key={`f2-${index}`} fill={best === 1 ? colorBest : colorWorse} />;
+                })}
+                <LabelList dataKey="veh2" content={renderLabel('veh2', colorWorse, financeData)} />
               </Bar>
             </BarChart>
           </ChartContainer>
@@ -128,12 +143,20 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
               <XAxis type="number" domain={[0, perfMax]} tickFormatter={v => number(v)} />
               <YAxis dataKey="metric" type="category" width={140} />
               <ChartTooltip content={<CustomTooltip />} />
-              <ChartLegend content={<ChartLegendContent />} />
-              <Bar dataKey="veh1" name={metrics1.name} fill="#3b82f6" barSize={18} radius={8} animationDuration={800}>
-                <LabelList dataKey="veh1" content={renderLabel('veh1', '#3b82f6', perfData)} />
+              <ChartLegend align="right" verticalAlign="bottom" />
+              <Bar dataKey="veh1" name={metrics1.name} barSize={18} radius={8} background={{ fill: '#f1f5f9', radius: 8 }}>
+                {perfData.map((entry, index) => {
+                  const best = computeBest([entry.veh1, entry.veh2], entry.mode);
+                  return <Cell key={`p1-${index}`} fill={best === 0 ? colorBest : colorWorse} />;
+                })}
+                <LabelList dataKey="veh1" content={renderLabel('veh1', colorBest, perfData)} />
               </Bar>
-              <Bar dataKey="veh2" name={metrics2.name} fill="#10b981" barSize={18} radius={8} animationDuration={800}>
-                <LabelList dataKey="veh2" content={renderLabel('veh2', '#10b981', perfData)} />
+              <Bar dataKey="veh2" name={metrics2.name} barSize={18} radius={8} background={{ fill: '#f1f5f9', radius: 8 }}>
+                {perfData.map((entry, index) => {
+                  const best = computeBest([entry.veh1, entry.veh2], entry.mode);
+                  return <Cell key={`p2-${index}`} fill={best === 1 ? colorBest : colorWorse} />;
+                })}
+                <LabelList dataKey="veh2" content={renderLabel('veh2', colorWorse, perfData)} />
               </Bar>
             </BarChart>
           </ChartContainer>
