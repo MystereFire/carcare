@@ -3,6 +3,7 @@ import ReactApexChart from 'react-apexcharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer } from '../ui/chart';
 import { formatEuro, formatDate, computeDomain } from '../../lib/formatters';
+import { baseChartOptions, chartColors } from '../../lib/apexConfig';
 
 export default function CostPerLiterChart({ data }) {
 
@@ -36,21 +37,26 @@ export default function CostPerLiterChart({ data }) {
     }
   ];
 
+  const start = chartData.length ? chartData[0].timestamp : undefined;
+  const end = chartData.length ? chartData[chartData.length - 1].timestamp : undefined;
+
   const options = {
-    chart: { type: 'area', toolbar: { show: false } },
-    stroke: { curve: 'smooth', width: 2 },
+    ...baseChartOptions,
+    chart: { ...baseChartOptions.chart, type: 'area' },
     xaxis: {
-      type: 'datetime',
+      ...baseChartOptions.xaxis,
       categories: chartData.map(d => d.timestamp),
+      min: start,
+      max: end,
       labels: { formatter: formatDate }
     },
-    yaxis: { min: minY, max: maxY, labels: { formatter: formatEuro } },
-    tooltip: { y: { formatter: (val) => `${formatEuro(val)}/L` }, x: { formatter: formatDate } },
+    yaxis: { ...baseChartOptions.yaxis, min: minY, max: maxY, labels: { formatter: formatEuro } },
+    tooltip: { ...baseChartOptions.tooltip, y: { formatter: (val) => `${formatEuro(val)}/L` }, x: { formatter: formatDate } },
     fill: {
       type: 'gradient',
       gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0, stops: [0, 100] }
     },
-    colors: ['#ef4444'],
+    colors: [chartColors.fuel],
     annotations: {
       yaxis: [
         {

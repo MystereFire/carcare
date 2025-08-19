@@ -3,6 +3,7 @@ import ReactApexChart from 'react-apexcharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer } from '../ui/chart';
 import { formatEuro, formatDate, computeDomain } from '../../lib/formatters';
+import { baseChartOptions, chartColors } from '../../lib/apexConfig';
 
 export default function CostPer100KmChart({ data }) {
 
@@ -23,24 +24,29 @@ export default function CostPer100KmChart({ data }) {
     }
   ];
 
-  const yAxis = { min: minY, labels: { formatter: formatEuro } };
+  const yAxis = { ...baseChartOptions.yaxis, min: minY, labels: { formatter: formatEuro } };
   if (maxY !== undefined) yAxis.max = maxY;
 
+  const start = sortedData.length ? sortedData[0].timestamp : undefined;
+  const end = sortedData.length ? sortedData[sortedData.length - 1].timestamp : undefined;
+
   const options = {
-    chart: { type: 'area', toolbar: { show: false } },
-    stroke: { curve: 'smooth', width: 2 },
+    ...baseChartOptions,
+    chart: { ...baseChartOptions.chart, type: 'area' },
     xaxis: {
-      type: 'datetime',
+      ...baseChartOptions.xaxis,
       categories: sortedData.map(d => d.timestamp),
+      min: start,
+      max: end,
       labels: { formatter: formatDate }
     },
-    yaxis: yAxis,
-    tooltip: { y: { formatter: (val) => `${formatEuro(val)}/100km` }, x: { formatter: formatDate } },
+    yaxis,
+    tooltip: { ...baseChartOptions.tooltip, y: { formatter: (val) => `${formatEuro(val)}/100km` }, x: { formatter: formatDate } },
     fill: {
       type: 'gradient',
       gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0, stops: [0, 100] }
     },
-    colors: ['#f59e0b'],
+    colors: [chartColors.fuel],
     annotations: {
       yaxis: [
         {

@@ -3,6 +3,7 @@ import ReactApexChart from 'react-apexcharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer } from '../ui/chart';
 import { formatEuro, formatDate, computeDomain } from '../../lib/formatters';
+import { baseChartOptions, chartColors } from '../../lib/apexConfig';
 
 export default function CumulativeExpenseChart({ data }) {
 
@@ -46,21 +47,26 @@ export default function CumulativeExpenseChart({ data }) {
     }
   ];
 
+  const start = cumulative.length ? cumulative[0].timestamp : undefined;
+  const end = cumulative.length ? cumulative[cumulative.length - 1].timestamp : undefined;
+
   const options = {
-    chart: { type: 'area', toolbar: { show: false } },
-    stroke: { curve: 'smooth', width: 2 },
+    ...baseChartOptions,
+    chart: { ...baseChartOptions.chart, type: 'area' },
     xaxis: {
-      type: 'datetime',
+      ...baseChartOptions.xaxis,
       categories: cumulative.map(d => d.timestamp),
+      min: start,
+      max: end,
       labels: { formatter: formatDate }
     },
-    yaxis: { min: minY, max: maxY, labels: { formatter: formatEuro } },
-    tooltip: { y: { formatter: formatEuro }, x: { formatter: formatDate } },
+    yaxis: { ...baseChartOptions.yaxis, min: minY, max: maxY, labels: { formatter: formatEuro } },
+    tooltip: { ...baseChartOptions.tooltip, y: { formatter: formatEuro }, x: { formatter: formatDate } },
     fill: {
       type: 'gradient',
       gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0, stops: [0, 100] }
     },
-    colors: ['#82ca9d'],
+    colors: [chartColors.maintenance],
     annotations: {
       yaxis: [
         {

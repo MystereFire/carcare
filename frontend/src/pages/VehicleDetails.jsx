@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
@@ -31,22 +31,23 @@ import {
   Droplet,
   PiggyBank,
 } from '../components/icons';
+import PeriodSelector from '../components/PeriodSelector';
+import { formatEuro, formatNumber } from '../../src/lib/formatters';
 
 export default function VehicleDetails() {
   const { id } = useParams();
   const [vehicle, setVehicle] = useState(null);
   const [expenses, setExpenses] = useState([]);
   const [expensesWithAcquisition, setExpensesWithAcquisition] = useState([]);
-  const [consumptionSegments, setConsumptionSegments] = useState([]);
+  const [period, setPeriod] = useState(90);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const [vehRes, expRes, consRes] = await Promise.all([
+        const [vehRes, expRes] = await Promise.all([
           api.get(`/api/vehicles/${id}`),
-          api.get(`/api/expenses/${id}`, { params: { page: 1, limit: 1000 } }),
-          api.get(`/api/stats/vehicle/${id}/consumption`)
+          api.get(`/api/expenses/${id}`, { params: { page: 1, limit: 1000 } })
         ]);
 
         const veh = vehRes.data;
@@ -73,7 +74,6 @@ export default function VehicleDetails() {
         setVehicle(veh);
         setExpenses(expensesFromApi.sort((a, b) => new Date(a.date) - new Date(b.date)));
         setExpensesWithAcquisition(withAcquisition);
-        setConsumptionSegments(consRes.data);
       } catch (err) {
         console.error('Erreur de chargement :', err);
       }
@@ -85,6 +85,61 @@ export default function VehicleDetails() {
   if (!vehicle) return <p className="text-center mt-20">Chargement...</p>;
 
   const lastExpense = expenses.length ? expenses[expenses.length - 1] : null;
+
+  const segments = useMemo(() => {
+    const fuel = expenses
+      .filter(e => e.type === 'fuel' && e.liters > 0 && e.km != null)
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+    const res = [];
+    for (let i = 1; i < fuel.length; i++) {
+      const prev = fuel[i - 1];
+      const curr = fuel[i];
+      const deltaKm = curr.km - prev.km;
+      if (!deltaKm || deltaKm <= 0) continue;
+      const liters = parseFloat(curr.liters) || 0;
+      const price = parseFloat(curr.amount) || 0;
+      res.push({
+        startDate: prev.date,
+        endDate: curr.date,
+        km: deltaKm,
+        liters,
+        price,
+        consumption: (liters * 100) / deltaKm,
+        costPer100: (price * 100) / deltaKm,
+      });
+    }
+    return res;
+  }, [expenses]);
+
+  const filteredExpenses = useMemo(() => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - period);
+    return expenses.filter(e => {
+      const d = new Date(e.date);
+      return d >= start && d <= end;
+    });
+  }, [expenses, period]);
+
+  const filteredExpensesWithAcquisition = useMemo(() => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - period);
+    return expensesWithAcquisition.filter(e => {
+      const d = new Date(e.date);
+      return d >= start && d <= end;
+    });
+  }, [expensesWithAcquisition, period]);
+
+  const filteredSegments = useMemo(() => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - period);
+    return segments.filter(seg => {
+      const d = new Date(seg.endDate);
+      return d >= start && d <= end;
+    });
+  }, [segments, period]);
 
   const handleOdometerUpdate = async () => {
     const km = prompt('Entrez le kilométrage actuel', vehicle.currentOdometer || '');
@@ -102,25 +157,21 @@ export default function VehicleDetails() {
   };
 
   // KPI calculations
-  let costPer100 = 0;
-  let avgCons = 0;
-  if (consumptionSegments.length) {
-    const totalKm = consumptionSegments.reduce((s, seg) => s + seg.km, 0);
-    const totalLiters = consumptionSegments.reduce((s, seg) => s + seg.liters, 0);
-    const totalCost = consumptionSegments.reduce((s, seg) => s + seg.price, 0);
-    costPer100 = totalKm > 0 ? ((totalCost * 100) / totalKm).toFixed(2) : 0;
-    avgCons = totalKm > 0 ? ((totalLiters * 100) / totalKm).toFixed(2) : 0;
-  }
+  const totalKm = filteredSegments.reduce((s, seg) => s + seg.km, 0);
+  const totalLiters = filteredSegments.reduce((s, seg) => s + seg.liters, 0);
+  const totalCost = filteredSegments.reduce((s, seg) => s + seg.price, 0);
+  const costPer100 = totalKm > 0 ? (totalCost * 100) / totalKm : 0;
+  const avgCons = totalKm > 0 ? (totalLiters * 100) / totalKm : 0;
 
   let annualBudget = 0;
-  const cleaned = expenses.filter(e => e.type !== 'acquisition');
+  const cleaned = filteredExpenses.filter(e => e.type !== 'acquisition');
   if (cleaned.length > 1) {
     const sorted = [...cleaned].sort((a, b) => new Date(a.date) - new Date(b.date));
     const firstDate = new Date(sorted[0].date);
     const lastDate = new Date(sorted[sorted.length - 1].date);
     const days = (lastDate - firstDate) / 86400000;
     const total = cleaned.reduce((sum, e) => sum + parseFloat(e.amount), 0);
-    annualBudget = days > 0 ? (total * (365 / days)).toFixed(2) : total.toFixed(2);
+    annualBudget = days > 0 ? total * (365 / days) : total;
   }
 
   return (
@@ -181,23 +232,27 @@ export default function VehicleDetails() {
           </div>
         </Card>
 
+        <div className="flex justify-end">
+          <PeriodSelector value={period} onChange={setPeriod} />
+        </div>
+
         {/* KPI tiles */}
         <div className="grid gap-4 sm:grid-cols-3">
           <StatTile
             title="Coût /100 km"
-            value={`${costPer100} €`}
+            value={formatEuro(costPer100)}
             icon={<Euro className="h-5 w-5" />}
             className="bg-blue-50 dark:bg-blue-950"
           />
           <StatTile
             title="Consommation moyenne"
-            value={`${avgCons} L/100km`}
+            value={`${formatNumber(avgCons)} L/100km`}
             icon={<Droplet className="h-5 w-5" />}
             className="bg-green-50 dark:bg-green-950"
           />
           <StatTile
             title="Budget annuel"
-            value={`${annualBudget} €`}
+            value={formatEuro(annualBudget)}
             icon={<PiggyBank className="h-5 w-5" />}
             className="bg-amber-50 dark:bg-amber-950"
           />
@@ -207,19 +262,19 @@ export default function VehicleDetails() {
         <div className="grid gap-6 md:grid-cols-3 auto-rows-fr">
           <LastExpenseCard expense={lastExpense} onViewAll={() => navigate(`/vehicle/${vehicle._id}/expenses`)} />
           <MaintenanceCard vehicleId={vehicle._id} />
-          <LastFuelPriceCard expenses={expenses} />
+          <LastFuelPriceCard expenses={filteredExpenses} />
         </div>
 
         {/* Charts section */}
         <section className="mb-12">
           <h2 className="text-2xl font-semibold mb-6">Données carburant / entretien</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
-            <CostPerLiterChart data={expenses} />
-            <CostPer100KmChart data={consumptionSegments} />
-            <CumulativeExpenseChart data={expenses} />
-            <MonthlyExpenseBarChart data={expenses} />
-            <ExpenseTypeBarChart data={expenses} />
-            <FuelConsumptionChart data={consumptionSegments} />
+            <CostPerLiterChart data={filteredExpenses} />
+            <CostPer100KmChart data={filteredSegments} />
+            <CumulativeExpenseChart data={filteredExpenses} />
+            <MonthlyExpenseBarChart data={filteredExpenses} />
+            <ExpenseTypeBarChart data={filteredExpenses} />
+            <FuelConsumptionChart data={filteredSegments} />
           </div>
         </section>
 
@@ -227,11 +282,11 @@ export default function VehicleDetails() {
         <section className="mb-12">
           <h2 className="text-2xl font-semibold mb-6">Analyse &amp; prévision</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
-            <AverageConsumptionChart data={consumptionSegments} />
-            <TankRangeCard data={consumptionSegments} tankSize={vehicle.tankSize} />
-            <AnnualBudgetEstimate data={expenses} />
-            <AverageKmCard data={expensesWithAcquisition} />
-            <KmOverTimeChart data={expensesWithAcquisition} />
+            <AverageConsumptionChart data={filteredSegments} />
+            <TankRangeCard data={filteredSegments} tankSize={vehicle.tankSize} />
+            <AnnualBudgetEstimate data={filteredExpenses} />
+            <AverageKmCard data={filteredExpensesWithAcquisition} />
+            <KmOverTimeChart data={filteredExpensesWithAcquisition} />
           </div>
         </section>
       </div>
