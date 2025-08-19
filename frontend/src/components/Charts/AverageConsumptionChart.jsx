@@ -9,7 +9,7 @@ export default function AverageConsumptionChart({ data }) {
 
   const consumption = data.map(seg => ({
     date: seg.endDate,
-    consumption: seg.consumption
+    consumption: seg.avgConsumption ?? seg.consumption
   }));
 
   const avg =
@@ -25,11 +25,14 @@ export default function AverageConsumptionChart({ data }) {
     }
   ];
 
+  const yAxis = { min: minY, labels: { formatter: v => `${number(v)} L/100km` } };
+  if (maxY !== undefined) yAxis.max = maxY;
+
   const options = {
     chart: { type: 'area', toolbar: { show: false } },
     stroke: { curve: 'smooth', width: 2 },
     xaxis: { categories: consumption.map(d => d.date), labels: { formatter: formatDate } },
-    yaxis: { min: minY, max: maxY, labels: { formatter: v => `${number(v)} L/100km` } },
+    yaxis: yAxis,
     tooltip: { y: { formatter: (val) => `${number(val)} L/100km` }, x: { formatter: formatDate } },
     fill: {
       type: 'gradient',

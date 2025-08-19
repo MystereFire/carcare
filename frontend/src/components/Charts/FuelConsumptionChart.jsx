@@ -35,12 +35,15 @@ export default function FuelConsumptionChart({ data }) {
     }
   ];
 
+  const yAxis = { min: minY, labels: { formatter: v => `${number(v)} L/100km` } };
+  if (maxY !== undefined) yAxis.max = maxY;
+
   const options = {
     chart: { type: 'line', toolbar: { show: false } },
     stroke: { curve: 'smooth' },
     markers: { size: 0 },
     xaxis: { categories: chartData.map(d => d.end), labels: { formatter: formatDate } },
-    yaxis: { min: minY, max: maxY, labels: { formatter: v => `${number(v)} L/100km` } },
+    yaxis: yAxis,
     tooltip: {
       y: { formatter: (val) => `${number(val)} L/100km` },
       x: { formatter: formatDate }

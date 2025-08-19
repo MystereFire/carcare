@@ -41,10 +41,10 @@ export function formatL100(value) {
 }
 
 export function computeDomain(values, pad = 0.1) {
-  if (!values.length) return [0, 'auto'];
+  if (!values.length) return [0, undefined];
   const min = Math.min(...values);
   const max = Math.max(...values);
-  if (!isFinite(min) || !isFinite(max)) return [0, 'auto'];
+  if (!isFinite(min) || !isFinite(max)) return [0, undefined];
   const range = max - min || max || 1;
   const padding = range * pad;
   return [min - padding, max + padding];

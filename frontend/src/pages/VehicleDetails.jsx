@@ -215,7 +215,7 @@ export default function VehicleDetails() {
           <h2 className="text-2xl font-semibold mb-6">Données carburant / entretien</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
             <CostPerLiterChart data={expenses} />
-            <CostPer100KmChart data={expenses} />
+            <CostPer100KmChart data={consumptionSegments} />
             <CumulativeExpenseChart data={expenses} />
             <MonthlyExpenseBarChart data={expenses} />
             <ExpenseTypeBarChart data={expenses} />
