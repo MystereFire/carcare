@@ -7,38 +7,29 @@ import { formatEuro, formatDate, computeDomain } from '../../lib/formatters';
 export default function CostPer100KmChart({ data }) {
 
   const sortedData = [...data]
-    .filter(d => d.type === 'fuel')
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  const costPer100Km = [];
-
-  for (let i = 1; i < sortedData.length; i++) {
-    const kmDiff = sortedData[i].km - sortedData[i - 1].km;
-    const euroPerKm = kmDiff > 0 ? sortedData[i].amount / kmDiff : 0;
-    costPer100Km.push({
-      date: sortedData[i].date,
-      costPer100: parseFloat((euroPerKm * 100).toFixed(2)),
-    });
-  }
+    .sort((a, b) => new Date(a.endDate) - new Date(b.endDate));
 
   const avg =
-    costPer100Km.reduce((sum, c) => sum + c.costPer100, 0) /
-    (costPer100Km.length || 1);
-  const yVals = costPer100Km.map(d => d.costPer100);
+    sortedData.reduce((sum, c) => sum + c.costPer100, 0) /
+    (sortedData.length || 1);
+  const yVals = sortedData.map(d => d.costPer100);
   const [minY, maxY] = computeDomain(yVals);
 
   const series = [
     {
       name: 'Coût/100km',
-      data: costPer100Km.map(d => ({ x: d.date, y: d.costPer100 }))
+      data: sortedData.map(d => ({ x: d.endDate, y: d.costPer100 }))
     }
   ];
+
+  const yAxis = { min: minY, labels: { formatter: formatEuro } };
+  if (maxY !== undefined) yAxis.max = maxY;
 
   const options = {
     chart: { type: 'area', toolbar: { show: false } },
     stroke: { curve: 'smooth', width: 2 },
-    xaxis: { categories: costPer100Km.map(d => d.date), labels: { formatter: formatDate } },
-    yaxis: { min: minY, max: maxY, labels: { formatter: formatEuro } },
+    xaxis: { categories: sortedData.map(d => d.endDate), labels: { formatter: formatDate } },
+    yaxis: yAxis,
     tooltip: { y: { formatter: (val) => `${formatEuro(val)}/100km` }, x: { formatter: formatDate } },
     fill: {
       type: 'gradient',
