@@ -54,7 +54,7 @@ export default function ExpenseTypeBarChart({ data = [] }) {
         distributed: true,
         borderRadius: 6,
         dataLabels: {
-          position: 'top',
+          position: 'right',
         },
       },
     },
@@ -62,6 +62,7 @@ export default function ExpenseTypeBarChart({ data = [] }) {
       enabled: true,
       formatter: (val) => formatEuro(val),
       offsetX: 8,
+      textAnchor: 'start',
       style: {
         colors: ['#111827'],
       },
