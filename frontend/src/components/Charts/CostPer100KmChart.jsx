@@ -40,7 +40,7 @@ export default function CostPer100KmChart({ data }) {
       max: end,
       labels: { formatter: formatDate }
     },
-    yaxis,
+    yaxis: yAxis,
     tooltip: { ...baseChartOptions.tooltip, y: { formatter: (val) => `${formatEuro(val)}/100km` }, x: { formatter: formatDate } },
     fill: {
       type: 'gradient',
