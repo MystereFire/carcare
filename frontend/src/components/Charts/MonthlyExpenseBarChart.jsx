@@ -34,8 +34,6 @@ export default function MonthlyExpenseBarChart({ data = [] }) {
 
   const categories = chartData.map((d) => new Date(d.month).getTime());
 
-  const baseWidth = monthsCount < 3 ? '80%' : '60%';
-
   const options = {
     chart: {
       type: 'bar',
@@ -45,7 +43,7 @@ export default function MonthlyExpenseBarChart({ data = [] }) {
     },
     plotOptions: {
       bar: {
-        columnWidth: baseWidth,
+        columnWidth: '60%',
         borderRadius: 6,
       },
     },
@@ -55,7 +53,7 @@ export default function MonthlyExpenseBarChart({ data = [] }) {
         options: {
           plotOptions: {
             bar: {
-              columnWidth: monthsCount < 3 ? '90%' : '70%',
+              columnWidth: monthsCount < 3 ? '80%' : '70%',
             },
           },
         },
@@ -65,9 +63,9 @@ export default function MonthlyExpenseBarChart({ data = [] }) {
     xaxis: {
       type: 'datetime',
       categories,
-      tickAmount: monthsCount > 14 ? 6 : monthsCount,
+      tickAmount: monthsCount > 8 ? 8 : monthsCount,
       labels: {
-        rotate: monthsCount > 14 ? -30 : 0,
+        rotate: monthsCount > 8 ? -30 : 0,
         formatter: (val, timestamp) =>
           new Date(timestamp).toLocaleDateString('fr-FR', {
             month: 'short',
@@ -102,11 +100,11 @@ export default function MonthlyExpenseBarChart({ data = [] }) {
   };
 
   return (
-    <Card className="h-[320px]">
+    <Card className="h-[260px]">
       <CardHeader className="pb-2">
         <CardTitle title="Dépenses mensuelles par type">💸 Dépenses mensuelles par type</CardTitle>
       </CardHeader>
-      <CardContent className="h-[240px]">
+      <CardContent className="h-[220px]">
         <ReactApexChart options={options} series={series} type="bar" height="100%" />
       </CardContent>
     </Card>

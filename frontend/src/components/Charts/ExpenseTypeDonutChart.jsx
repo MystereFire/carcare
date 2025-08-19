@@ -48,7 +48,14 @@ export default function ExpenseTypeDonutChart({ data = [] }) {
     },
     colors,
     labels,
-    legend: { position: 'bottom' },
+    legend: {
+      position: 'bottom',
+      formatter: (seriesName, opts) => {
+        const value = opts.w.globals.series[opts.seriesIndex];
+        const percent = opts.w.globals.seriesPercent[opts.seriesIndex][0];
+        return `${seriesName} — ${formatEuro(value)} (${Math.round(percent)}%)`;
+      },
+    },
     dataLabels: {
       enabled: true,
       formatter: (val, opts) => {

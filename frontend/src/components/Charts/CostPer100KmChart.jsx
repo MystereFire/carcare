@@ -64,8 +64,9 @@ export default function CostPer100KmChart({ data }) {
 
   return (
     <Card className="h-64">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 flex items-center justify-between">
         <CardTitle title="Coût moyen aux 100 km">💰 Coût moyen aux 100 km (€)</CardTitle>
+        <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Moyenne: {formatEuro(avg)}</span>
       </CardHeader>
       <CardContent className="h-[180px]">
         <ChartContainer>

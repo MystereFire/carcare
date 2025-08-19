@@ -19,7 +19,7 @@ export const baseChartOptions = {
   dataLabels: { enabled: false },
   xaxis: {
     type: 'datetime',
-    tickAmount: 6,
+    tickAmount: 4,
     labels: { format: 'dd/MM' },
   },
   yaxis: {
