@@ -1,14 +1,14 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, LabelList, ReferenceLine } from 'recharts';
+import ReactApexChart from 'react-apexcharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent
-} from '../ui/chart';
+import { ChartContainer } from '../ui/chart';
 import { formatEuro, computeDomain, formatDate } from '../../lib/formatters';
+
+const COLORS = {
+  fuel: '#3B82F6',
+  maintenance: '#10B981',
+  repair: '#FACC15'
+};
 
 export default function MonthlyExpenseBarChart({ data }) {
   // Regrouper les dépenses par mois et type en fonction de l'année courante
@@ -38,6 +38,50 @@ export default function MonthlyExpenseBarChart({ data }) {
   const avg = totals.reduce((s, v) => s + v, 0) / (totals.length || 1);
   const showLabels = chartData.length <= 6;
 
+  const categories = chartData.map(d => d.month);
+  const series = [
+    { name: 'Carburant', data: chartData.map(d => d.fuel) },
+    { name: 'Maintenance', data: chartData.map(d => d.maintenance) },
+    { name: 'Réparation', data: chartData.map(d => d.repair) }
+  ];
+
+  const options = {
+    chart: { type: 'bar', stacked: true, toolbar: { show: false } },
+    colors: [COLORS.fuel, COLORS.maintenance, COLORS.repair],
+    xaxis: {
+      categories,
+      labels: { formatter: formatDate }
+    },
+    yaxis: {
+      min: minY,
+      max: maxY,
+      labels: { formatter: formatEuro }
+    },
+    dataLabels: {
+      enabled: showLabels,
+      formatter: (val) => (val ? formatEuro(val) : ''),
+      offsetY: -10
+    },
+    tooltip: {
+      y: { formatter: formatEuro },
+      x: { formatter: formatDate }
+    },
+    legend: { show: true, position: 'bottom', formatter: (val) => val },
+    annotations: {
+      yaxis: [
+        {
+          y: avg,
+          borderColor: '#94a3b8',
+          strokeDashArray: 4,
+          label: {
+            text: `Moyenne ${formatEuro(avg)}`,
+            style: { color: '#6b7280', fontSize: '12px' }
+          }
+        }
+      ]
+    }
+  };
+
   return (
     <Card className="h-64">
       <CardHeader className="pb-2">
@@ -45,28 +89,7 @@ export default function MonthlyExpenseBarChart({ data }) {
       </CardHeader>
       <CardContent className="h-[180px]">
         <ChartContainer>
-          <BarChart data={chartData} barGap={4} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
-            <XAxis dataKey="month" minTickGap={20} preserveStartEnd tickFormatter={formatDate} />
-            <YAxis domain={[minY, maxY]} tickFormatter={formatEuro} />
-            <ChartTooltip content={<ChartTooltipContent formatter={formatEuro} labelFormatter={formatDate} />} />
-            <ChartLegend content={<ChartLegendContent />} />
-            <ReferenceLine
-              y={avg}
-              stroke="#94a3b8"
-              strokeDasharray="4 2"
-              strokeWidth={1}
-              label={{ position: 'top', value: `Moyenne ${formatEuro(avg)}`, fontSize: 12, fill: '#6b7280', dy: -4 }}
-            />
-            <Bar dataKey="fuel" stackId="a" fill="#3B82F6" animationDuration={600}>
-              {showLabels && <LabelList dataKey="fuel" position="top" formatter={(v) => v ? formatEuro(v) : ''} />}
-            </Bar>
-            <Bar dataKey="maintenance" stackId="a" fill="#10B981" animationDuration={600}>
-              {showLabels && <LabelList dataKey="maintenance" position="top" formatter={(v) => v ? formatEuro(v) : ''} />}
-            </Bar>
-            <Bar dataKey="repair" stackId="a" fill="#FACC15" animationDuration={600}>
-              {showLabels && <LabelList dataKey="repair" position="top" formatter={(v) => v ? formatEuro(v) : ''} />}
-            </Bar>
-          </BarChart>
+          <ReactApexChart options={options} series={series} type="bar" height="100%" />
         </ChartContainer>
       </CardContent>
     </Card>

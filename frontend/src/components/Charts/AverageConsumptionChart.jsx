@@ -1,7 +1,7 @@
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, ReferenceLine, CartesianGrid } from 'recharts';
+import ReactApexChart from 'react-apexcharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
+import { ChartContainer } from '../ui/chart';
 import { formatNumber, formatDate, computeDomain } from '../../lib/formatters';
 
 export default function AverageConsumptionChart({ data }) {
@@ -18,6 +18,39 @@ export default function AverageConsumptionChart({ data }) {
   const yVals = consumption.map(d => d.consumption);
   const [minY, maxY] = computeDomain(yVals);
 
+  const series = [
+    {
+      name: 'Consommation',
+      data: consumption.map(d => ({ x: d.date, y: d.consumption }))
+    }
+  ];
+
+  const options = {
+    chart: { type: 'area', toolbar: { show: false } },
+    stroke: { curve: 'smooth', width: 2 },
+    xaxis: { categories: consumption.map(d => d.date), labels: { formatter: formatDate } },
+    yaxis: { min: minY, max: maxY, labels: { formatter: v => `${number(v)} L/100km` } },
+    tooltip: { y: { formatter: (val) => `${number(val)} L/100km` }, x: { formatter: formatDate } },
+    fill: {
+      type: 'gradient',
+      gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0, stops: [0, 100] }
+    },
+    colors: ['#10b981'],
+    annotations: {
+      yaxis: [
+        {
+          y: avg,
+          borderColor: '#94a3b8',
+          strokeDashArray: 4,
+          label: {
+            text: `Moyenne ${number(avg)}`,
+            style: { color: '#6b7280', fontSize: '12px' }
+          }
+        }
+      ]
+    }
+  };
+
   return (
     <Card className="h-64">
       <CardHeader className="pb-2">
@@ -25,34 +58,7 @@ export default function AverageConsumptionChart({ data }) {
       </CardHeader>
       <CardContent className="h-[180px]">
         <ChartContainer>
-          <AreaChart data={consumption} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
-          <defs>
-            <linearGradient id="consAvg" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10b981" stopOpacity={0.4} />
-              <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" minTickGap={20} preserveStartEnd tickFormatter={formatDate} />
-          <YAxis domain={[minY, maxY]} tickFormatter={(v) => `${number(v)} L/100km`} />
-          <ChartTooltip content={<ChartTooltipContent formatter={val => `${number(val)} L/100km`} labelFormatter={formatDate} />} />
-          <ReferenceLine
-            y={avg}
-            stroke="#94a3b8"
-            strokeWidth={1}
-            strokeDasharray="4 2"
-            label={{ position: 'top', value: `Moyenne ${number(avg)}`, fontSize: 12, fill: '#6b7280', dy: -4 }}
-          />
-          <Area
-            type="monotone"
-            dataKey="consumption"
-            stroke="#10b981"
-            fill="url(#consAvg)"
-            strokeWidth={2}
-            dot={false}
-            activeDot={{ r: 4 }}
-          />
-        </AreaChart>
+          <ReactApexChart options={options} series={series} type="area" height="100%" />
         </ChartContainer>
       </CardContent>
     </Card>

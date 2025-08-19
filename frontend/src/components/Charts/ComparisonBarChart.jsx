@@ -1,7 +1,7 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, LabelList, Cell } from 'recharts';
+import ReactApexChart from 'react-apexcharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
-import { ChartContainer, ChartTooltip, ChartLegend } from '../ui/chart';
+import { ChartContainer } from '../ui/chart';
 import { computeDomain, formatCurrency, formatKm, formatL100, formatNumber } from '../../lib/formatters';
 import { computeBest } from '../../lib/compare';
 
@@ -32,38 +32,6 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
       default:
         return number.format(value);
     }
-  };
-
-  const renderLabel = (key, color, dataset) => (props) => {
-    const { x, y, width, height, value, index } = props;
-    const inside = width > 40;
-    const metric = dataset[index].metric;
-    return (
-      <text
-        x={inside ? x + width - 4 : x + width + 4}
-        y={y + height / 2}
-        fill={inside ? '#fff' : '#000'}
-        textAnchor={inside ? 'end' : 'start'}
-        dominantBaseline="middle"
-        fontSize={14}
-      >
-        {formatValue(metric, value)}
-      </text>
-    );
-  };
-
-  const CustomTooltip = ({ active, payload }) => {
-    if (!active || !payload || !payload.length) return null;
-    return (
-      <div className="rounded-md border bg-white/90 p-2 text-sm shadow-sm">
-        {payload.map(p => {
-          const name = p.dataKey === 'veh1' ? metrics1.name : metrics2.name;
-          return (
-            <div key={p.dataKey}>{`${name} — ${p.payload.metric}: ${formatValue(p.payload.metric, p.value)}`}</div>
-          );
-        })}
-      </div>
-    );
   };
 
   const financeData = [
@@ -101,6 +69,60 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
   const [, financeMax] = computeDomain([0, ...financeVals]);
   const [, perfMax] = computeDomain([0, ...perfVals]);
 
+  const buildChart = (dataset, max) => {
+    const categories = dataset.map(d => d.metric);
+    const series = [
+      {
+        name: metrics1.name,
+        data: dataset.map(d => ({
+          x: d.metric,
+          y: d.veh1,
+          fillColor:
+            computeBest([d.veh1, d.veh2], d.mode) === 0 ? colorBest : colorWorse
+        }))
+      },
+      {
+        name: metrics2.name,
+        data: dataset.map(d => ({
+          x: d.metric,
+          y: d.veh2,
+          fillColor:
+            computeBest([d.veh1, d.veh2], d.mode) === 1 ? colorBest : colorWorse
+        }))
+      }
+    ];
+
+    return {
+      series,
+      options: {
+        chart: { type: 'bar', toolbar: { show: false } },
+        plotOptions: {
+          bar: { horizontal: true, barHeight: '30%', borderRadius: 8 }
+        },
+        xaxis: {
+          max,
+          labels: { formatter: v => number(v) }
+        },
+        yaxis: { categories },
+        dataLabels: {
+          enabled: true,
+          formatter: (val, opts) =>
+            formatValue(categories[opts.dataPointIndex], val)
+        },
+        tooltip: {
+          y: {
+            formatter: (val, opts) =>
+              formatValue(categories[opts.dataPointIndex], val)
+          }
+        },
+        legend: { position: 'bottom' }
+      }
+    };
+  };
+
+  const financeChart = buildChart(financeData, financeMax);
+  const perfChart = buildChart(perfData, perfMax);
+
   return (
     <div className="space-y-6">
       <Card>
@@ -109,26 +131,12 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
         </CardHeader>
         <CardContent className="h-[260px]">
           <ChartContainer>
-            <BarChart layout="vertical" data={financeData} margin={{ top: 10, right: 10, bottom: 10, left: 40 }} barGap={12}>
-              <XAxis type="number" domain={[0, financeMax]} tickFormatter={v => number(v)} />
-              <YAxis dataKey="metric" type="category" width={140} />
-              <ChartTooltip content={<CustomTooltip />} />
-              <ChartLegend align="right" verticalAlign="bottom" />
-              <Bar dataKey="veh1" name={metrics1.name} barSize={18} radius={8} background={{ fill: '#f1f5f9', radius: 8 }}>
-                {financeData.map((entry, index) => {
-                  const best = computeBest([entry.veh1, entry.veh2], entry.mode);
-                  return <Cell key={`f1-${index}`} fill={best === 0 ? colorBest : colorWorse} />;
-                })}
-                <LabelList dataKey="veh1" content={renderLabel('veh1', colorBest, financeData)} />
-              </Bar>
-              <Bar dataKey="veh2" name={metrics2.name} barSize={18} radius={8} background={{ fill: '#f1f5f9', radius: 8 }}>
-                {financeData.map((entry, index) => {
-                  const best = computeBest([entry.veh1, entry.veh2], entry.mode);
-                  return <Cell key={`f2-${index}`} fill={best === 1 ? colorBest : colorWorse} />;
-                })}
-                <LabelList dataKey="veh2" content={renderLabel('veh2', colorWorse, financeData)} />
-              </Bar>
-            </BarChart>
+            <ReactApexChart
+              options={financeChart.options}
+              series={financeChart.series}
+              type="bar"
+              height="100%"
+            />
           </ChartContainer>
         </CardContent>
       </Card>
@@ -139,26 +147,12 @@ export default function ComparisonBarChart({ metrics1, metrics2 }) {
         </CardHeader>
         <CardContent className="h-[260px]">
           <ChartContainer>
-            <BarChart layout="vertical" data={perfData} margin={{ top: 10, right: 10, bottom: 10, left: 40 }} barGap={12}>
-              <XAxis type="number" domain={[0, perfMax]} tickFormatter={v => number(v)} />
-              <YAxis dataKey="metric" type="category" width={140} />
-              <ChartTooltip content={<CustomTooltip />} />
-              <ChartLegend align="right" verticalAlign="bottom" />
-              <Bar dataKey="veh1" name={metrics1.name} barSize={18} radius={8} background={{ fill: '#f1f5f9', radius: 8 }}>
-                {perfData.map((entry, index) => {
-                  const best = computeBest([entry.veh1, entry.veh2], entry.mode);
-                  return <Cell key={`p1-${index}`} fill={best === 0 ? colorBest : colorWorse} />;
-                })}
-                <LabelList dataKey="veh1" content={renderLabel('veh1', colorBest, perfData)} />
-              </Bar>
-              <Bar dataKey="veh2" name={metrics2.name} barSize={18} radius={8} background={{ fill: '#f1f5f9', radius: 8 }}>
-                {perfData.map((entry, index) => {
-                  const best = computeBest([entry.veh1, entry.veh2], entry.mode);
-                  return <Cell key={`p2-${index}`} fill={best === 1 ? colorBest : colorWorse} />;
-                })}
-                <LabelList dataKey="veh2" content={renderLabel('veh2', colorWorse, perfData)} />
-              </Bar>
-            </BarChart>
+            <ReactApexChart
+              options={perfChart.options}
+              series={perfChart.series}
+              type="bar"
+              height="100%"
+            />
           </ChartContainer>
         </CardContent>
       </Card>

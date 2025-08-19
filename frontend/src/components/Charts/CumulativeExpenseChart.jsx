@@ -1,7 +1,7 @@
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, ReferenceLine, CartesianGrid } from 'recharts';
+import ReactApexChart from 'react-apexcharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
+import { ChartContainer } from '../ui/chart';
 import { formatEuro, formatDate, computeDomain } from '../../lib/formatters';
 
 export default function CumulativeExpenseChart({ data }) {
@@ -39,6 +39,43 @@ export default function CumulativeExpenseChart({ data }) {
   const [minY, maxY] = computeDomain(yVals);
   const avg = yVals.reduce((s, v) => s + v, 0) / (yVals.length || 1);
 
+  const series = [
+    {
+      name: 'Total',
+      data: cumulative.map(d => ({ x: d.timestamp, y: d.total }))
+    }
+  ];
+
+  const options = {
+    chart: { type: 'area', toolbar: { show: false } },
+    stroke: { curve: 'smooth', width: 2 },
+    xaxis: {
+      type: 'datetime',
+      categories: cumulative.map(d => d.timestamp),
+      labels: { formatter: formatDate }
+    },
+    yaxis: { min: minY, max: maxY, labels: { formatter: formatEuro } },
+    tooltip: { y: { formatter: formatEuro }, x: { formatter: formatDate } },
+    fill: {
+      type: 'gradient',
+      gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0, stops: [0, 100] }
+    },
+    colors: ['#82ca9d'],
+    annotations: {
+      yaxis: [
+        {
+          y: avg,
+          borderColor: '#94a3b8',
+          strokeDashArray: 4,
+          label: {
+            text: `Moyenne ${formatEuro(avg)}`,
+            style: { color: '#6b7280', fontSize: '12px' }
+          }
+        }
+      ]
+    }
+  };
+
   return (
     <Card className="h-64">
       <CardHeader className="pb-2">
@@ -46,44 +83,7 @@ export default function CumulativeExpenseChart({ data }) {
       </CardHeader>
       <CardContent className="h-[180px]">
         <ChartContainer>
-          <AreaChart data={cumulative} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
-          <defs>
-            <linearGradient id="cumulExp" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#82ca9d" stopOpacity={0.4} />
-              <stop offset="100%" stopColor="#82ca9d" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="timestamp"
-            type="number"
-            domain={['dataMin', 'dataMax']}
-            ticks={cumulative.map(d => d.timestamp)}
-            tickFormatter={formatDate}
-            minTickGap={20}
-            preserveStartEnd
-          />
-          <YAxis domain={[minY, maxY]} tickFormatter={formatEuro} />
-          <ChartTooltip
-            content={<ChartTooltipContent formatter={val => formatEuro(val)} labelFormatter={formatDate} />}
-          />
-          <ReferenceLine
-            y={avg}
-            stroke="#94a3b8"
-            strokeWidth={1}
-            strokeDasharray="4 2"
-            label={{ position: 'top', value: `Moyenne ${formatEuro(avg)}`, fontSize: 12, fill: '#6b7280', dy: -4 }}
-          />
-          <Area
-            type="monotone"
-            dataKey="total"
-            stroke="#82ca9d"
-            fill="url(#cumulExp)"
-            strokeWidth={2}
-            dot={false}
-            activeDot={{ r: 4 }}
-          />
-        </AreaChart>
+          <ReactApexChart options={options} series={series} type="area" height="100%" />
         </ChartContainer>
       </CardContent>
     </Card>
