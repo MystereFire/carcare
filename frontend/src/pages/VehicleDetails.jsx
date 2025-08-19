@@ -30,7 +30,7 @@ import {
   Euro,
   Droplet,
   PiggyBank,
-} from 'lucide-react';
+} from '../components/icons';
 
 export default function VehicleDetails() {
   const { id } = useParams();
