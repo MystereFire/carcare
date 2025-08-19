@@ -88,6 +88,7 @@ export default function MonthlyExpenseBarChart({ data = [] }) {
     legend: { position: 'bottom' },
     tooltip: {
       shared: true,
+      intersect: false,
       y: { formatter: (val) => formatEuro(val) },
       x: {
         formatter: (val) =>
