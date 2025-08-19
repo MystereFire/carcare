@@ -4,7 +4,7 @@ import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
 import {
   KmOverTimeChart,
-  ExpenseTypeBarChart,
+  ExpenseTypeDonutChart,
   CumulativeExpenseChart,
   CostPer100KmChart,
   CostPerLiterChart,
@@ -282,7 +282,7 @@ export default function VehicleDetails() {
             <CostPer100KmChart data={filteredSegments} />
             <CumulativeExpenseChart data={filteredExpenses} />
             <MonthlyExpenseBarChart data={filteredExpenses} />
-            <ExpenseTypeBarChart data={filteredExpenses} />
+            <ExpenseTypeDonutChart data={filteredExpenses} />
             <FuelConsumptionChart data={filteredSegments} />
           </div>
         </section>
