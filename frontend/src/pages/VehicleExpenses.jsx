@@ -32,8 +32,12 @@ export default function VehicleExpenses() {
                     api.get(`/api/vehicles/${id}`),
                     api.get(`/api/expenses/${id}`, { params: { page: 1, limit: 1000 } }),
                 ]);
-                setVehicle(vehRes.data);
-                setExpenses(expRes.data.data.reverse()); // + récent en haut
+                const veh = vehRes.data;
+                const expensesFromApi = Array.isArray(expRes.data?.data)
+                    ? expRes.data.data
+                    : [];
+                setVehicle(veh);
+                setExpenses([...expensesFromApi].reverse()); // + récent en haut
             } catch (err) {
                 console.error('Erreur chargement données', err);
             }

@@ -51,7 +51,9 @@ export default function VehicleDetails() {
         ]);
 
         const veh = vehRes.data;
-        const expensesFromApi = expRes.data.data;
+        const expensesFromApi = Array.isArray(expRes.data?.data)
+          ? expRes.data.data
+          : [];
 
         let withAcquisition = [...expensesFromApi];
 
@@ -72,7 +74,7 @@ export default function VehicleDetails() {
         withAcquisition.sort((a, b) => new Date(a.date) - new Date(b.date));
 
         setVehicle(veh);
-        setExpenses(expensesFromApi.sort((a, b) => new Date(a.date) - new Date(b.date)));
+        setExpenses([...expensesFromApi].sort((a, b) => new Date(a.date) - new Date(b.date)));
         setExpensesWithAcquisition(withAcquisition);
       } catch (err) {
         console.error('Erreur de chargement :', err);
