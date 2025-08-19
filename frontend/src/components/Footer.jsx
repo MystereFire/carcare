@@ -3,9 +3,9 @@ import React from 'react';
 export default function Footer({ className = '' }) {
   return (
     <footer
-      className={`bg-white text-center text-gray-500 p-4 mt-auto border-t ${className}`}
+      className={`bg-white border-t text-center text-gray-500 py-4 mt-auto ${className}`}
     >
-      &copy; {new Date().getFullYear()} CarCare
+      © 2025 CarCare
     </footer>
   );
 }
