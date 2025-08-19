@@ -36,9 +36,7 @@ export default function CumulativeExpenseChart({ data }) {
       displayDate: new Date(d.timestamp).toLocaleDateString('fr-FR')
     };
   });
-  const yVals = cumulative.map(d => d.total);
-  const [minY, maxY] = computeDomain(yVals);
-  const avg = yVals.reduce((s, v) => s + v, 0) / (yVals.length || 1);
+  const [minY, maxY] = computeDomain(cumulative.map(d => d.total));
 
   const series = [
     {
@@ -71,9 +69,8 @@ export default function CumulativeExpenseChart({ data }) {
 
   return (
     <Card className="h-64">
-      <CardHeader className="pb-2 flex items-center justify-between">
+      <CardHeader className="pb-2">
         <CardTitle title="Dépenses cumulées">💶 Dépenses cumulées</CardTitle>
-        <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Moyenne: {formatEuro(avg)}</span>
       </CardHeader>
       <CardContent className="h-[180px]">
         <ChartContainer>
