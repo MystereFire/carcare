@@ -25,6 +25,7 @@ router.get('/', auth, async (req, res) => {
   const filter = { userId: req.user._id };
   const total = await Vehicle.countDocuments(filter);
   const vehicles = await Vehicle.find(filter)
+    .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
     .limit(limit);
 

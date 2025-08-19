@@ -49,14 +49,14 @@ export default function MaintenanceCard({ vehicleId }) {
     <Section
       title="Entretien"
       actions={<span className={`px-2 py-1 rounded text-xs font-bold ${badgeClass}`}>{task.status}</span>}
-      className="h-full flex flex-col"
+      className="h-full"
     >
       <p className="mt-2 text-foreground">{task.title}</p>
       <div className="mt-1 text-sm text-foreground/60">
         {distanceRemaining != null && <p>{distanceRemaining} km restants</p>}
         {daysRemaining != null && <p>{daysRemaining} jours restants</p>}
       </div>
-      <div className="mt-auto text-right">
+      <div className="mt-auto">
         <button
           onClick={() => navigate(`/vehicle/${vehicleId}/maintenance`)}
           aria-label="Voir le carnet d'entretien"
