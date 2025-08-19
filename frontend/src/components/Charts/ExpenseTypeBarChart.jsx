@@ -75,7 +75,6 @@ export default function ExpenseTypeBarChart({ data }) {
         <div className="h-[180px]">
           <ReactApexChart options={options} series={series} type="bar" height="100%" />
         </div>
-        <div className="text-center font-bold mt-2">{formatEuro(total)}</div>
       </CardContent>
     </Card>
   );
