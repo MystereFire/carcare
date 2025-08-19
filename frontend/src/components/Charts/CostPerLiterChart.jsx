@@ -56,20 +56,7 @@ export default function CostPerLiterChart({ data }) {
       type: 'gradient',
       gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0, stops: [0, 100] }
     },
-    colors: [chartColors.fuel],
-    annotations: {
-      yaxis: [
-        {
-          y: avg,
-          borderColor: '#94a3b8',
-          strokeDashArray: 4,
-          label: {
-            text: `Moyenne ${formatEuro(avg)}`,
-            style: { color: '#6b7280', fontSize: '12px' }
-          }
-        }
-      ]
-    }
+    colors: [chartColors.fuel]
   };
 
   return (
