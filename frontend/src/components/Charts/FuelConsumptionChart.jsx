@@ -3,6 +3,7 @@ import ReactApexChart from 'react-apexcharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer } from '../ui/chart';
 import { formatNumber, formatDate, computeDomain } from '../../lib/formatters';
+import { baseChartOptions } from '../../lib/apexConfig';
 
 export default function FuelConsumptionChart({ data }) {
   const number = formatNumber;
@@ -35,20 +36,24 @@ export default function FuelConsumptionChart({ data }) {
     }
   ];
 
-  const yAxis = { min: minY, labels: { formatter: v => `${number(v)} L/100km` } };
+  const yAxis = {
+    ...baseChartOptions.yaxis,
+    min: minY,
+    labels: { formatter: v => `${number(v)} L/100km` }
+  };
   if (maxY !== undefined) yAxis.max = maxY;
 
   const options = {
-    chart: { type: 'line', toolbar: { show: false } },
-    stroke: { curve: 'smooth' },
-    markers: { size: 0 },
+    ...baseChartOptions,
+    chart: { ...baseChartOptions.chart, type: 'line' },
     xaxis: {
-      type: 'datetime',
+      ...baseChartOptions.xaxis,
       categories: chartData.map(d => d.timestamp),
       labels: { formatter: formatDate }
     },
     yaxis: yAxis,
     tooltip: {
+      ...baseChartOptions.tooltip,
       y: { formatter: (val) => `${number(val)} L/100km` },
       x: { formatter: formatDate }
     },

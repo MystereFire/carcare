@@ -3,6 +3,7 @@ import ReactApexChart from 'react-apexcharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer } from '../ui/chart';
 import { formatNumber, formatDate, computeDomain } from '../../lib/formatters';
+import { baseChartOptions } from '../../lib/apexConfig';
 
 export default function AverageConsumptionChart({ data }) {
   const number = formatNumber;
@@ -25,19 +26,28 @@ export default function AverageConsumptionChart({ data }) {
     }
   ];
 
-  const yAxis = { min: minY, labels: { formatter: v => `${number(v)} L/100km` } };
+  const yAxis = {
+    ...baseChartOptions.yaxis,
+    min: minY,
+    labels: { formatter: v => `${number(v)} L/100km` }
+  };
   if (maxY !== undefined) yAxis.max = maxY;
 
   const options = {
-    chart: { type: 'area', toolbar: { show: false } },
-    stroke: { curve: 'smooth', width: 2 },
+    ...baseChartOptions,
+    chart: { ...baseChartOptions.chart, type: 'area' },
+    stroke: { ...baseChartOptions.stroke, width: 2 },
     xaxis: {
-      type: 'datetime',
+      ...baseChartOptions.xaxis,
       categories: consumption.map(d => d.date),
       labels: { formatter: formatDate }
     },
     yaxis: yAxis,
-    tooltip: { y: { formatter: (val) => `${number(val)} L/100km` }, x: { formatter: formatDate } },
+    tooltip: {
+      ...baseChartOptions.tooltip,
+      y: { formatter: (val) => `${number(val)} L/100km` },
+      x: { formatter: formatDate }
+    },
     fill: {
       type: 'gradient',
       gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0, stops: [0, 100] }

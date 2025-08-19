@@ -3,6 +3,7 @@ import ReactApexChart from 'react-apexcharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ChartContainer } from '../ui/chart';
 import { formatKm, formatDate, computeDomain } from '../../lib/formatters';
+import { baseChartOptions } from '../../lib/apexConfig';
 
 export default function KmOverTimeChart({ data }) {
 
@@ -34,16 +35,28 @@ export default function KmOverTimeChart({ data }) {
     }
   ];
 
+  const yAxis = {
+    ...baseChartOptions.yaxis,
+    min: minY,
+    labels: { formatter: formatKm }
+  };
+  if (maxY !== undefined) yAxis.max = maxY;
+
   const options = {
-    chart: { type: 'area', toolbar: { show: false } },
-    stroke: { curve: 'smooth', width: 2 },
+    ...baseChartOptions,
+    chart: { ...baseChartOptions.chart, type: 'area' },
+    stroke: { ...baseChartOptions.stroke, width: 2 },
     xaxis: {
-      type: 'datetime',
+      ...baseChartOptions.xaxis,
       categories: filteredData.map(d => d.timestamp),
       labels: { formatter: formatDate }
     },
-    yaxis: { min: minY, max: maxY, labels: { formatter: formatKm } },
-    tooltip: { y: { formatter: (val) => formatKm(val) }, x: { formatter: formatDate } },
+    yaxis: yAxis,
+    tooltip: {
+      ...baseChartOptions.tooltip,
+      y: { formatter: (val) => formatKm(val) },
+      x: { formatter: formatDate }
+    },
     fill: {
       type: 'gradient',
       gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0, stops: [0, 100] }
