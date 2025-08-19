@@ -61,6 +61,8 @@ export default function ExpenseTypeBarChart({ data = [] }) {
     },
     xaxis: {
       labels: { formatter: (val) => formatEuro(val) },
+      // Limit the number of ticks to avoid overcrowding under the chart
+      tickAmount: 4,
     },
     yaxis: {
       categories,
