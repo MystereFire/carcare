@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  BarChart,
-  Bar,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import ReactApexChart from 'react-apexcharts';
 
 export interface BarMiniProps {
   data: any[];
@@ -23,15 +15,17 @@ export function BarMini({ data, xKey, yKey, unit, height = 220, loading, error }
   if (loading) return <div className="h-[220px] animate-pulse bg-muted/40" />;
   if (error) return <div className="flex h-[220px] items-center justify-center text-danger">Erreur</div>;
   if (!data?.length) return <div className="flex h-[220px] items-center justify-center text-foreground/60">No data</div>;
-  return (
-    <ResponsiveContainer width="100%" height={height}>
-      <BarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" className="stroke-border/40" />
-        <XAxis dataKey={xKey} className="text-xs" />
-        <YAxis className="text-xs" />
-        <Tooltip formatter={(v: any) => `${v}${unit ?? ''}`} />
-        <Bar dataKey={yKey} fill="currentColor" />
-      </BarChart>
-    </ResponsiveContainer>
-  );
+
+  const categories = data.map((d) => d[xKey]);
+  const series = [{ name: yKey, data: data.map((d) => d[yKey]) }];
+  const options = {
+    chart: { type: 'bar', toolbar: { show: false } },
+    xaxis: { categories },
+    yaxis: { labels: { formatter: (v: number) => `${v}${unit ?? ''}` } },
+    tooltip: { y: { formatter: (v: number) => `${v}${unit ?? ''}` } },
+    colors: ['#3b82f6'],
+    grid: { strokeDashArray: 3 }
+  };
+
+  return <ReactApexChart options={options} series={series} type="bar" height={height} width="100%" />;
 }

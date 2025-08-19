@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  PieChart,
-  Pie,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from 'recharts';
+import ReactApexChart from 'react-apexcharts';
 
 export interface DonutProps {
   data: any[];
@@ -23,16 +17,15 @@ export function Donut({ data, labelKey, valueKey, unit, height = 220, loading, e
   if (loading) return <div className="h-[220px] animate-pulse bg-muted/40" />;
   if (error) return <div className="flex h-[220px] items-center justify-center text-danger">Erreur</div>;
   if (!data?.length) return <div className="flex h-[220px] items-center justify-center text-foreground/60">No data</div>;
-  return (
-    <ResponsiveContainer width="100%" height={height}>
-      <PieChart>
-        <Pie data={data} dataKey={valueKey} nameKey={labelKey} innerRadius={60} outerRadius={80} stroke="transparent">
-          {data.map((_, i) => (
-            <Cell key={i} fill={COLORS[i % COLORS.length]} />
-          ))}
-        </Pie>
-        <Tooltip formatter={(v: any) => `${v}${unit ?? ''}`} />
-      </PieChart>
-    </ResponsiveContainer>
-  );
+
+  const series = data.map(d => d[valueKey]);
+  const options = {
+    chart: { type: 'donut', toolbar: { show: false } },
+    labels: data.map(d => d[labelKey]),
+    colors: COLORS,
+    legend: { position: 'bottom' },
+    tooltip: { y: { formatter: (v: number) => `${v}${unit ?? ''}` } }
+  };
+
+  return <ReactApexChart options={options} series={series} type="donut" height={height} width="100%" />;
 }

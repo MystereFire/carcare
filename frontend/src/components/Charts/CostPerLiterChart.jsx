@@ -1,7 +1,7 @@
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, ReferenceLine, CartesianGrid } from 'recharts';
+import ReactApexChart from 'react-apexcharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
+import { ChartContainer } from '../ui/chart';
 import { formatEuro, formatDate, computeDomain } from '../../lib/formatters';
 
 export default function CostPerLiterChart({ data }) {
@@ -29,6 +29,43 @@ export default function CostPerLiterChart({ data }) {
   const yVals = chartData.map(d => d.costPerLiter);
   const [minY, maxY] = computeDomain(yVals);
 
+  const series = [
+    {
+      name: 'Coût/L',
+      data: chartData.map(d => ({ x: d.timestamp, y: d.costPerLiter }))
+    }
+  ];
+
+  const options = {
+    chart: { type: 'area', toolbar: { show: false } },
+    stroke: { curve: 'smooth', width: 2 },
+    xaxis: {
+      type: 'datetime',
+      categories: chartData.map(d => d.timestamp),
+      labels: { formatter: formatDate }
+    },
+    yaxis: { min: minY, max: maxY, labels: { formatter: formatEuro } },
+    tooltip: { y: { formatter: (val) => `${formatEuro(val)}/L` }, x: { formatter: formatDate } },
+    fill: {
+      type: 'gradient',
+      gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0, stops: [0, 100] }
+    },
+    colors: ['#ef4444'],
+    annotations: {
+      yaxis: [
+        {
+          y: avg,
+          borderColor: '#94a3b8',
+          strokeDashArray: 4,
+          label: {
+            text: `Moyenne ${formatEuro(avg)}`,
+            style: { color: '#6b7280', fontSize: '12px' }
+          }
+        }
+      ]
+    }
+  };
+
   return (
     <Card className="h-64">
       <CardHeader className="pb-2">
@@ -36,44 +73,7 @@ export default function CostPerLiterChart({ data }) {
       </CardHeader>
       <CardContent className="h-[180px]">
         <ChartContainer>
-          <AreaChart data={chartData} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
-          <defs>
-            <linearGradient id="costLiter" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#ef4444" stopOpacity={0.4} />
-              <stop offset="100%" stopColor="#ef4444" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="timestamp"
-            type="number"
-            domain={['dataMin', 'dataMax']}
-            ticks={chartData.map(d => d.timestamp)}
-            tickFormatter={formatDate}
-            minTickGap={20}
-            preserveStartEnd
-          />
-          <YAxis domain={[minY, maxY]} tickFormatter={formatEuro} />
-          <ChartTooltip
-            content={<ChartTooltipContent formatter={val => `${formatEuro(val)}/L`} labelFormatter={formatDate} />}
-          />
-          <ReferenceLine
-            y={avg}
-            stroke="#94a3b8"
-            strokeWidth={1}
-            strokeDasharray="4 2"
-            label={{ position: 'top', value: `Moyenne ${formatEuro(avg)}`, fontSize: 12, fill: '#6b7280', dy: -4 }}
-          />
-          <Area
-            type="monotone"
-            dataKey="costPerLiter"
-            stroke="#ef4444"
-            fill="url(#costLiter)"
-            strokeWidth={2}
-            dot={false}
-            activeDot={{ r: 4 }}
-          />
-        </AreaChart>
+          <ReactApexChart options={options} series={series} type="area" height="100%" />
         </ChartContainer>
       </CardContent>
     </Card>
