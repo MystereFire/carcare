@@ -7,7 +7,8 @@ import { formatEuro, formatDate, computeDomain } from '../../lib/formatters';
 export default function CostPer100KmChart({ data }) {
 
   const sortedData = [...data]
-    .sort((a, b) => new Date(a.endDate) - new Date(b.endDate));
+    .sort((a, b) => new Date(a.endDate) - new Date(b.endDate))
+    .map(d => ({ ...d, timestamp: new Date(d.endDate).getTime() }));
 
   const avg =
     sortedData.reduce((sum, c) => sum + c.costPer100, 0) /
@@ -18,7 +19,7 @@ export default function CostPer100KmChart({ data }) {
   const series = [
     {
       name: 'Coût/100km',
-      data: sortedData.map(d => ({ x: d.endDate, y: d.costPer100 }))
+      data: sortedData.map(d => ({ x: d.timestamp, y: d.costPer100 }))
     }
   ];
 
@@ -28,7 +29,11 @@ export default function CostPer100KmChart({ data }) {
   const options = {
     chart: { type: 'area', toolbar: { show: false } },
     stroke: { curve: 'smooth', width: 2 },
-    xaxis: { categories: sortedData.map(d => d.endDate), labels: { formatter: formatDate } },
+    xaxis: {
+      type: 'datetime',
+      categories: sortedData.map(d => d.timestamp),
+      labels: { formatter: formatDate }
+    },
     yaxis: yAxis,
     tooltip: { y: { formatter: (val) => `${formatEuro(val)}/100km` }, x: { formatter: formatDate } },
     fill: {
