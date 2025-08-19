@@ -19,6 +19,10 @@ export default function VehicleCard({ vehicle, index, bestMap }) {
         src={imgSrc}
         alt={`Photo ${vehicle.brand} ${vehicle.model}`}
         className="w-full h-32 object-cover rounded-md"
+        onError={(e) => {
+          e.currentTarget.onerror = null;
+          e.currentTarget.src = '/car-placeholder.svg';
+        }}
       />
       <h2 className="text-xl font-semibold">{vehicle.name}</h2>
       <div className="space-y-3">

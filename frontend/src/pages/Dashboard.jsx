@@ -107,6 +107,10 @@ export default function Dashboard() {
                     alt={`Image de ${veh.brand} ${veh.model}`}
                     loading="lazy"
                     className="h-48 w-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/car-placeholder.svg';
+                    }}
                   />
                   <div className="p-4">
                     <h2 className="mb-1 text-lg font-semibold">Voiture {veh.name}</h2>

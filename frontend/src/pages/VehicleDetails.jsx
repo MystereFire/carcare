@@ -185,18 +185,22 @@ export default function VehicleDetails() {
     return <p className="text-center mt-20">Chargement...</p>;
   }
 
+  const imgSrc = vehicle.image ? `${API_URL}${vehicle.image}` : '/car-placeholder.svg';
+
   return (
     <PageTransition>
       <div className="max-w-5xl mx-auto mt-6 px-4 space-y-16">
         {/* Vehicle header */}
         <Card className="flex flex-col md:flex-row md:items-center gap-4 p-4">
-          {vehicle.image && (
-            <img
-              src={`${API_URL}${vehicle.image}`}
-              alt={`Photo du véhicule ${vehicle.name} ${vehicle.model} (${vehicle.year})`}
-              className="w-full md:w-1/2 h-56 object-cover rounded-lg"
-            />
-          )}
+          <img
+            src={imgSrc}
+            alt={`Photo du véhicule ${vehicle.name} ${vehicle.model} (${vehicle.year})`}
+            className="w-full md:w-1/2 h-56 object-cover rounded-lg"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = '/car-placeholder.svg';
+            }}
+          />
           <div className="flex-1 w-full flex flex-col justify-center gap-4">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold">
