@@ -61,26 +61,14 @@ export default function KmOverTimeChart({ data }) {
       type: 'gradient',
       gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0, stops: [0, 100] }
     },
-    colors: ['#8884d8'],
-    annotations: {
-      yaxis: [
-        {
-          y: avg,
-          borderColor: '#94a3b8',
-          strokeDashArray: 4,
-          label: {
-            text: `Moyenne ${formatKm(avg)}`,
-            style: { color: '#6b7280', fontSize: '12px' }
-          }
-        }
-      ]
-    }
+    colors: ['#8884d8']
   };
 
   return (
     <Card className="h-64">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 flex items-center justify-between">
         <CardTitle title="Évolution du kilométrage">📈 Évolution du kilométrage</CardTitle>
+        <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Moyenne: {formatKm(avg)}</span>
       </CardHeader>
       <CardContent className="h-[180px]">
         <ChartContainer>

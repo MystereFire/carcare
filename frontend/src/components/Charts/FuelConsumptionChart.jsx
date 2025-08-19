@@ -56,26 +56,14 @@ export default function FuelConsumptionChart({ data }) {
       ...baseChartOptions.tooltip,
       y: { formatter: (val) => `${number(val)} L/100km` },
       x: { formatter: formatDate }
-    },
-    annotations: {
-      yaxis: [
-        {
-          y: mean,
-          borderColor: '#94a3b8',
-          strokeDashArray: 4,
-          label: {
-            text: `Moyenne ${number(mean)}`,
-            style: { color: '#6b7280', fontSize: '12px' }
-          }
-        }
-      ]
     }
   };
 
   return (
     <Card className="h-64">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 flex items-center justify-between">
         <CardTitle title="Consommation">⛽ Consommation (L/100km)</CardTitle>
+        <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Moyenne: {number(mean)}</span>
       </CardHeader>
       <CardContent className="h-[180px]">
         <ChartContainer>

@@ -22,8 +22,9 @@ export default function AverageKmCard({ data }) {
 
   return (
     <Card className="h-64 flex flex-col justify-center text-center">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 flex items-center justify-between">
         <CardTitle title="Moyenne km par jour">🚗 Moyenne km/jour</CardTitle>
+        <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Moyenne: {avg} km</span>
       </CardHeader>
       <CardContent className="pt-0">
         <p className="text-3xl font-bold">{avg} km</p>
