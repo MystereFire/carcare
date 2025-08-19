@@ -8,7 +8,7 @@ export default function AverageConsumptionChart({ data }) {
   const number = formatNumber;
 
   const consumption = data.map(seg => ({
-    date: seg.endDate,
+    date: new Date(seg.endDate).getTime(),
     consumption: seg.avgConsumption ?? seg.consumption
   }));
 
@@ -31,7 +31,11 @@ export default function AverageConsumptionChart({ data }) {
   const options = {
     chart: { type: 'area', toolbar: { show: false } },
     stroke: { curve: 'smooth', width: 2 },
-    xaxis: { categories: consumption.map(d => d.date), labels: { formatter: formatDate } },
+    xaxis: {
+      type: 'datetime',
+      categories: consumption.map(d => d.date),
+      labels: { formatter: formatDate }
+    },
     yaxis: yAxis,
     tooltip: { y: { formatter: (val) => `${number(val)} L/100km` }, x: { formatter: formatDate } },
     fill: {

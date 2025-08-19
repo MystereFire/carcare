@@ -10,7 +10,7 @@ export default function FuelConsumptionChart({ data }) {
   const chartData = data.map((d, idx) => ({
     ...d,
     index: idx + 1,
-    end: d.endDate
+    timestamp: new Date(d.endDate).getTime()
   }));
 
   const mean = chartData.reduce((sum, d) => sum + d.consumption, 0) / (chartData.length || 1);
@@ -28,7 +28,7 @@ export default function FuelConsumptionChart({ data }) {
     {
       name: 'Consommation',
       data: chartData.map((d) => ({
-        x: d.end,
+        x: d.timestamp,
         y: d.consumption,
         marker: d.anomaly ? { size: 4, fillColor: 'red' } : { size: 0 }
       }))
@@ -42,7 +42,11 @@ export default function FuelConsumptionChart({ data }) {
     chart: { type: 'line', toolbar: { show: false } },
     stroke: { curve: 'smooth' },
     markers: { size: 0 },
-    xaxis: { categories: chartData.map(d => d.end), labels: { formatter: formatDate } },
+    xaxis: {
+      type: 'datetime',
+      categories: chartData.map(d => d.timestamp),
+      labels: { formatter: formatDate }
+    },
     yaxis: yAxis,
     tooltip: {
       y: { formatter: (val) => `${number(val)} L/100km` },
