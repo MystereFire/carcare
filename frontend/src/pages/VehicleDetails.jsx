@@ -88,22 +88,30 @@ export default function VehicleDetails() {
       .filter(e => e.type === 'fuel' && e.liters > 0 && e.km != null)
       .sort((a, b) => new Date(a.date) - new Date(b.date));
     const res = [];
-    for (let i = 1; i < fuel.length; i++) {
-      const prev = fuel[i - 1];
-      const curr = fuel[i];
-      const deltaKm = curr.km - prev.km;
-      if (!deltaKm || deltaKm <= 0) continue;
-      const liters = parseFloat(curr.liters) || 0;
-      const price = parseFloat(curr.amount) || 0;
-      res.push({
-        startDate: prev.date,
-        endDate: curr.date,
-        km: deltaKm,
-        liters,
-        price,
-        consumption: (liters * 100) / deltaKm,
-        costPer100: (price * 100) / deltaKm,
-      });
+    let lastFull = null;
+    let liters = 0;
+    let price = 0;
+    for (const exp of fuel) {
+      liters += parseFloat(exp.liters) || 0;
+      price += parseFloat(exp.amount) || 0;
+
+      if (exp.isFullFill) {
+        if (lastFull && exp.km > lastFull.km && liters > 0) {
+          const km = exp.km - lastFull.km;
+          res.push({
+            startDate: lastFull.date,
+            endDate: exp.date,
+            km,
+            liters,
+            price,
+            consumption: (liters * 100) / km,
+            costPer100: (price * 100) / km,
+          });
+        }
+        lastFull = exp;
+        liters = 0;
+        price = 0;
+      }
     }
     return res;
   }, [expenses]);
