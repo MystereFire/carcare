@@ -95,61 +95,83 @@ export default function VehicleDetails() {
     };
 
     let prevKm = null;
-    let sumAmt = 0;
-    let sumLiters = 0;
+    let segFuelAmt = 0;
+    let segFuelLiters = 0;
     let cumulative = 0;
-    let firstKm = null;
-    let lastKm = null;
+    let minKm = Infinity;
+    let maxKm = -Infinity;
+    let totalFuelAmt = 0;
+    let totalFuelLiters = 0;
 
     filteredExpenses.forEach((exp) => {
+      if (!exp.date) return;
       const date = new Date(exp.date);
       const type = exp.type || 'other';
-      const amt = Number(exp.amount) || 0;
-      const liters = Number(exp.liters) || 0;
+      const amt = Number(exp.amount);
+      const liters = Number(exp.liters);
+      const km = exp.km != null ? Number(exp.km) : null;
 
-      cumulative += amt;
-      result.cumulativeSeries.push({ x: date, y: cumulative });
-      result.distribution[type] = (result.distribution[type] || 0) + amt;
-      result.totalAmount += amt;
+      // Sanitize
+      const validAmt = !Number.isNaN(amt) && amt > 0;
+      const validLiters = !Number.isNaN(liters) && liters > 0;
 
-      const mKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      if (!result.monthlyMap[mKey]) {
-        result.monthlyMap[mKey] = { fuel: 0, maintenance: 0, repair: 0, other: 0 };
+      if (validAmt) {
+        cumulative += amt;
+        result.cumulativeSeries.push({ x: date, y: cumulative });
+        result.distribution[type] = (result.distribution[type] || 0) + amt;
+        result.totalAmount += amt;
+
+        const mKey = `${date.getFullYear()}-${String(
+          date.getMonth() + 1
+        ).padStart(2, '0')}`;
+        if (!result.monthlyMap[mKey]) {
+          result.monthlyMap[mKey] = {
+            fuel: 0,
+            maintenance: 0,
+            repair: 0,
+            other: 0,
+          };
+        }
+        result.monthlyMap[mKey][type] += amt;
+
+        if (!result.lastExpense || date > new Date(result.lastExpense.date)) {
+          result.lastExpense = { ...exp };
+        }
       }
-      result.monthlyMap[mKey][type] += amt;
 
-      if (!result.lastExpense || date > new Date(result.lastExpense.date)) {
-        result.lastExpense = exp;
-      }
-
-      if (type === 'fuel' && liters > 0 && amt > 0) {
+      if (type === 'fuel' && validAmt && validLiters) {
         const pricePerL = amt / liters;
         result.costPerLSeries.push({ x: date, y: Number(pricePerL.toFixed(2)) });
-        sumLiters += liters;
+        segFuelAmt += amt;
+        segFuelLiters += liters;
+        totalFuelAmt += amt;
+        totalFuelLiters += liters;
       }
 
-      sumAmt += amt;
-
-      if (exp.km != null) {
-        const km = Number(exp.km);
+      if (km != null && !Number.isNaN(km)) {
         result.odometerSeries.push({ x: date, y: km });
+        minKm = Math.min(minKm, km);
+        maxKm = Math.max(maxKm, km);
 
         if (prevKm != null && km > prevKm) {
           const delta = km - prevKm;
-          const cost100 = (sumAmt / delta) * 100;
-          result.cost100Series.push({ x: date, y: cost100 });
-
-          if (sumLiters > 0) {
-            const conso = (sumLiters / delta) * 100;
-            result.consumptionSeries.push({ x: date, y: conso });
+          if (delta > 0) {
+            if (segFuelAmt > 0) {
+              result.cost100Series.push({
+                x: date,
+                y: (segFuelAmt * 100) / delta,
+              });
+            }
+            if (segFuelLiters > 0) {
+              result.consumptionSeries.push({
+                x: date,
+                y: (segFuelLiters * 100) / delta,
+              });
+            }
           }
-
-          sumAmt = 0;
-          sumLiters = 0;
+          segFuelAmt = 0;
+          segFuelLiters = 0;
         }
-
-        if (firstKm == null) firstKm = km;
-        lastKm = km;
         prevKm = km;
       }
     });
@@ -157,20 +179,26 @@ export default function VehicleDetails() {
     result.cost100Series = movingAverage(result.cost100Series);
     result.consumptionSeries = movingAverage(result.consumptionSeries);
 
-    result.avgCost100 =
-      result.cost100Series.length
-        ? result.cost100Series.reduce((a, b) => a + b.y, 0) /
-          result.cost100Series.length
-        : 0;
-    result.avgConsumption =
-      result.consumptionSeries.length
-        ? result.consumptionSeries.reduce((a, b) => a + b.y, 0) /
-          result.consumptionSeries.length
-        : 0;
+    const KM = isFinite(minKm) && isFinite(maxKm) && maxKm > minKm ? maxKm - minKm : 0;
+    result.avgCost100 = KM > 0 ? (totalFuelAmt * 100) / KM : 0;
+    result.avgConsumption = KM > 0 ? (totalFuelLiters * 100) / KM : 0;
 
     const days = Math.max(1, (Date.now() - periodStart.getTime()) / 86400000);
-    if (firstKm != null && lastKm != null && lastKm > firstKm) {
-      result.kmPerDay = (lastKm - firstKm) / days;
+    result.kmPerDay = KM > 0 ? KM / days : 0;
+
+    // Invariants (±1%)
+    const eps = 0.01;
+    const inv1 = KM > 0 ? (totalFuelLiters * 100) / KM : 0;
+    const inv2 = KM > 0 ? (totalFuelAmt * 100) / KM : 0;
+    const inv3 = days > 0 ? KM / days : 0;
+    if (inv1 || result.avgConsumption) {
+      console.assert(Math.abs(result.avgConsumption - inv1) / (inv1 || 1) < eps);
+    }
+    if (inv2 || result.avgCost100) {
+      console.assert(Math.abs(result.avgCost100 - inv2) / (inv2 || 1) < eps);
+    }
+    if (inv3 || result.kmPerDay) {
+      console.assert(Math.abs(result.kmPerDay - inv3) / (inv3 || 1) < eps);
     }
 
     return result;
@@ -289,10 +317,14 @@ export default function VehicleDetails() {
     },
   };
 
+  const periodDays = Math.max(
+    1,
+    (Date.now() - periodStart.getTime()) / 86400000
+  );
   const budgetAnnual =
-    (stats.totalAmount /
-      ((Date.now() - periodStart.getTime()) / 86400000)) *
-    365;
+    periodDays >= 300
+      ? stats.totalAmount
+      : (stats.totalAmount / periodDays) * 365;
   const autonomy =
     stats.avgConsumption > 0 && vehicle.tankSize
       ? Math.round((vehicle.tankSize / stats.avgConsumption) * 100)
