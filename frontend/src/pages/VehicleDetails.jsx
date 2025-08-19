@@ -81,9 +81,6 @@ export default function VehicleDetails() {
 
     fetchDetails();
   }, [id]);
-
-  if (!vehicle) return <p className="text-center mt-20">Chargement...</p>;
-
   const lastExpense = expenses.length ? expenses[expenses.length - 1] : null;
 
   const segments = useMemo(() => {
@@ -172,6 +169,10 @@ export default function VehicleDetails() {
     const days = (lastDate - firstDate) / 86400000;
     const total = cleaned.reduce((sum, e) => sum + parseFloat(e.amount), 0);
     annualBudget = days > 0 ? total * (365 / days) : total;
+  }
+
+  if (!vehicle) {
+    return <p className="text-center mt-20">Chargement...</p>;
   }
 
   return (
