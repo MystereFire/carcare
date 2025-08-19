@@ -53,11 +53,18 @@ export default function ExpenseTypeBarChart({ data = [] }) {
         horizontal: true,
         distributed: true,
         borderRadius: 6,
+        dataLabels: {
+          position: 'top',
+        },
       },
     },
     dataLabels: {
       enabled: true,
       formatter: (val) => formatEuro(val),
+      offsetX: 8,
+      style: {
+        colors: ['#111827'],
+      },
     },
     xaxis: {
       labels: { formatter: (val) => formatEuro(val) },
