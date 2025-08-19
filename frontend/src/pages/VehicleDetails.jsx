@@ -10,7 +10,27 @@ const fmtCurrency = new Intl.NumberFormat('fr-FR', {
   style: 'currency',
   currency: 'EUR',
 });
+const fmtNumber = new Intl.NumberFormat('fr-FR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+const fmtInt = new Intl.NumberFormat('fr-FR');
 const fmtDate = new Intl.DateTimeFormat('fr-FR');
+
+const typeColors = {
+  fuel: '#3B82F6',
+  maintenance: '#10B981',
+  repair: '#F59E0B',
+  other: '#EF4444',
+};
+
+const movingAverage = (arr, n = 3) =>
+  arr.map((p, i) => {
+    const start = Math.max(0, i - n + 1);
+    const slice = arr.slice(start, i + 1);
+    const avg = slice.reduce((s, v) => s + v.y, 0) / slice.length;
+    return { ...p, y: Number(avg.toFixed(2)) };
+  });
 
 export default function VehicleDetails() {
   const { id } = useParams();
@@ -80,8 +100,6 @@ export default function VehicleDetails() {
     let cumulative = 0;
     let firstKm = null;
     let lastKm = null;
-    const costVals = [];
-    const consoVals = [];
 
     filteredExpenses.forEach((exp) => {
       const date = new Date(exp.date);
@@ -119,13 +137,11 @@ export default function VehicleDetails() {
         if (prevKm != null && km > prevKm) {
           const delta = km - prevKm;
           const cost100 = (sumAmt / delta) * 100;
-          result.cost100Series.push({ x: date, y: Number(cost100.toFixed(2)) });
-          costVals.push(cost100);
+          result.cost100Series.push({ x: date, y: cost100 });
 
           if (sumLiters > 0) {
             const conso = (sumLiters / delta) * 100;
-            result.consumptionSeries.push({ x: date, y: Number(conso.toFixed(2)) });
-            consoVals.push(conso);
+            result.consumptionSeries.push({ x: date, y: conso });
           }
 
           sumAmt = 0;
@@ -138,12 +154,19 @@ export default function VehicleDetails() {
       }
     });
 
-    result.avgCost100 = costVals.length
-      ? costVals.reduce((a, b) => a + b, 0) / costVals.length
-      : 0;
-    result.avgConsumption = consoVals.length
-      ? consoVals.reduce((a, b) => a + b, 0) / consoVals.length
-      : 0;
+    result.cost100Series = movingAverage(result.cost100Series);
+    result.consumptionSeries = movingAverage(result.consumptionSeries);
+
+    result.avgCost100 =
+      result.cost100Series.length
+        ? result.cost100Series.reduce((a, b) => a + b.y, 0) /
+          result.cost100Series.length
+        : 0;
+    result.avgConsumption =
+      result.consumptionSeries.length
+        ? result.consumptionSeries.reduce((a, b) => a + b.y, 0) /
+          result.consumptionSeries.length
+        : 0;
 
     const days = Math.max(1, (Date.now() - periodStart.getTime()) / 86400000);
     if (firstKm != null && lastKm != null && lastKm > firstKm) {
@@ -153,6 +176,8 @@ export default function VehicleDetails() {
     return result;
   }, [filteredExpenses, periodStart]);
 
+  const types = ['fuel', 'maintenance', 'repair', 'other'];
+
   const monthlyCategories = useMemo(
     () => Object.keys(stats.monthlyMap).sort(),
     [stats.monthlyMap]
@@ -160,30 +185,34 @@ export default function VehicleDetails() {
 
   const monthlySeries = useMemo(
     () =>
-      ['fuel', 'maintenance', 'repair', 'other'].map((t) => ({
+      types.map((t) => ({
         name: t,
         data: monthlyCategories.map((m) => stats.monthlyMap[m]?.[t] || 0),
       })),
     [stats.monthlyMap, monthlyCategories]
   );
 
-  const lineOptions = (unit) => ({
-    chart: { type: 'line', height: 160, toolbar: { show: false } },
-    stroke: { curve: 'smooth' },
-    xaxis: { type: 'datetime' },
+  const lineOptions = (unit, color = '#3B82F6', area = true) => ({
+    chart: { type: area ? 'area' : 'line', height: 160, toolbar: { show: false } },
+    stroke: { curve: 'smooth', width: 3 },
+    colors: [color],
+    xaxis: { type: 'datetime', labels: { format: 'dd/MM' } },
     yaxis: {
       labels: {
         formatter: (v) => {
           if (unit === '€') return fmtCurrency.format(v);
           if (unit === 'L/100') return `${v.toFixed(2)} L/100km`;
           if (unit === '€/L') return `${v.toFixed(2)} €/L`;
-          return `${v.toFixed(0)} km`;
+          return fmtInt.format(Math.round(v)) + ' km';
         },
       },
     },
     dataLabels: { enabled: false },
     markers: { size: 0 },
     grid: { strokeDashArray: 4 },
+    fill: area
+      ? { type: 'gradient', gradient: { opacityFrom: 0.2, opacityTo: 0 } }
+      : undefined,
     tooltip: {
       x: { formatter: (v) => fmtDate.format(new Date(v)) },
       y: {
@@ -191,10 +220,11 @@ export default function VehicleDetails() {
           if (unit === '€') return fmtCurrency.format(v);
           if (unit === 'L/100') return `${v.toFixed(2)} L/100km`;
           if (unit === '€/L') return `${v.toFixed(2)} €/L`;
-          return `${v.toFixed(0)} km`;
+          return fmtInt.format(Math.round(v)) + ' km';
         },
       },
     },
+    legend: { show: false },
   });
 
   if (loading) {
@@ -229,14 +259,34 @@ export default function VehicleDetails() {
         return `${mo}/${y}`;
       }),
     },
+    colors: types.map((t) => typeColors[t]),
     yaxis: { labels: { formatter: (v) => fmtCurrency.format(v) } },
     tooltip: { y: { formatter: (v) => fmtCurrency.format(v) } },
+    legend: { show: true },
   };
 
   const distOptions = {
-    labels: ['fuel', 'maintenance', 'repair', 'other'],
+    labels: types,
     legend: { position: 'bottom' },
+    colors: types.map((t) => typeColors[t]),
     tooltip: { y: { formatter: (v) => fmtCurrency.format(v) } },
+    plotOptions: {
+      pie: {
+        donut: {
+          labels: {
+            show: true,
+            total: {
+              show: true,
+              label: 'Total',
+              formatter: (w) =>
+                fmtCurrency.format(
+                  w.globals.seriesTotals.reduce((a, b) => a + b, 0)
+                ),
+            },
+          },
+        },
+      },
+    },
   };
 
   const budgetAnnual =
@@ -250,7 +300,7 @@ export default function VehicleDetails() {
 
   return (
     <PageTransition>
-      <div className="space-y-6 px-4 max-w-6xl mx-auto">
+      <div className="space-y-6 px-4 max-w-7xl mx-auto">
         <div className="flex flex-wrap items-center justify-between mt-4">
           <h1 className="text-3xl font-bold">
             {vehicle.name} {vehicle.model}{' '}
@@ -260,8 +310,10 @@ export default function VehicleDetails() {
             {[30, 90, 365].map((d) => (
               <button
                 key={d}
-                className={`px-3 py-1 rounded ${
-                  period === d ? 'bg-primary text-white' : 'bg-muted'
+                className={`px-3 py-1 rounded-full border ${
+                  period === d
+                    ? 'bg-primary text-white border-primary'
+                    : 'text-primary border-primary/30 hover:bg-primary/10'
                 }`}
                 onClick={() => setPeriod(d)}
               >
@@ -281,46 +333,51 @@ export default function VehicleDetails() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="p-4 bg-card rounded">
-            <p className="text-sm text-foreground/60">Conso moyenne</p>
+            <p className="text-sm text-foreground/60">Coût / 100 km</p>
             <p className="text-2xl font-bold">
-              {stats.avgConsumption.toFixed(2)} L/100km
+              {fmtCurrency.format(stats.avgCost100 || 0)}
+            </p>
+            <p className="text-xs mt-1 text-foreground/60">
+              moyenne période
             </p>
           </div>
           <div className="p-4 bg-card rounded">
-            <p className="text-sm text-foreground/60">Coût /100km</p>
+            <p className="text-sm text-foreground/60">Conso moyenne</p>
             <p className="text-2xl font-bold">
-              {fmtCurrency.format(stats.avgCost100 || 0)}
+              {fmtNumber.format(stats.avgConsumption)} L/100km
+            </p>
+            <p className="text-xs mt-1 text-foreground/60">
+              moyenne période
             </p>
           </div>
           <div className="p-4 bg-card rounded">
             <p className="text-sm text-foreground/60">Budget annuel</p>
-            <p className="text-2xl font-bold">{fmtCurrency.format(budgetAnnual)}</p>
+            <p className="text-2xl font-bold">
+              {fmtCurrency.format(budgetAnnual)}
+            </p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="bg-card p-2 rounded">
             <ReactApexChart
-              type="line"
               height={160}
-              options={lineOptions('€/L')}
+              options={lineOptions('€/L', typeColors.fuel)}
               series={[{ name: '€/L', data: stats.costPerLSeries }]}
             />
           </div>
           <div className="bg-card p-2 rounded">
             <ReactApexChart
-              type="line"
               height={160}
-              options={lineOptions('€')}
+              options={lineOptions('€', typeColors.repair)}
               series={[{ name: '€', data: stats.cost100Series }]}
             />
           </div>
           <div className="bg-card p-2 rounded">
             <ReactApexChart
-              type="line"
               height={160}
-              options={lineOptions('€')}
-              series={[{ name: '€', data: stats.cumulativeSeries }]}
+              options={lineOptions('€', typeColors.other)}
+              series={[{ name: '€', data: stats.cumulativeSeries, } ]}
             />
           </div>
           <div className="bg-card p-2 rounded">
@@ -336,15 +393,14 @@ export default function VehicleDetails() {
               type="donut"
               height={160}
               options={distOptions}
-              series={Object.values(stats.distribution)}
+              series={types.map((t) => stats.distribution[t])}
             />
           </div>
           <div className="bg-card p-2 rounded">
             <ReactApexChart
-              type="line"
               height={160}
-              options={lineOptions('km')}
-              series={[{ name: 'km', data: stats.odometerSeries }]}
+              options={lineOptions('L/100', typeColors.fuel)}
+              series={[{ name: 'L/100km', data: stats.consumptionSeries }]}
             />
           </div>
         </div>
@@ -362,12 +418,20 @@ export default function VehicleDetails() {
             )}
           </div>
           <div className="p-4 bg-card rounded">
-            <p className="text-sm text-foreground/60">Kilomètres / jour</p>
-            <p className="text-2xl font-bold">{stats.kmPerDay.toFixed(1)} km</p>
+            <p className="text-sm text-foreground/60">Km / jour</p>
+            <p className="text-2xl font-bold">{fmtNumber.format(stats.kmPerDay)} km</p>
             <p className="text-sm mt-2">
-              Autonomie plein : {autonomy ? `${autonomy} km` : 'N/A'}
+              Autonomie plein : {autonomy ? `${fmtInt.format(autonomy)} km` : 'N/A'}
             </p>
           </div>
+        </div>
+
+        <div className="bg-card p-2 rounded">
+          <ReactApexChart
+            height={160}
+            options={lineOptions('km', typeColors.maintenance, false)}
+            series={[{ name: 'km', data: stats.odometerSeries }]}
+          />
         </div>
       </div>
     </PageTransition>
