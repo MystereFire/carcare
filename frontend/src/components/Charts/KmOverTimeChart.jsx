@@ -1,8 +1,9 @@
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, ReferenceLine, CartesianGrid } from 'recharts';
+import ReactApexChart from 'react-apexcharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
+import { ChartContainer } from '../ui/chart';
 import { formatKm, formatDate, computeDomain } from '../../lib/formatters';
+import { baseChartOptions } from '../../lib/apexConfig';
 
 export default function KmOverTimeChart({ data }) {
 
@@ -27,51 +28,51 @@ export default function KmOverTimeChart({ data }) {
   const [minY, maxY] = computeDomain(yVals);
   const avg = yVals.reduce((s, v) => s + v, 0) / (yVals.length || 1);
 
+  const series = [
+    {
+      name: 'Km',
+      data: filteredData.map(d => ({ x: d.timestamp, y: d.km }))
+    }
+  ];
+
+  const yAxis = {
+    ...baseChartOptions.yaxis,
+    min: minY,
+    labels: { formatter: formatKm }
+  };
+  if (maxY !== undefined) yAxis.max = maxY;
+
+  const options = {
+    ...baseChartOptions,
+    chart: { ...baseChartOptions.chart, type: 'area' },
+    stroke: { ...baseChartOptions.stroke, width: 2 },
+    xaxis: {
+      ...baseChartOptions.xaxis,
+      categories: filteredData.map(d => d.timestamp),
+      labels: { formatter: formatDate }
+    },
+    yaxis: yAxis,
+    tooltip: {
+      ...baseChartOptions.tooltip,
+      y: { formatter: (val) => formatKm(val) },
+      x: { formatter: formatDate }
+    },
+    fill: {
+      type: 'gradient',
+      gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0, stops: [0, 100] }
+    },
+    colors: ['#8884d8']
+  };
+
   return (
     <Card className="h-64">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 flex items-center justify-between">
         <CardTitle title="Évolution du kilométrage">📈 Évolution du kilométrage</CardTitle>
+        <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Moyenne: {formatKm(avg)}</span>
       </CardHeader>
       <CardContent className="h-[180px]">
         <ChartContainer>
-          <AreaChart data={filteredData} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
-          <defs>
-            <linearGradient id="kmTime" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#8884d8" stopOpacity={0.4} />
-              <stop offset="100%" stopColor="#8884d8" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="timestamp"
-            type="number"
-            domain={['dataMin', 'dataMax']}
-            ticks={filteredData.map(d => d.timestamp)}
-            tickFormatter={formatDate}
-            minTickGap={20}
-            preserveStartEnd
-          />
-          <YAxis dataKey="km" domain={[minY, maxY]} tickFormatter={formatKm} />
-          <ChartTooltip
-            content={<ChartTooltipContent formatter={(val) => formatKm(val)} labelFormatter={formatDate} />}
-          />
-          <ReferenceLine
-            y={avg}
-            stroke="#94a3b8"
-            strokeWidth={1}
-            strokeDasharray="4 2"
-            label={{ position: 'top', value: `Moyenne ${formatKm(avg)}`, fontSize: 12, fill: '#6b7280', dy: -4 }}
-          />
-          <Area
-            type="monotone"
-            dataKey="km"
-            stroke="#8884d8"
-            fill="url(#kmTime)"
-            strokeWidth={2}
-            dot={false}
-            activeDot={{ r: 4 }}
-          />
-        </AreaChart>
+          <ReactApexChart options={options} series={series} type="area" height="100%" />
         </ChartContainer>
       </CardContent>
     </Card>

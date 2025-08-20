@@ -4,6 +4,33 @@ const Expense = require('../models/Expense');
 const Vehicle = require('../models/Vehicle');
 const auth = require('../middleware/auth');
 
+// Raw expenses endpoint returning all documents for a vehicle
+// Supports optional date filtering via `from` and `to` query params (ISO strings)
+router.get('/', auth, async (req, res) => {
+  try {
+    const { vehicleId, from, to } = req.query;
+    if (!vehicleId) {
+      return res.status(400).json({ error: 'vehicleId is required' });
+    }
+
+    const filter = {
+      vehicleId,
+      userId: req.user._id,
+    };
+
+    if (from || to) {
+      filter.date = {};
+      if (from) filter.date.$gte = new Date(from);
+      if (to) filter.date.$lte = new Date(to);
+    }
+
+    const expenses = await Expense.find(filter).sort({ date: 1 });
+    res.json(expenses);
+  } catch (err) {
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 router.get('/:vehicleId', auth, async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;

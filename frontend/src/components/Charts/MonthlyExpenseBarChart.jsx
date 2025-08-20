@@ -1,73 +1,111 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, LabelList, ReferenceLine } from 'recharts';
+import ReactApexChart from 'react-apexcharts';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent
-} from '../ui/chart';
-import { formatEuro, computeDomain, formatDate } from '../../lib/formatters';
+import { formatEuro } from '../../lib/formatters';
 
-export default function MonthlyExpenseBarChart({ data }) {
-  // Regrouper les dépenses par mois et type en fonction de l'année courante
+const COLORS = {
+  fuel: '#3B82F6',
+  maintenance: '#10B981',
+  repair: '#F59E0B',
+  other: '#EF4444',
+};
+
+export default function MonthlyExpenseBarChart({ data = [] }) {
+  // Group expenses by month and type
   const grouped = {};
-
-  const currentYear = new Date().getFullYear();
-
   data.forEach((e) => {
-    const date = new Date(e.date);
-    if (date.getFullYear() !== currentYear) return;
-
-    const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-01`;
-    if (!grouped[month]) grouped[month] = {};
-    const prev = grouped[month][e.type] || 0;
-    grouped[month][e.type] = parseFloat((prev + e.amount).toFixed(2));
+    const d = new Date(e.date);
+    const month = new Date(d.getFullYear(), d.getMonth(), 1).toISOString();
+    if (!grouped[month]) grouped[month] = { fuel: 0, maintenance: 0, repair: 0, other: 0 };
+    const type = e.type || 'other';
+    grouped[month][type] += parseFloat(e.amount || 0);
   });
 
-  const chartData = Object.entries(grouped).map(([month, types]) => ({
-    month,
-    fuel: types.fuel || 0,
-    maintenance: types.maintenance || 0,
-    repair: types.repair || 0
-  }));
+  const months = Object.keys(grouped).sort();
+  const chartData = months.map((m) => ({ month: m, ...grouped[m] }));
+  const monthsCount = chartData.length;
 
-  const totals = chartData.map(d => d.fuel + d.maintenance + d.repair);
-  const [minY, maxY] = computeDomain([0, ...totals]);
-  const avg = totals.reduce((s, v) => s + v, 0) / (totals.length || 1);
-  const showLabels = chartData.length <= 6;
+  const series = [
+    { name: 'Carburant', data: chartData.map((d) => d.fuel) },
+    { name: 'Maintenance', data: chartData.map((d) => d.maintenance) },
+    { name: 'Réparation', data: chartData.map((d) => d.repair) },
+    { name: 'Autres', data: chartData.map((d) => d.other) },
+  ];
+
+  const categories = chartData.map((d) => new Date(d.month).getTime());
+
+  const options = {
+    chart: {
+      type: 'bar',
+      stacked: true,
+      toolbar: { show: false },
+      parentHeightOffset: 0,
+    },
+    plotOptions: {
+      bar: {
+        columnWidth: '60%',
+        borderRadius: 6,
+      },
+    },
+    responsive: [
+      {
+        breakpoint: 640,
+        options: {
+          plotOptions: {
+            bar: {
+              columnWidth: monthsCount < 3 ? '80%' : '70%',
+            },
+          },
+        },
+      },
+    ],
+    colors: [COLORS.fuel, COLORS.maintenance, COLORS.repair, COLORS.other],
+    xaxis: {
+      type: 'datetime',
+      categories,
+      tickAmount: monthsCount > 8 ? 8 : monthsCount,
+      labels: {
+        rotate: monthsCount > 8 ? -30 : 0,
+        formatter: (val, timestamp) =>
+          new Date(timestamp).toLocaleDateString('fr-FR', {
+            month: 'short',
+            year: 'numeric',
+          }),
+      },
+    },
+    yaxis: {
+      tickAmount: 4,
+      forceNiceScale: true,
+      labels: { formatter: (val) => formatEuro(val) },
+    },
+    grid: {
+      borderColor: '#E5E7EB',
+      strokeDashArray: 3,
+    },
+    dataLabels: { enabled: false },
+    legend: { position: 'bottom' },
+    tooltip: {
+      shared: true,
+      intersect: false,
+      y: { formatter: (val) => formatEuro(val) },
+      x: {
+        formatter: (val) =>
+          new Date(parseInt(val)).toLocaleDateString('fr-FR', {
+            month: 'long',
+            year: 'numeric',
+          }),
+      },
+    },
+    noData: { text: 'Aucune donnée sur la période' },
+  };
 
   return (
-    <Card className="h-64">
+    <Card className="h-[260px]">
       <CardHeader className="pb-2">
         <CardTitle title="Dépenses mensuelles par type">💸 Dépenses mensuelles par type</CardTitle>
       </CardHeader>
-      <CardContent className="h-[180px]">
-        <ChartContainer>
-          <BarChart data={chartData} barGap={4} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
-            <XAxis dataKey="month" minTickGap={20} preserveStartEnd tickFormatter={formatDate} />
-            <YAxis domain={[minY, maxY]} tickFormatter={formatEuro} />
-            <ChartTooltip content={<ChartTooltipContent formatter={formatEuro} labelFormatter={formatDate} />} />
-            <ChartLegend content={<ChartLegendContent />} />
-            <ReferenceLine
-              y={avg}
-              stroke="#94a3b8"
-              strokeDasharray="4 2"
-              strokeWidth={1}
-              label={{ position: 'top', value: `Moyenne ${formatEuro(avg)}`, fontSize: 12, fill: '#6b7280', dy: -4 }}
-            />
-            <Bar dataKey="fuel" stackId="a" fill="#3B82F6" animationDuration={600}>
-              {showLabels && <LabelList dataKey="fuel" position="top" formatter={(v) => v ? formatEuro(v) : ''} />}
-            </Bar>
-            <Bar dataKey="maintenance" stackId="a" fill="#10B981" animationDuration={600}>
-              {showLabels && <LabelList dataKey="maintenance" position="top" formatter={(v) => v ? formatEuro(v) : ''} />}
-            </Bar>
-            <Bar dataKey="repair" stackId="a" fill="#FACC15" animationDuration={600}>
-              {showLabels && <LabelList dataKey="repair" position="top" formatter={(v) => v ? formatEuro(v) : ''} />}
-            </Bar>
-          </BarChart>
-        </ChartContainer>
+      <CardContent className="h-[220px]">
+        <ReactApexChart options={options} series={series} type="bar" height="100%" />
       </CardContent>
     </Card>
   );

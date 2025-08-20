@@ -1,4 +1,5 @@
 export { default as KmOverTimeChart } from './KmOverTimeChart';
+export { default as ExpenseTypeDonutChart } from './ExpenseTypeDonutChart';
 export { default as ExpenseTypeBarChart } from './ExpenseTypeBarChart';
 export { default as CumulativeExpenseChart } from './CumulativeExpenseChart';
 export { default as CostPer100KmChart } from './CostPer100KmChart';

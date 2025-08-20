@@ -17,7 +17,8 @@ const LABELS = {
   other: 'Autres',
 };
 
-export default function ExpenseTypeBarChart({ data = [] }) {
+export default function ExpenseTypeDonutChart({ data = [] }) {
+  // Aggregate expenses by type over provided data
   const grouped = data.reduce((acc, curr) => {
     const type = curr.type || 'other';
     const prev = acc[type] || 0;
@@ -27,62 +28,60 @@ export default function ExpenseTypeBarChart({ data = [] }) {
   }, {});
 
   const types = ['fuel', 'maintenance', 'repair', 'other'];
-  const values = [];
-  const categories = [];
+  const series = [];
+  const labels = [];
   const colors = [];
 
   types.forEach((t) => {
     const val = grouped[t] || 0;
     if (val > 0) {
-      values.push(parseFloat(val.toFixed(2)));
-      categories.push(LABELS[t]);
+      series.push(parseFloat(val.toFixed(2)));
+      labels.push(LABELS[t]);
       colors.push(COLORS[t]);
     }
   });
 
-  const series = [{ name: 'Montant', data: values }];
-
   const options = {
     chart: {
-      type: 'bar',
+      type: 'donut',
       toolbar: { show: false },
     },
     colors,
-    plotOptions: {
-      bar: {
-        horizontal: true,
-        distributed: true,
-        borderRadius: 6,
-        dataLabels: {
-          position: 'right',
-        },
+    labels,
+    legend: {
+      position: 'bottom',
+      formatter: (seriesName, opts) => {
+        const value = opts.w.globals.series[opts.seriesIndex];
+        const percent = opts.w.globals.seriesPercent[opts.seriesIndex][0];
+        return `${seriesName} — ${formatEuro(value)} (${Math.round(percent)}%)`;
       },
     },
     dataLabels: {
       enabled: true,
-      formatter: (val) => formatEuro(val),
-      offsetX: 8,
-      textAnchor: 'start',
-      style: {
-        colors: ['#111827'],
+      formatter: (val, opts) => {
+        const amount = opts.w.globals.series[opts.seriesIndex];
+        return `${formatEuro(amount)} (${Math.round(val)}%)`;
       },
-    },
-    xaxis: {
-      labels: { formatter: (val) => formatEuro(val) },
-      // Limit the number of ticks to avoid overcrowding under the chart
-      tickAmount: 4,
-    },
-    yaxis: {
-      categories,
     },
     tooltip: {
       y: { formatter: (val) => formatEuro(val) },
     },
-    grid: {
-      borderColor: '#E5E7EB',
-      strokeDashArray: 3,
+    plotOptions: {
+      pie: {
+        donut: {
+          size: '72%',
+          labels: {
+            show: true,
+            total: {
+              show: true,
+              label: 'Total',
+              formatter: (w) =>
+                formatEuro(w.globals.seriesTotals.reduce((a, b) => a + b, 0)),
+            },
+          },
+        },
+      },
     },
-    legend: { show: false },
     noData: { text: 'Aucune donnée sur la période' },
   };
 
@@ -92,9 +91,8 @@ export default function ExpenseTypeBarChart({ data = [] }) {
         <CardTitle title="Répartition des dépenses">📊 Répartition des dépenses</CardTitle>
       </CardHeader>
       <CardContent className="h-[220px]">
-        <ReactApexChart options={options} series={series} type="bar" height="100%" />
+        <ReactApexChart options={options} series={series} type="donut" height="100%" />
       </CardContent>
     </Card>
   );
 }
-
