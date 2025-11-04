@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 const vehicleRoutes = require('../routes/vehicle');
 const User = require('../models/User');
 const Vehicle = require('../models/Vehicle');
+const Expense = require('../models/Expense');
+const MaintenanceTask = require('../models/MaintenanceTask');
 
 let mongoServer;
 let app;
@@ -29,6 +31,8 @@ afterAll(async () => {
 afterEach(async () => {
   await User.deleteMany({});
   await Vehicle.deleteMany({});
+  await Expense.deleteMany({});
+  await MaintenanceTask.deleteMany({});
 });
 
 // Test if unauthenticated request is rejected
@@ -62,7 +66,11 @@ it('supports pagination for vehicles', async () => {
   // create 15 vehicles
   const vehicles = [];
   for (let i = 0; i < 15; i++) {
-    vehicles.push({ userId: user._id, name: `Car ${i}` });
+    vehicles.push({
+      userId: user._id,
+      name: `Car ${i}`,
+      createdAt: new Date(2000, 0, i + 1),
+    });
   }
   await Vehicle.insertMany(vehicles);
 
@@ -74,7 +82,7 @@ it('supports pagination for vehicles', async () => {
   expect(res.body.page).toBe(2);
   expect(res.body.totalPages).toBe(2);
   expect(res.body.data.length).toBe(5);
-  expect(res.body.data[0].name).toBe('Car 10');
+  expect(res.body.data[0].name).toBe('Car 4');
 });
 
 it('POST /api/vehicles creates a vehicle for the user', async () => {
@@ -106,4 +114,45 @@ it('GET /api/vehicles/:id forbids access to other user\'s vehicle', async () => 
     .set('Authorization', `Bearer ${token}`);
 
   expect(res.status).toBe(404);
+});
+
+it('DELETE /api/vehicles/:id removes vehicle and related data', async () => {
+  const user = await User.create({ email: 'delete@test.com', passwordHash: 'pwd', name: 'Delete' });
+  const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+
+  const vehicle = await Vehicle.create({
+    userId: user._id,
+    name: 'To Remove',
+    image: '/uploads/sample.jpg',
+  });
+
+  await Expense.create({
+    userId: user._id,
+    vehicleId: vehicle._id,
+    type: 'fuel',
+    label: 'Fuel up',
+    amount: 42,
+    date: new Date(),
+  });
+
+  await MaintenanceTask.create({
+    userId: user._id,
+    vehicleId: vehicle._id,
+    title: 'Oil change',
+  });
+
+  const res = await request(app)
+    .delete(`/api/vehicles/${vehicle._id}`)
+    .set('Authorization', `Bearer ${token}`);
+
+  expect(res.status).toBe(200);
+  expect(res.body.message).toBe('Vehicule supprime');
+
+  const vehicleCount = await Vehicle.countDocuments({ userId: user._id });
+  const expenseCount = await Expense.countDocuments({ userId: user._id, vehicleId: vehicle._id });
+  const maintenanceCount = await MaintenanceTask.countDocuments({ userId: user._id, vehicleId: vehicle._id });
+
+  expect(vehicleCount).toBe(0);
+  expect(expenseCount).toBe(0);
+  expect(maintenanceCount).toBe(0);
 });

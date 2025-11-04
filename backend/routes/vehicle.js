@@ -1,24 +1,26 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const multer = require('multer');
-const path = require('path');
-const Vehicle = require('../models/Vehicle');
-const auth = require('../middleware/auth');
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs").promises;
+const Vehicle = require("../models/Vehicle");
+const Expense = require("../models/Expense");
+const MaintenanceTask = require("../models/MaintenanceTask");
+const auth = require("../middleware/auth");
 
-// Config stockage image
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Assure-toi que ce dossier existe
+    cb(null, "uploads/");
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
   },
 });
 
 const upload = multer({ storage });
 
-router.get('/', auth, async (req, res) => {
+router.get("/", auth, async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
 
@@ -36,7 +38,7 @@ router.get('/', auth, async (req, res) => {
   });
 });
 
-router.post('/', auth, upload.single('image'), async (req, res) => {
+router.post("/", auth, upload.single("image"), async (req, res) => {
   try {
     const { name, brand, model, year, plate, vin, tankSize, initialKm, acquisitionDate } = req.body;
     const image = req.file ? `/uploads/${req.file.filename}` : null;
@@ -60,27 +62,27 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
     res.status(201).json(vehicle);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Erreur lors de l’ajout du véhicule' });
+    res.status(500).json({ error: "Erreur lors de l'ajout du vehicule" });
   }
 });
 
-router.get('/:id', auth, async (req, res) => {
+router.get("/:id", auth, async (req, res) => {
   try {
     const vehicle = await Vehicle.findById(req.params.id);
     if (!vehicle || vehicle.userId.toString() !== req.user._id) {
-      return res.status(404).json({ error: 'Véhicule introuvable ou non autorisé' });
+      return res.status(404).json({ error: "Vehicule introuvable ou non autorise" });
     }
     res.json(vehicle);
   } catch (err) {
-    res.status(500).json({ error: 'Erreur serveur' });
+    res.status(500).json({ error: "Erreur serveur" });
   }
 });
 
-router.put('/:id', auth, upload.single('image'), async (req, res) => {
+router.put("/:id", auth, upload.single("image"), async (req, res) => {
   try {
     const vehicle = await Vehicle.findById(req.params.id);
     if (!vehicle || vehicle.userId.toString() !== req.user._id) {
-      return res.status(404).json({ error: 'Véhicule introuvable ou non autorisé' });
+      return res.status(404).json({ error: "Vehicule introuvable ou non autorise" });
     }
 
     const { name, brand, model, year, plate, vin, tankSize, initialKm, acquisitionDate, currentOdometer } = req.body;
@@ -102,7 +104,40 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
     res.json(vehicle);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Erreur lors de la mise à jour du véhicule' });
+    res.status(500).json({ error: "Erreur lors de la mise a jour du vehicule" });
+  }
+});
+
+router.delete("/:id", auth, async (req, res) => {
+  try {
+    const vehicle = await Vehicle.findOne({ _id: req.params.id, userId: req.user._id });
+    if (!vehicle) {
+      return res.status(404).json({ error: "Vehicule introuvable ou non autorise" });
+    }
+
+    if (vehicle.image) {
+      const imageFile = path.basename(vehicle.image);
+      const imagePath = path.join(__dirname, "..", "uploads", imageFile);
+      try {
+        await fs.unlink(imagePath);
+      } catch (fileErr) {
+        if (fileErr.code !== "ENOENT") {
+          console.warn(`Erreur suppression image ${imageFile} :`, fileErr);
+        }
+      }
+    }
+
+    await Promise.all([
+      Expense.deleteMany({ vehicleId: vehicle._id, userId: req.user._id }),
+      MaintenanceTask.deleteMany({ vehicleId: vehicle._id, userId: req.user._id }),
+    ]);
+
+    await vehicle.deleteOne();
+
+    res.json({ message: "Vehicule supprime" });
+  } catch (err) {
+    console.error("Erreur suppression vehicule :", err);
+    res.status(500).json({ error: "Erreur lors de la suppression du vehicule" });
   }
 });
 

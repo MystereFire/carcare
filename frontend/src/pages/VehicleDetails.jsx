@@ -19,6 +19,7 @@ import { API_URL } from '../../src/config';
 import MaintenanceCard from '../components/MaintenanceCard';
 import LastExpenseCard from '../components/LastExpenseCard';
 import LastFuelPriceCard from '../components/LastFuelPriceCard';
+import { useToast } from '../components/ToastProvider';
 import { StatTile } from '../components/ui/StatTile';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -40,7 +41,9 @@ export default function VehicleDetails() {
   const [expenses, setExpenses] = useState([]);
   const [expensesWithAcquisition, setExpensesWithAcquisition] = useState([]);
   const [period, setPeriod] = useState(90);
+  const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
+  const { addToast } = useToast();
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -149,7 +152,7 @@ export default function VehicleDetails() {
   }, [segments, period]);
 
   const handleOdometerUpdate = async () => {
-    const km = prompt('Entrez le kilométrage actuel', vehicle.currentOdometer || '');
+    const km = prompt('Entrez le kilometrage actuel', vehicle.currentOdometer || '');
     if (km !== null && km !== '') {
       const kmNumber = parseInt(km, 10);
       if (!isNaN(kmNumber)) {
@@ -157,9 +160,29 @@ export default function VehicleDetails() {
           await api.put(`/api/vehicles/${vehicle._id}`, { currentOdometer: kmNumber });
           setVehicle(v => ({ ...v, currentOdometer: kmNumber }));
         } catch (err) {
-          console.error('Erreur lors de la mise à jour du kilométrage', err);
+          console.error('Erreur lors de la mise a jour du kilometrage', err);
         }
       }
+    }
+  };
+
+  const handleDeleteVehicle = async () => {
+    if (!vehicle) return;
+    const confirmDelete = window.confirm('Supprimer ce vehicule ? Les depenses et maintenances associees seront supprimees.');
+    if (!confirmDelete) {
+      return;
+    }
+    setDeleting(true);
+    try {
+      await api.delete(`/api/vehicles/${vehicle._id}`);
+      addToast('Vehicule supprime');
+      localStorage.removeItem('currentVehicleId');
+      navigate('/');
+    } catch (err) {
+      console.error('Erreur suppression vehicule :', err);
+      addToast('Erreur lors de la suppression du vehicule', 'error');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -194,7 +217,7 @@ export default function VehicleDetails() {
         <Card className="flex flex-col md:flex-row md:items-center gap-4 p-4">
           <img
             src={imgSrc}
-            alt={`Photo du véhicule ${vehicle.name} ${vehicle.model} (${vehicle.year})`}
+            alt={`Photo du vehicule ${vehicle.name} ${vehicle.model} (${vehicle.year})`}
             className="w-full md:w-1/2 h-56 object-cover rounded-lg"
             onError={(e) => {
               e.currentTarget.onerror = null;
@@ -213,15 +236,15 @@ export default function VehicleDetails() {
             <div className="flex flex-wrap gap-2">
               <Button
                 onClick={() => navigate(`/vehicle/${vehicle._id}/add-expense`)}
-                aria-label="Ajouter une dépense"
+                aria-label="Ajouter une depense"
                 className="gap-2"
               >
                 <Plus className="h-4 w-4" />
-                <span className="hidden sm:inline">Ajouter une dépense</span>
+                <span className="hidden sm:inline">Ajouter une depense</span>
               </Button>
               <Button
                 onClick={() => navigate(`/vehicle/${vehicle._id}/edit`)}
-                aria-label="Modifier le véhicule"
+                aria-label="Modifier le vehicule"
                 className="gap-2"
               >
                 <Pencil className="h-4 w-4" />
@@ -237,11 +260,21 @@ export default function VehicleDetails() {
               </Button>
               <Button
                 onClick={handleOdometerUpdate}
-                aria-label="Relever le kilométrage"
+                aria-label="Relever le kilometrage"
                 className="gap-2"
               >
                 <Gauge className="h-4 w-4" />
-                <span className="hidden sm:inline">Relevé kilométrique</span>
+                <span className="hidden sm:inline">Releve kilometrique</span>
+              </Button>
+              <Button
+                onClick={handleDeleteVehicle}
+                aria-label="Supprimer le vehicule"
+                variant="outline"
+                className="gap-2 border-red-600 text-red-600 hover:bg-red-50"
+                disabled={deleting}
+              >
+                <span className="hidden sm:inline">Supprimer</span>
+                <span className="sm:hidden">Suppr.</span>
               </Button>
             </div>
           </div>
@@ -254,7 +287,7 @@ export default function VehicleDetails() {
         {/* KPI tiles */}
         <div className="grid gap-4 sm:grid-cols-3">
           <StatTile
-            title="Coût /100 km"
+            title="Cout /100 km"
             value={formatEuro(costPer100)}
             icon={<Euro className="h-5 w-5" />}
             className="bg-blue-50 dark:bg-blue-950"
@@ -282,7 +315,7 @@ export default function VehicleDetails() {
 
         {/* Charts section */}
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6">Données carburant / entretien</h2>
+          <h2 className="text-2xl font-semibold mb-6">Donnees carburant / entretien</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
             <CostPerLiterChart data={filteredExpenses} />
             <CostPer100KmChart data={filteredSegments} />
@@ -295,7 +328,7 @@ export default function VehicleDetails() {
 
         {/* Analysis section */}
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6">Analyse &amp; prévision</h2>
+          <h2 className="text-2xl font-semibold mb-6">Analyse &amp; prevision</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
             <AverageConsumptionChart data={filteredSegments} />
             <TankRangeCard data={filteredSegments} tankSize={vehicle.tankSize} />
