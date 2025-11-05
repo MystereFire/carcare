@@ -33,6 +33,7 @@ import {
   PiggyBank,
 } from '../components/icons';
 import PeriodSelector from '../components/PeriodSelector';
+import { annotateConsumptionSegments } from '../../src/lib/consumption';
 import { formatEuro, formatNumber } from '../../src/lib/formatters';
 
 export default function VehicleDetails() {
@@ -118,7 +119,7 @@ export default function VehicleDetails() {
         price = 0;
       }
     }
-    return res;
+    return annotateConsumptionSegments(res);
   }, [expenses]);
 
   const filteredExpenses = useMemo(() => {
@@ -150,6 +151,16 @@ export default function VehicleDetails() {
       return d >= start && d <= end;
     });
   }, [segments, period]);
+
+  const safeSegments = useMemo(
+    () => filteredSegments.filter(seg => !seg.isSuspect),
+    [filteredSegments]
+  );
+
+  const suspectSegments = useMemo(
+    () => filteredSegments.filter(seg => seg.isSuspect),
+    [filteredSegments]
+  );
 
   const handleOdometerUpdate = async () => {
     const km = prompt('Entrez le kilometrage actuel', vehicle.currentOdometer || '');
@@ -187,9 +198,9 @@ export default function VehicleDetails() {
   };
 
   // KPI calculations
-  const totalKm = filteredSegments.reduce((s, seg) => s + seg.km, 0);
-  const totalLiters = filteredSegments.reduce((s, seg) => s + seg.liters, 0);
-  const totalCost = filteredSegments.reduce((s, seg) => s + seg.price, 0);
+  const totalKm = safeSegments.reduce((s, seg) => s + seg.km, 0);
+  const totalLiters = safeSegments.reduce((s, seg) => s + seg.liters, 0);
+  const totalCost = safeSegments.reduce((s, seg) => s + seg.price, 0);
   const costPer100 = totalKm > 0 ? (totalCost * 100) / totalKm : 0;
   const avgCons = totalKm > 0 ? (totalLiters * 100) / totalKm : 0;
 
@@ -284,6 +295,14 @@ export default function VehicleDetails() {
           <PeriodSelector value={period} onChange={setPeriod} />
         </div>
 
+        {suspectSegments.length > 0 && (
+          <div className="rounded-md border border-amber-300 bg-amber-50 text-amber-900 px-4 py-3 text-sm dark:border-amber-600 dark:bg-amber-900/40 dark:text-amber-100">
+            {suspectSegments.length}{' '}
+            {suspectSegments.length > 1 ? 'pleins suspects ont ete ecarte des graphiques.' : 'plein suspect a ete ecarte des graphiques.'}
+            {' '}Verifiez les kilometres ou les litres saisis pour eviter d'impacter les statistiques.
+          </div>
+        )}
+
         {/* KPI tiles */}
         <div className="grid gap-4 sm:grid-cols-3">
           <StatTile
@@ -318,11 +337,11 @@ export default function VehicleDetails() {
           <h2 className="text-2xl font-semibold mb-6">Donnees carburant / entretien</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
             <CostPerLiterChart data={filteredExpenses} />
-            <CostPer100KmChart data={filteredSegments} />
+            <CostPer100KmChart data={safeSegments} />
             <CumulativeExpenseChart data={filteredExpenses} />
             <MonthlyExpenseBarChart data={filteredExpenses} />
             <ExpenseTypeBarChart data={filteredExpenses} />
-            <FuelConsumptionChart data={filteredSegments} />
+            <FuelConsumptionChart data={safeSegments} />
           </div>
         </section>
 
@@ -330,8 +349,8 @@ export default function VehicleDetails() {
         <section className="mb-12">
           <h2 className="text-2xl font-semibold mb-6">Analyse &amp; prevision</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
-            <AverageConsumptionChart data={filteredSegments} />
-            <TankRangeCard data={filteredSegments} tankSize={vehicle.tankSize} />
+            <AverageConsumptionChart data={safeSegments} />
+            <TankRangeCard data={safeSegments} tankSize={vehicle.tankSize} />
             <AnnualBudgetEstimate data={filteredExpenses} />
             <AverageKmCard data={filteredExpensesWithAcquisition} />
             <KmOverTimeChart data={filteredExpensesWithAcquisition} />

@@ -1,7 +1,5 @@
-const Expense = require('../models/Expense');
-
-const MIN_PLAUSIBLE_CONSUMPTION = 2.5; // L/100km
-const MAX_PLAUSIBLE_CONSUMPTION = 30; // L/100km
+const MIN_PLAUSIBLE_CONSUMPTION = 2.5;
+const MAX_PLAUSIBLE_CONSUMPTION = 30;
 
 function computeMedian(sortedValues) {
   if (!sortedValues.length) return 0;
@@ -21,7 +19,6 @@ function computeRobustStats(values) {
   const median = computeMedian(sorted);
   const absoluteDeviations = sorted.map((v) => Math.abs(v - median)).sort((a, b) => a - b);
   const rawMad = computeMedian(absoluteDeviations);
-  // Consistent estimator for std dev assuming normal distribution
   const mad = rawMad * 1.4826;
   return { median, mad };
 }
@@ -86,43 +83,9 @@ function computeRollingAverages(segments) {
   }
 }
 
-async function getConsumptionSegments(vehicleId, userId) {
-  const expenses = await Expense.find({ vehicleId, userId, type: 'fuel' }).sort({ date: 1 });
-
-  const segments = [];
-  let lastFull = null;
-  let liters = 0;
-  let price = 0;
-
-  for (const exp of expenses) {
-    liters += exp.liters || 0;
-    price += exp.amount || 0;
-
-    if (exp.isFullFill) {
-      if (lastFull && exp.km > lastFull.km && liters > 0) {
-        const km = exp.km - lastFull.km;
-        const consumption = parseFloat(((liters * 100) / km).toFixed(2));
-        const costPer100 = parseFloat(((price * 100) / km).toFixed(2));
-        segments.push({
-          startDate: lastFull.date,
-          endDate: exp.date,
-          km,
-          liters,
-          price,
-          consumption,
-          costPer100,
-        });
-      }
-      lastFull = exp;
-      liters = 0;
-      price = 0;
-    }
-  }
-
+export function annotateConsumptionSegments(rawSegments) {
+  const segments = rawSegments.map((seg) => ({ ...seg }));
   detectSegmentIssues(segments);
   computeRollingAverages(segments);
-
   return segments;
 }
-
-module.exports = { getConsumptionSegments };
