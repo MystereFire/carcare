@@ -3,9 +3,9 @@ import React from 'react';
 export default function Footer({ className = '' }) {
   return (
     <footer
-      className={`bg-white border-t text-center text-gray-500 py-4 mt-auto ${className}`}
+      className={`bg-white/80 backdrop-blur border-t border-slate-200 text-center text-slate-500 py-4 mt-auto ${className}`}
     >
-      © 2025 CarCare
+      (c) 2025 CarCare
     </footer>
   );
 }

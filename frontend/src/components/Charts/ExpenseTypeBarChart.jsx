@@ -17,7 +17,7 @@ const LABELS = {
   other: 'Autres',
 };
 
-export default function ExpenseTypeBarChart({ data = [] }) {
+export default function ExpenseTypeBarChart({ data = [], className }) {
   const grouped = data.reduce((acc, curr) => {
     const type = curr.type || 'other';
     const prev = acc[type] || 0;
@@ -87,7 +87,7 @@ export default function ExpenseTypeBarChart({ data = [] }) {
   };
 
   return (
-    <Card className="h-64">
+    <Card className={`h-[260px] ${className || ''}`}>
       <CardHeader className="pb-2">
         <CardTitle title="Répartition des dépenses">📊 Répartition des dépenses</CardTitle>
       </CardHeader>

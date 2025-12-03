@@ -10,7 +10,7 @@ const COLORS = {
   other: '#EF4444',
 };
 
-export default function MonthlyExpenseBarChart({ data = [] }) {
+export default function MonthlyExpenseBarChart({ data = [], className }) {
   // Group expenses by month and type
   const grouped = {};
   data.forEach((e) => {
@@ -100,7 +100,7 @@ export default function MonthlyExpenseBarChart({ data = [] }) {
   };
 
   return (
-    <Card className="h-[260px]">
+    <Card className={`h-[260px] ${className || ''}`}>
       <CardHeader className="pb-2">
         <CardTitle title="Dépenses mensuelles par type">💸 Dépenses mensuelles par type</CardTitle>
       </CardHeader>

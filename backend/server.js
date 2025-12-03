@@ -13,6 +13,7 @@ const maintenanceRoutes = require('./routes/maintenance');
 const statsRoutes = require('./routes/stats');
 const errorHandler = require('./middleware/errorHandler');
 const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const passport = require('passport');
 require('./config/googleAuth');
 
@@ -20,11 +21,19 @@ const app = express();
 app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
+
+app.use(session({
+  secret: process.env.JWT_SECRET || 'supersecret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } // secure: true in production with https
+}));
+
 app.use(passport.initialize());
 
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error(err));
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error(err));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehicleRoutes);

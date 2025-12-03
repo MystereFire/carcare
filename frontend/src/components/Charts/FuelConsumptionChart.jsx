@@ -5,7 +5,7 @@ import { ChartContainer } from '../ui/chart';
 import { formatNumber, formatDate, computeDomain } from '../../lib/formatters';
 import { baseChartOptions } from '../../lib/apexConfig';
 
-export default function FuelConsumptionChart({ data }) {
+export default function FuelConsumptionChart({ data, className }) {
   const number = formatNumber;
 
   const chartData = data.map((d, idx) => ({
@@ -60,7 +60,7 @@ export default function FuelConsumptionChart({ data }) {
   };
 
   return (
-    <Card className="h-64">
+    <Card className={`h-64 ${className || ''}`}>
       <CardHeader className="pb-2 flex items-center justify-between">
         <CardTitle title="Consommation">⛽ Consommation (L/100km)</CardTitle>
         <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Moyenne: {number(mean)}</span>

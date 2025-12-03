@@ -13,18 +13,32 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
+        console.log('Google Strategy Callback reached');
+        console.log('Profile:', profile ? profile.id : 'No profile');
+        
+        if (!profile || !profile.emails || !profile.emails[0]) {
+            console.error('No email found in Google profile');
+            return done(new Error('No email found'));
+        }
+
         const email = profile.emails[0].value;
+        console.log('Email:', email);
+
         let user = await User.findOne({ email });
         if (!user) {
+          console.log('Creating new user for google auth');
           user = await User.create({
             email,
             name: profile.displayName,
             provider: 'google',
             passwordHash: null,
           });
+        } else {
+            console.log('User found:', user._id);
         }
         return done(null, user);
       } catch (err) {
+        console.error('Google Auth Error:', err);
         return done(err);
       }
     }

@@ -1,7 +1,7 @@
 import React from 'react';
 import Section from './Section';
 
-export default function LastExpenseCard({ expense, onViewAll }) {
+export default function LastExpenseCard({ expense, onViewAll, className }) {
   if (!expense) {
     return (
       <Section title="Dernière dépense" className="h-full items-center justify-center">
@@ -29,7 +29,7 @@ export default function LastExpenseCard({ expense, onViewAll }) {
           Voir toutes les dépenses
         </button>
       }
-      className="h-full"
+      className={`h-full ${className || ''}`}
     >
       <p className="text-foreground">{expense.label}</p>
       <p className="mt-2 text-3xl font-bold">{parseFloat(expense.amount).toFixed(2)} €</p>

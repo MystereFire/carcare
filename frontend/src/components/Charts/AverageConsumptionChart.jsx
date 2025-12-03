@@ -5,7 +5,7 @@ import { ChartContainer } from '../ui/chart';
 import { formatNumber, formatDate, computeDomain } from '../../lib/formatters';
 import { baseChartOptions } from '../../lib/apexConfig';
 
-export default function AverageConsumptionChart({ data }) {
+export default function AverageConsumptionChart({ data, className }) {
   const number = formatNumber;
 
   const consumption = data.map(seg => ({
@@ -56,7 +56,7 @@ export default function AverageConsumptionChart({ data }) {
   };
 
   return (
-    <Card className="h-64">
+    <Card className={`h-64 ${className || ''}`}>
       <CardHeader className="pb-2 flex items-center justify-between">
         <CardTitle title="Consommation moyenne">⛽ Consommation moyenne (L/100km)</CardTitle>
         <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Moyenne: {number(avg)}</span>

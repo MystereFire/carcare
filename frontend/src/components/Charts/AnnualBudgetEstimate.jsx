@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 
-export default function AnnualBudgetEstimate({ data }) {
+export default function AnnualBudgetEstimate({ data, className }) {
   const [filter, setFilter] = useState("all");
 
   const cleaned = data.filter(e => e.type !== 'acquisition');
@@ -9,7 +9,7 @@ export default function AnnualBudgetEstimate({ data }) {
 
   if (!filteredData || filteredData.length < 2) {
     return (
-      <Card className="h-64 flex flex-col justify-center text-center">
+      <Card className={`h-64 flex flex-col justify-center text-center ${className || ''}`}>
         <CardHeader className="pb-2">
           <CardTitle title="Estimation budget annuel">💰 Estimation budget annuel</CardTitle>
         </CardHeader>
@@ -31,7 +31,7 @@ export default function AnnualBudgetEstimate({ data }) {
   const estimate = days > 0 ? (total * factor).toFixed(2) : total;
 
   return (
-    <Card className="h-64 flex flex-col justify-center text-center">
+    <Card className={`h-64 flex flex-col justify-center text-center ${className || ''}`}>
       <CardHeader className="pb-2">
         <CardTitle title="Estimation budget annuel">💰 Estimation budget annuel</CardTitle>
       </CardHeader>
@@ -55,11 +55,10 @@ function FilterButtons({ filter, setFilter }) {
         <button
           key={b}
           onClick={() => setFilter(b)}
-          className={`px-2 py-1 rounded text-sm border ${
-            filter === b
+          className={`px-2 py-1 rounded text-sm border ${filter === b
               ? 'bg-indigo-500 text-white border-indigo-500'
               : 'bg-white text-gray-700 border-gray-300'
-          }`}
+            }`}
         >
           {b === "all" ? "Tous" : b.charAt(0).toUpperCase() + b.slice(1)}
         </button>

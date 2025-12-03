@@ -9,6 +9,8 @@ const maintenanceTaskSchema = new mongoose.Schema({
   intervalDays: Number,
   lastDoneKm: Number,
   lastDoneDate: Date,
+  inspectionDate: Date,
+  isInspection: { type: Boolean, default: false },
   nextAtKm: Number,
   nextAtDate: Date,
   status: { type: String, enum: ['OK', 'SOON', 'DUE'], default: 'OK', index: true },

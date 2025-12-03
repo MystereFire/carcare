@@ -38,15 +38,19 @@ export default function MaintenancePage() {
 
   const priority = { DUE: 0, SOON: 1, OK: 2 };
 
-  const filtered = tasks.filter((t) => {
-    const matchFilter = filter === 'ALL' || t.status === filter;
-    const matchSearch = t.title.toLowerCase().includes(search.toLowerCase());
-    return matchFilter && matchSearch;
-  }).sort((a, b) => {
-    const p = priority[a.status] - priority[b.status];
-    if (p !== 0) return p;
-    return new Date(a.nextAtDate || '2100-01-01') - new Date(b.nextAtDate || '2100-01-01');
-  });
+  const inspectionTasks = tasks.filter((t) => t.isInspection);
+  const filtered = tasks
+    .filter((t) => !t.isInspection)
+    .filter((t) => {
+      const matchFilter = filter === 'ALL' || t.status === filter;
+      const matchSearch = t.title.toLowerCase().includes(search.toLowerCase());
+      return matchFilter && matchSearch;
+    })
+    .sort((a, b) => {
+      const p = priority[a.status] - priority[b.status];
+      if (p !== 0) return p;
+      return new Date(a.nextAtDate || '2100-01-01') - new Date(b.nextAtDate || '2100-01-01');
+    });
 
   const handleDelete = async (task) => {
     if (!window.confirm('Supprimer cette tâche ?')) return;
@@ -79,6 +83,42 @@ export default function MaintenancePage() {
         </select>
         <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Recherche" className="flex-1 border p-2 rounded" />
       </div>
+      {inspectionTasks.length ? (
+        <div className="mb-6 bg-blue-50 border border-blue-100 rounded-lg p-4 space-y-2">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs uppercase text-blue-600 font-semibold">Contrôle technique</p>
+              <h3 className="text-lg font-bold text-blue-900">{inspectionTasks[0].title || 'Contrôle technique'}</h3>
+            </div>
+            <button
+              onClick={() => { setEditing(inspectionTasks[0]); setFormOpen(true); }}
+              className="text-blue-700 text-sm font-semibold hover:underline"
+            >
+              Modifier
+            </button>
+          </div>
+          <p className="text-sm text-blue-800">
+            Date : {inspectionTasks[0].inspectionDate ? new Date(inspectionTasks[0].inspectionDate).toLocaleDateString('fr-FR') : 'Non renseignée'}
+          </p>
+          {inspectionTasks[0].notes && (
+            <p className="text-sm text-blue-800">Notes : {inspectionTasks[0].notes}</p>
+          )}
+        </div>
+      ) : (
+        <div className="mb-6 bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-center justify-between">
+          <div>
+            <p className="text-xs uppercase text-blue-600 font-semibold">Contrôle technique</p>
+            <p className="text-sm text-blue-800">Ajoute la date de ton prochain contrôle.</p>
+          </div>
+          <button
+            onClick={() => { setEditing({ isInspection: true, title: 'Contrôle technique' }); setFormOpen(true); }}
+            className="bg-blue-600 text-white px-3 py-2 rounded text-sm shadow-sm"
+          >
+            Ajouter
+          </button>
+        </div>
+      )}
+
       {loading ? (
         <div className="space-y-2">
           {[1,2,3].map(i => <div key={i} className="h-20 bg-gray-200 animate-pulse rounded" />)}
@@ -98,6 +138,11 @@ export default function MaintenancePage() {
                 <p className="text-sm text-gray-600">
                   {t.intervalKm ? `Tous les ${t.intervalKm} km` : ''} {t.intervalDays ? `/${t.intervalDays} jours` : ''}
                 </p>
+                {t.inspectionDate && (
+                  <p className="text-sm text-blue-700 font-medium">
+                    Contrôle technique: {new Date(t.inspectionDate).toLocaleDateString('fr-FR')}
+                  </p>
+                )}
                 <p className="text-sm">
                   Prochaine échéance dans {distanceRemaining(t) != null ? `${distanceRemaining(t)} km` : ''}
                   {daysRemaining(t) != null && distanceRemaining(t) != null ? ' ou ' : ''}

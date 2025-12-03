@@ -5,7 +5,7 @@ import { ChartContainer } from '../ui/chart';
 import { formatEuro, formatDate, computeDomain } from '../../lib/formatters';
 import { baseChartOptions, chartColors } from '../../lib/apexConfig';
 
-export default function CostPerLiterChart({ data }) {
+export default function CostPerLiterChart({ data, className }) {
 
   const grouped = {};
   data
@@ -60,7 +60,7 @@ export default function CostPerLiterChart({ data }) {
   };
 
   return (
-    <Card className="h-64">
+    <Card className={`h-64 ${className || ''}`}>
       <CardHeader className="pb-2 flex items-center justify-between">
         <CardTitle title="Coût au litre">⛽ Coût au litre (€)</CardTitle>
         <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Moyenne: {formatEuro(avg)}</span>

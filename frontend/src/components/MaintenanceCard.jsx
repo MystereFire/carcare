@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import Section from './Section';
 
-export default function MaintenanceCard({ vehicleId }) {
+export default function MaintenanceCard({ vehicleId, className }) {
   const [tasks, setTasks] = useState([]);
   const [vehicle, setVehicle] = useState(null);
   const navigate = useNavigate();
@@ -49,7 +49,7 @@ export default function MaintenanceCard({ vehicleId }) {
     <Section
       title="Entretien"
       actions={<span className={`px-2 py-1 rounded text-xs font-bold ${badgeClass}`}>{task.status}</span>}
-      className="h-full"
+      className={`h-full ${className || ''}`}
     >
       <p className="mt-2 text-foreground">{task.title}</p>
       <div className="mt-1 text-sm text-foreground/60">

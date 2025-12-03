@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
@@ -21,8 +21,6 @@ import LastExpenseCard from '../components/LastExpenseCard';
 import LastFuelPriceCard from '../components/LastFuelPriceCard';
 import { useToast } from '../components/ToastProvider';
 import { StatTile } from '../components/ui/StatTile';
-import { Card } from '../components/ui/card';
-import { Button } from '../components/ui/button';
 import {
   Plus,
   Pencil,
@@ -197,7 +195,6 @@ export default function VehicleDetails() {
     }
   };
 
-  // KPI calculations
   const totalKm = safeSegments.reduce((s, seg) => s + seg.km, 0);
   const totalLiters = safeSegments.reduce((s, seg) => s + seg.liters, 0);
   const totalCost = safeSegments.reduce((s, seg) => s + seg.price, 0);
@@ -220,142 +217,251 @@ export default function VehicleDetails() {
   }
 
   const imgSrc = vehicle.image ? `${API_URL}${vehicle.image}` : '/car-placeholder.svg';
+  const currentKm = vehicle.currentOdometer ?? vehicle.initialKm ?? 0;
+  const monthlyAmount = filteredExpenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+  const currentMonthLabel = new Date().toLocaleString('fr-FR', { month: 'long' });
+  const inspectionDate = vehicle.technicalInspectionDate
+    ? new Date(vehicle.technicalInspectionDate).toLocaleDateString('fr-FR')
+    : null;
+
+  const handleInspectionUpdate = async () => {
+    const value = window.prompt('Date du contrôle technique (YYYY-MM-DD)', inspectionDate || '');
+    if (!value) return;
+    try {
+      const updated = await api.put(`/api/vehicles/${vehicle._id}`, {
+        technicalInspectionDate: value,
+      });
+      setVehicle((v) => ({ ...v, technicalInspectionDate: updated.data.technicalInspectionDate || value }));
+    } catch (err) {
+      console.error('Erreur mise à jour contrôle technique', err);
+      addToast && addToast('Erreur mise à jour CT', 'error');
+    }
+  };
 
   return (
     <PageTransition>
-      <div className="max-w-5xl mx-auto mt-6 px-4 space-y-16">
-        {/* Vehicle header */}
-        <Card className="flex flex-col md:flex-row md:items-center gap-4 p-4">
-          <img
-            src={imgSrc}
-            alt={`Photo du vehicule ${vehicle.name} ${vehicle.model} (${vehicle.year})`}
-            className="w-full md:w-1/2 h-56 object-cover rounded-lg"
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = '/car-placeholder.svg';
-            }}
-          />
-          <div className="flex-1 w-full flex flex-col justify-center gap-4">
+      <div className="min-h-[calc(100vh-64px)] bg-gradient-to-br from-slate-50 to-blue-50 text-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="glass p-8 rounded-3xl col-span-2 flex flex-col md:flex-row justify-between relative overflow-hidden group card-hover">
+              <div className="z-10 flex flex-col justify-between h-full space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => navigate('/')} className="p-2 rounded-full hover:bg-slate-100/50 transition-colors text-slate-500">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                    </button>
+                    <p className="text-xs uppercase tracking-wider text-slate-500 font-bold">Détails du véhicule</p>
+                  </div>
+                  <h1 className="text-4xl font-black text-slate-900 tracking-tight">
+                    {vehicle.name || `${vehicle.brand || ''} ${vehicle.model || ''}`}
+                    {vehicle.year ? (
+                      <span className="ml-3 text-lg font-medium text-slate-500 bg-white/50 px-3 py-1 rounded-full border border-slate-200/50 backdrop-blur-sm align-middle">
+                        {vehicle.year}
+                      </span>
+                    ) : null}
+                  </h1>
+                  <div className="flex flex-wrap gap-3 text-sm font-medium text-slate-600">
+                    {vehicle.plate && <span className="px-3 py-1 bg-white/60 rounded-lg border border-slate-200/60 shadow-sm">Immat: {vehicle.plate}</span>}
+                    {vehicle.brand || vehicle.model ? <span className="px-3 py-1 bg-white/60 rounded-lg border border-slate-200/60 shadow-sm">{vehicle.brand} {vehicle.model}</span> : null}
+                  </div>
+                  <div className="flex flex-wrap gap-3 text-sm">
+                    <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50/80 border border-blue-100 text-blue-700 font-bold shadow-sm">
+                      <Gauge className="w-4 h-4" />
+                      {formatNumber(currentKm)} km
+                    </span>
+                    <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-50/80 border border-green-100 text-green-700 font-bold shadow-sm">
+                      Initial: {formatNumber(vehicle.initialKm || 0)} km
+                    </span>
+                    {inspectionDate && (
+                      <span className={clsx("inline-flex items-center gap-2 px-4 py-1.5 rounded-full border font-bold shadow-sm",
+                        new Date(vehicle.technicalInspectionDate) < new Date() ? "bg-red-50/80 border-red-100 text-red-700" : "bg-amber-50/80 border-amber-100 text-amber-700"
+                      )}>
+                        CT: {inspectionDate}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <button
+                    onClick={() => navigate(`/vehicle/${vehicle._id}/add-expense`)}
+                    className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all text-sm font-bold"
+                  >
+                    <Plus className="h-5 w-5" />
+                    Ajouter dépense
+                  </button>
+                  <button
+                    onClick={() => navigate(`/vehicle/${vehicle._id}/edit`)}
+                    className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white/50 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-white hover:shadow-md transition-all"
+                  >
+                    <Pencil className="h-4 w-4" />
+                    Modifier
+                  </button>
+                  <button
+                    onClick={() => navigate(`/vehicle/${vehicle._id}/maintenance`)}
+                    className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white/50 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-white hover:shadow-md transition-all"
+                  >
+                    <Wrench className="h-4 w-4" />
+                    Entretien
+                  </button>
+                  <button
+                    onClick={handleInspectionUpdate}
+                    className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white/50 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-white hover:shadow-md transition-all"
+                  >
+                    CT
+                  </button>
+                  <button
+                    onClick={handleOdometerUpdate}
+                    className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white/50 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-white hover:shadow-md transition-all"
+                  >
+                    <Gauge className="h-4 w-4" />
+                    Relevé km
+                  </button>
+                  <button
+                    onClick={handleDeleteVehicle}
+                    disabled={deleting}
+                    className="inline-flex items-center gap-2 rounded-xl border border-red-100 bg-red-50/50 px-4 py-2.5 text-sm font-semibold text-red-700 hover:bg-red-100 hover:shadow-md transition-all disabled:opacity-50 ml-auto"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+              <div className="relative w-full md:w-80 mt-8 md:mt-0 flex items-center justify-center">
+                <div className="absolute w-64 h-64 bg-gradient-to-r from-blue-200 to-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob" />
+                <div className="absolute w-64 h-64 bg-gradient-to-r from-purple-200 to-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob animation-delay-2000" style={{ top: '-20px', right: '-20px' }} />
+                <img
+                  src={imgSrc}
+                  alt={`Photo du vehicule ${vehicle.name || vehicle.model || ''}`}
+                  className="relative object-contain w-full h-auto drop-shadow-2xl transform transition-transform duration-700 group-hover:scale-105"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = '/car-placeholder.svg';
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="premium-gradient rounded-3xl p-8 text-white flex flex-col justify-between shadow-2xl shadow-indigo-500/20 relative overflow-hidden card-hover group">
+              <div className="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-700" />
+              <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/20 to-transparent" />
+
+              <div className="relative z-10">
+                <div className="flex justify-between items-start mb-8">
+                  <div>
+                    <p className="text-white/80 text-sm font-medium mb-1 flex items-center gap-2">
+                      <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      Dépenses ({currentMonthLabel})
+                    </p>
+                    <p className="text-5xl font-bold tracking-tight">{formatEuro(monthlyAmount || 0)}</p>
+                  </div>
+                  <div className="bg-white/20 backdrop-blur-md p-3 rounded-2xl shadow-inner border border-white/10">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative z-10 space-y-6">
+                <div>
+                  <div className="flex justify-between text-sm text-blue-50 mb-2 font-medium">
+                    <span>Consommation moyenne</span>
+                    <span className="font-bold text-white">{formatNumber(avgCons || 0)} L/100km</span>
+                  </div>
+                  <div className="w-full bg-black/20 rounded-full h-3 backdrop-blur-sm overflow-hidden">
+                    <div
+                      className="bg-white h-full rounded-full shadow-[0_0_15px_rgba(255,255,255,0.6)] transition-all duration-1000 ease-out relative"
+                      style={{
+                        width: avgCons ? `${Math.min(100, Math.max(10, (avgCons / 15) * 100))}%` : '25%',
+                      }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent w-full h-full animate-[shimmer_2s_infinite]"></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 text-xs text-white/90 bg-white/10 backdrop-blur-md p-3 rounded-xl border border-white/10">
+                  <svg className="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Suivi mis à jour automatiquement
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row justify-between items-end sm:items-center mb-8 gap-4 border-b border-slate-200/60 pb-6">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold">
-                {vehicle.name} {vehicle.model}{' '}
-                <span className="text-foreground/60">({vehicle.year})</span>
-              </h1>
-              <p className="text-sm text-foreground/60">Km initial : {vehicle.initialKm}</p>
-              <p className="text-sm text-foreground/60">Km actuel : {vehicle.currentOdometer}</p>
+              <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Vue d'ensemble</h2>
+              <p className="text-slate-500 mt-1 font-medium">Analysez les performances et coûts de votre véhicule</p>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                onClick={() => navigate(`/vehicle/${vehicle._id}/add-expense`)}
-                aria-label="Ajouter une depense"
-                className="gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                <span className="hidden sm:inline">Ajouter une depense</span>
-              </Button>
-              <Button
-                onClick={() => navigate(`/vehicle/${vehicle._id}/edit`)}
-                aria-label="Modifier le vehicule"
-                className="gap-2"
-              >
-                <Pencil className="h-4 w-4" />
-                <span className="hidden sm:inline">Modifier</span>
-              </Button>
-              <Button
-                onClick={() => navigate(`/vehicle/${vehicle._id}/maintenance`)}
-                aria-label="Ouvrir le carnet d'entretien"
-                className="gap-2"
-              >
-                <Wrench className="h-4 w-4" />
-                <span className="hidden sm:inline">Carnet d'entretien</span>
-              </Button>
-              <Button
-                onClick={handleOdometerUpdate}
-                aria-label="Relever le kilometrage"
-                className="gap-2"
-              >
-                <Gauge className="h-4 w-4" />
-                <span className="hidden sm:inline">Releve kilometrique</span>
-              </Button>
-              <Button
-                onClick={handleDeleteVehicle}
-                aria-label="Supprimer le vehicule"
-                variant="outline"
-                className="gap-2 border-red-600 text-red-600 hover:bg-red-50"
-                disabled={deleting}
-              >
-                <span className="hidden sm:inline">Supprimer</span>
-                <span className="sm:hidden">Suppr.</span>
-              </Button>
+            <PeriodSelector period={period} onChange={setPeriod} />
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-3">
+            <StatTile
+              title="Coût / 100 km"
+              value={formatEuro(costPer100)}
+              icon={<Euro className="h-6 w-6 text-blue-600" />}
+              className="glass bg-blue-50/40 hover:bg-blue-50/60 transition-all duration-300 card-hover border-blue-100/50"
+            />
+            <StatTile
+              title="Conso. moyenne"
+              value={`${formatNumber(avgCons)} L/100km`}
+              icon={<Droplet className="h-6 w-6 text-green-600" />}
+              className="glass bg-green-50/40 hover:bg-green-50/60 transition-all duration-300 card-hover border-green-100/50"
+            />
+            <StatTile
+              title="Budget annuel (est.)"
+              value={formatEuro(annualBudget)}
+              icon={<PiggyBank className="h-6 w-6 text-amber-600" />}
+              className="glass bg-amber-50/40 hover:bg-amber-50/60 transition-all duration-300 card-hover border-amber-100/50"
+            />
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-3 auto-rows-fr">
+            <div className="glass rounded-3xl p-1 card-hover h-full">
+              <LastExpenseCard expense={lastExpense} onViewAll={() => navigate(`/vehicle/${vehicle._id}/expenses`)} className="bg-transparent shadow-none border-none" />
+            </div>
+            <div className="glass rounded-3xl p-1 card-hover h-full">
+              <MaintenanceCard vehicleId={vehicle._id} className="bg-transparent shadow-none border-none" />
+            </div>
+            <div className="glass rounded-3xl p-1 card-hover h-full">
+              <LastFuelPriceCard expenses={filteredExpenses} className="bg-transparent shadow-none border-none" />
             </div>
           </div>
-        </Card>
 
-        <div className="flex justify-end">
-          <PeriodSelector value={period} onChange={setPeriod} />
+          <section className="mb-16 space-y-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-indigo-100 text-indigo-600 rounded-xl">
+                <Droplet className="w-6 h-6" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900">Données carburant / entretien</h2>
+            </div>
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
+              <div className="glass rounded-3xl p-6 card-hover"><CostPerLiterChart data={filteredExpenses} className="bg-transparent shadow-none border-none" /></div>
+              <div className="glass rounded-3xl p-6 card-hover"><CostPer100KmChart data={safeSegments} className="bg-transparent shadow-none border-none" /></div>
+              <div className="glass rounded-3xl p-6 card-hover"><CumulativeExpenseChart data={filteredExpenses} className="bg-transparent shadow-none border-none" /></div>
+              <div className="glass rounded-3xl p-6 card-hover"><MonthlyExpenseBarChart data={filteredExpenses} className="bg-transparent shadow-none border-none" /></div>
+              <div className="glass rounded-3xl p-6 card-hover"><ExpenseTypeBarChart data={filteredExpenses} className="bg-transparent shadow-none border-none" /></div>
+              <div className="glass rounded-3xl p-6 card-hover"><FuelConsumptionChart data={safeSegments} className="bg-transparent shadow-none border-none" /></div>
+            </div>
+          </section>
+
+          <section className="mb-16 space-y-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-purple-100 text-purple-600 rounded-xl">
+                <Gauge className="w-6 h-6" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900">Analyse &amp; prévision</h2>
+            </div>
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
+              <div className="glass rounded-3xl p-6 card-hover"><AverageConsumptionChart data={safeSegments} className="bg-transparent shadow-none border-none" /></div>
+              <div className="glass rounded-3xl p-6 card-hover"><TankRangeCard data={safeSegments} tankSize={vehicle.tankSize} className="bg-transparent shadow-none border-none" /></div>
+              <div className="glass rounded-3xl p-6 card-hover"><AnnualBudgetEstimate data={filteredExpenses} className="bg-transparent shadow-none border-none" /></div>
+              <div className="glass rounded-3xl p-6 card-hover"><AverageKmCard data={filteredExpensesWithAcquisition} className="bg-transparent shadow-none border-none" /></div>
+              <div className="glass rounded-3xl p-6 card-hover"><KmOverTimeChart data={filteredExpensesWithAcquisition} className="bg-transparent shadow-none border-none" /></div>
+            </div>
+          </section>
         </div>
-
-        {suspectSegments.length > 0 && (
-          <div className="rounded-md border border-amber-300 bg-amber-50 text-amber-900 px-4 py-3 text-sm dark:border-amber-600 dark:bg-amber-900/40 dark:text-amber-100">
-            {suspectSegments.length}{' '}
-            {suspectSegments.length > 1 ? 'pleins suspects ont ete ecarte des graphiques.' : 'plein suspect a ete ecarte des graphiques.'}
-            {' '}Verifiez les kilometres ou les litres saisis pour eviter d'impacter les statistiques.
-          </div>
-        )}
-
-        {/* KPI tiles */}
-        <div className="grid gap-4 sm:grid-cols-3">
-          <StatTile
-            title="Cout /100 km"
-            value={formatEuro(costPer100)}
-            icon={<Euro className="h-5 w-5" />}
-            className="bg-blue-50 dark:bg-blue-950"
-          />
-          <StatTile
-            title="Consommation moyenne"
-            value={`${formatNumber(avgCons)} L/100km`}
-            icon={<Droplet className="h-5 w-5" />}
-            className="bg-green-50 dark:bg-green-950"
-          />
-          <StatTile
-            title="Budget annuel"
-            value={formatEuro(annualBudget)}
-            icon={<PiggyBank className="h-5 w-5" />}
-            className="bg-amber-50 dark:bg-amber-950"
-          />
-        </div>
-
-        {/* Last expense, maintenance, and last fuel price */}
-        <div className="grid gap-6 md:grid-cols-3 auto-rows-fr">
-          <LastExpenseCard expense={lastExpense} onViewAll={() => navigate(`/vehicle/${vehicle._id}/expenses`)} />
-          <MaintenanceCard vehicleId={vehicle._id} />
-          <LastFuelPriceCard expenses={filteredExpenses} />
-        </div>
-
-        {/* Charts section */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6">Donnees carburant / entretien</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
-            <CostPerLiterChart data={filteredExpenses} />
-            <CostPer100KmChart data={safeSegments} />
-            <CumulativeExpenseChart data={filteredExpenses} />
-            <MonthlyExpenseBarChart data={filteredExpenses} />
-            <ExpenseTypeBarChart data={filteredExpenses} />
-            <FuelConsumptionChart data={safeSegments} />
-          </div>
-        </section>
-
-        {/* Analysis section */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6">Analyse &amp; prevision</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
-            <AverageConsumptionChart data={safeSegments} />
-            <TankRangeCard data={safeSegments} tankSize={vehicle.tankSize} />
-            <AnnualBudgetEstimate data={filteredExpenses} />
-            <AverageKmCard data={filteredExpensesWithAcquisition} />
-            <KmOverTimeChart data={filteredExpensesWithAcquisition} />
-          </div>
-        </section>
       </div>
     </PageTransition>
   );

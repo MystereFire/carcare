@@ -2,10 +2,10 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { formatKm } from '../../lib/formatters';
 
-export default function TankRangeCard({ data, tankSize }) {
+export default function TankRangeCard({ data, tankSize, className }) {
   if (!data?.length || !tankSize) {
     return (
-      <Card className="h-64 flex flex-col items-center justify-center text-center">
+      <Card className={`h-64 flex flex-col items-center justify-center text-center ${className || ''}`}>
         <CardHeader className="pb-2">
           <CardTitle title="Autonomie sur un plein">🔋 Autonomie plein</CardTitle>
         </CardHeader>
@@ -21,7 +21,7 @@ export default function TankRangeCard({ data, tankSize }) {
   const range = avgKmPerLiter * tankSize;
 
   return (
-    <Card className="h-64 flex flex-col items-center justify-center text-center">
+    <Card className={`h-64 flex flex-col items-center justify-center text-center ${className || ''}`}>
       <CardHeader className="pb-2">
         <CardTitle title="Autonomie sur un plein">🔋 Autonomie plein</CardTitle>
       </CardHeader>

@@ -5,7 +5,7 @@ import { ChartContainer } from '../ui/chart';
 import { formatEuro, formatDate, computeDomain } from '../../lib/formatters';
 import { baseChartOptions, chartColors } from '../../lib/apexConfig';
 
-export default function CumulativeExpenseChart({ data }) {
+export default function CumulativeExpenseChart({ data, className }) {
 
   const filtered = data.filter(e => e.type !== 'acquisition');
   // Regrouper les montants par date (ISO)
@@ -68,7 +68,7 @@ export default function CumulativeExpenseChart({ data }) {
   };
 
   return (
-    <Card className="h-64">
+    <Card className={`h-64 ${className || ''}`}>
       <CardHeader className="pb-2">
         <CardTitle title="Dépenses cumulées">💶 Dépenses cumulées</CardTitle>
       </CardHeader>

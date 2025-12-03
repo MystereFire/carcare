@@ -13,6 +13,7 @@ const vehicleSchema = new mongoose.Schema({
     initialKm: Number,
     currentOdometer: { type: Number, default: 0 },
     acquisitionDate: Date,
+    technicalInspectionDate: Date,
     createdAt: { type: Date, default: Date.now }
 });
 

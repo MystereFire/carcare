@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import AddVehicle from './pages/AddVehicle';
@@ -22,7 +21,6 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col bg-gray-100 text-gray-900">
-        <Navbar />
         <main className="flex-grow">
           <Routes>
             <Route
