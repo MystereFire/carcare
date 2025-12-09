@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
+import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
 import { API_URL } from '../../src/config';
@@ -112,8 +113,7 @@ export default function Dashboard() {
       };
     }
     const now = new Date();
-    const startMonth = new Date(now);
-    startMonth.setMonth(now.getMonth() - 1);
+    const startMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const byType = expenses.reduce(
       (acc, exp) => {
         const amount = Number(exp.amount) || 0;
@@ -162,18 +162,66 @@ export default function Dashboard() {
     () => new Date().toLocaleString('fr-FR', { month: 'long' }),
     []
   );
-  const litersPer100Km = useMemo(() => {
-    const fuel = expenses.filter(
-      (e) => e.type === 'fuel' && e.km != null && e.liters != null
-    );
-    if (fuel.length < 2) return 0;
-    const minKm = Math.min(...fuel.map((e) => Number(e.km) || 0));
-    const maxKm = Math.max(...fuel.map((e) => Number(e.km) || 0));
-    const distance = maxKm - minKm;
-    const totalLiters = fuel.reduce((sum, e) => sum + (Number(e.liters) || 0), 0);
-    if (distance <= 0 || !isFinite(distance)) return 0;
-    return (totalLiters * 100) / distance;
+  const fuelExpenses = useMemo(() => {
+    return expenses
+      .filter((e) => e.type === 'fuel' && e.km != null && e.liters != null)
+      .sort((a, b) => (Number(a.km) || 0) - (Number(b.km) || 0));
   }, [expenses]);
+
+  const litersPer100Km = useMemo(() => {
+    if (fuelExpenses.length < 2) return 0;
+
+    // Find all indices of Full Fills
+    const fullFillIndices = fuelExpenses
+      .map((e, i) => (e.isFullFill ? i : -1))
+      .filter((i) => i !== -1);
+
+    let startIndex = 0;
+    let endIndex = fuelExpenses.length - 1;
+
+    // Logic: "Base on last 3 full tanks"
+    // We need at least 2 full tanks to form a closed interval.
+    if (fullFillIndices.length >= 2) {
+      // Take the last 3 full tank indices (or 2 if only 2 exist)
+      const recentIndices = fullFillIndices.slice(-3);
+      startIndex = recentIndices[0];
+      endIndex = recentIndices[recentIndices.length - 1];
+    } else {
+      // Fallback: If not enough regular full tanks, we try to use the whole history
+      // strictly if we can't find better, to show *something* rather than 0.
+      startIndex = 0;
+      endIndex = fuelExpenses.length - 1;
+    }
+
+    const startExp = fuelExpenses[startIndex];
+    const endExp = fuelExpenses[endIndex];
+
+    // Distance between start (tank full) and end (tank full)
+    const distance = (Number(endExp.km) || 0) - (Number(startExp.km) || 0);
+
+    // Sum liters strictly between Start (excl) and End (incl)
+    // + any liters in the End expense itself.
+    const consumedLiters = fuelExpenses
+      .slice(startIndex + 1, endIndex + 1)
+      .reduce((sum, e) => sum + (Number(e.liters) || 0), 0);
+
+    if (distance <= 0 || !isFinite(distance)) return 0;
+    return (consumedLiters * 100) / distance;
+  }, [fuelExpenses]);
+
+  const avgAutonomy = useMemo(() => {
+    if (!litersPer100Km) return 0;
+    const tank = Number(selectedVehicle?.tankSize) || 0;
+    if (tank) {
+      return (tank * 100) / litersPer100Km;
+    }
+    // Fallback: Moyenne des distances entre pleins
+    if (fuelExpenses.length < 2) return 0;
+    const minKm = Number(fuelExpenses[0].km) || 0;
+    const maxKm = Number(fuelExpenses[fuelExpenses.length - 1].km) || 0;
+    const distance = maxKm - minKm;
+    return distance / (fuelExpenses.length - 1);
+  }, [litersPer100Km, selectedVehicle, fuelExpenses]);
 
   const inspectionDateLabel = useMemo(() => {
     if (!selectedVehicle?.technicalInspectionDate) return null;
@@ -190,7 +238,7 @@ export default function Dashboard() {
     if (!selectedId) return;
     setShowExpenseModal(true);
   };
-  const handleViewVehicle = () => selectedId && navigate(`/vehicle/${selectedId}`);
+
   const handleCompare = () => navigate('/compare');
   const handleProfile = () => navigate('/profile');
   const handleAddVehicleFromProfile = () => navigate('/add-vehicle');
@@ -220,14 +268,7 @@ export default function Dashboard() {
     };
   }, [totals.byType]);
 
-  const maxSeries = Math.max(...monthlySeries.map((m) => m.total), 1);
-  const chartPoints = monthlySeries
-    .map((m, idx) => {
-      const x = monthlySeries.length === 1 ? 50 : (idx / (monthlySeries.length - 1)) * 100;
-      const y = 100 - (m.total / maxSeries) * 70 - 10;
-      return `${x},${y}`;
-    })
-    .join(' ');
+
 
   const vehicleImage = selectedVehicle?.image
     ? `${API_URL}${selectedVehicle.image}`
@@ -394,13 +435,7 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <div className="flex gap-3 mt-4 md:mt-0">
-                  <button
-                    onClick={handleViewVehicle}
-                    className="px-5 py-2.5 text-sm font-semibold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-                    disabled={!selectedId}
-                  >
-                    Voir les détails
-                  </button>
+
                   <button
                     onClick={handleAddExpense}
                     disabled={!selectedId}
@@ -541,9 +576,9 @@ export default function Dashboard() {
                           </div>
                           <div className="flex items-center gap-3 text-xs text-white/90 bg-white/10 backdrop-blur-md p-3 rounded-xl border border-white/10">
                             <svg className="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
-                            Suivi mensuel mis à jour automatiquement
+                            Autonomie moyenne : {formatNumber(avgAutonomy)} km
                           </div>
                         </div>
                       </div>
@@ -562,44 +597,45 @@ export default function Dashboard() {
                             </span>
                           </div>
                         </div>
-                        <div className="relative h-64 w-full flex items-end justify-between px-2 overflow-hidden">
-                          <div className="absolute inset-0 flex flex-col justify-between text-slate-200 text-xs py-2 pointer-events-none">
-                            {[...Array(5)].map((_, idx) => (
-                              <div key={idx} className="border-b border-dashed border-slate-200 w-full h-0" />
-                            ))}
-                          </div>
-                          <svg
-                            className="absolute bottom-0 left-0 w-full h-full text-blue-500 z-10 drop-shadow-xl"
-                            fill="none"
-                            preserveAspectRatio="none"
-                            viewBox="0 0 100 100"
-                          >
-                            <defs>
-                              <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="currentColor" stopOpacity="0.3" />
-                                <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
-                              </linearGradient>
-                            </defs>
-                            <polygon
-                              fill="url(#chartGradient)"
-                              stroke="none"
-                              points={`0,100 ${chartPoints} 100,100`}
-                            />
-                            <polyline
-                              points={chartPoints}
-                              stroke="currentColor"
-                              strokeWidth="3"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              vectorEffect="non-scaling-stroke"
-                              fill="none"
-                            />
-                          </svg>
-                          <div className="w-full flex justify-between absolute bottom-0 text-xs text-slate-400 font-bold px-2 uppercase tracking-wider">
-                            {monthlySeries.map((m) => (
-                              <span key={m.label}>{m.label}</span>
-                            ))}
-                          </div>
+                        <div className="h-64 w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={monthlySeries} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                              <defs>
+                                <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                </linearGradient>
+                              </defs>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                              <XAxis
+                                dataKey="label"
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fill: '#94a3b8', fontSize: 12, fontWeight: 'bold' }}
+                                dy={10}
+                              />
+                              <Tooltip
+                                formatter={(value) => [formatEuro(value), 'Dépenses']}
+                                contentStyle={{
+                                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                  borderRadius: '12px',
+                                  border: 'none',
+                                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                }}
+                                itemStyle={{ color: '#1e293b', fontWeight: 'bold' }}
+                                labelStyle={{ color: '#64748b', marginBottom: '4px' }}
+                                cursor={{ stroke: '#3b82f6', strokeWidth: 2 }}
+                              />
+                              <Area
+                                type="monotone"
+                                dataKey="total"
+                                stroke="#3b82f6"
+                                strokeWidth={3}
+                                fillOpacity={1}
+                                fill="url(#colorTotal)"
+                              />
+                            </AreaChart>
+                          </ResponsiveContainer>
                         </div>
                       </div>
 
@@ -648,7 +684,7 @@ export default function Dashboard() {
                           Historique récent
                         </h3>
                         <button
-                          onClick={handleViewVehicle}
+                          onClick={() => selectedId && navigate(`/vehicle/${selectedId}/expenses`)}
                           className="text-blue-600 text-sm font-bold hover:text-blue-700 hover:underline disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
                           disabled={!selectedId}
                         >
@@ -747,28 +783,13 @@ export default function Dashboard() {
                                       e.currentTarget.src = '/car-placeholder.svg';
                                     }}
                                   />
-                                  <div className="absolute bottom-4 left-4 right-4 z-20 text-white">
-                                    <p className="text-sm text-slate-300 font-medium mb-1">
-                                      {veh.brand} {veh.model}
+                                  <div className="absolute bottom-0 left-0 p-5 z-20">
+                                    <h4 className="text-white font-bold text-lg leading-tight">
+                                      {veh.name || `${veh.brand} ${veh.model}`}
+                                    </h4>
+                                    <p className="text-slate-300 text-xs font-medium mt-1">
+                                      {veh.plate || 'Sans immat'} • {veh.year || 'Année ?'}
                                     </p>
-                                    <p className="text-xl font-bold leading-tight tracking-tight">{veh.name}</p>
-                                  </div>
-                                  {isSelected && (
-                                    <div className="absolute top-4 right-4 z-20 bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg">
-                                      ACTIF
-                                    </div>
-                                  )}
-                                </div>
-                                <div className={clsx("p-5 space-y-3", isSelected ? "bg-blue-50/50 backdrop-blur-sm" : "bg-white/80 backdrop-blur-sm")}>
-                                  <div className="flex items-center justify-between text-sm">
-                                    <span className="text-slate-500 font-medium">Plaque</span>
-                                    <span className="font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 text-xs">{veh.plate || '—'}</span>
-                                  </div>
-                                  <div className="flex items-center justify-between text-sm">
-                                    <span className="text-slate-500 font-medium">Km initial</span>
-                                    <span className="font-bold text-slate-900">
-                                      {veh.initialKm ? formatNumber(veh.initialKm) : '—'}
-                                    </span>
                                   </div>
                                 </div>
                               </button>
@@ -782,14 +803,11 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+          {showExpenseModal && (
+            <AddExpense vehicleId={selectedId} onClose={() => { setShowExpenseModal(false); window.location.reload(); }} />
+          )}
         </div>
       </PageTransition>
-      {showExpenseModal && (
-        <AddExpense
-          vehicleId={selectedId}
-          onClose={() => setShowExpenseModal(false)}
-        />
-      )}
     </>
   );
 }

@@ -7,7 +7,7 @@ import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import AddVehicle from './pages/AddVehicle';
 import EditVehicle from './pages/EditVehicle';
-import VehicleDetails from './pages/VehicleDetails';
+
 import AddExpense from './pages/AddExpense';
 import VehicleExpenses from './pages/VehicleExpenses';
 import Profile from './pages/Profile';
@@ -31,10 +31,7 @@ function App() {
               path="/add-vehicle"
               element={<ProtectedRoute><AddVehicle /></ProtectedRoute>}
             />
-            <Route
-              path="/vehicle/:id"
-              element={<ProtectedRoute><VehicleDetails /></ProtectedRoute>}
-            />
+
             <Route
               path="/vehicle/:id/edit"
               element={<ProtectedRoute><EditVehicle /></ProtectedRoute>}

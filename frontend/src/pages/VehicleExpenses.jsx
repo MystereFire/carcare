@@ -1,17 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import clsx from 'clsx';
 import api from '../../src/api';
 import PageTransition from '../components/PageTransition';
 import EditExpenseModal from '../components/EditExpenseModal';
-
+import { formatDate, formatEuro } from '../lib/formatters';
 
 export default function VehicleExpenses() {
-    const { id } = useParams(); // vehicleId
+    const { id } = useParams();
     const navigate = useNavigate();
     const [expenses, setExpenses] = useState([]);
     const [vehicle, setVehicle] = useState(null);
     const [filter, setFilter] = useState('all');
     const [editExpense, setEditExpense] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    const typeBadges = {
+        fuel: { label: 'Carburant', bg: 'bg-blue-100', text: 'text-blue-600' },
+        maintenance: { label: 'Entretien', bg: 'bg-amber-100', text: 'text-amber-700' },
+        repair: { label: 'Réparation', bg: 'bg-red-100', text: 'text-red-600' },
+    };
 
     const handleDelete = async (expenseId) => {
         if (!window.confirm('Supprimer cette dépense ?')) return;
@@ -24,126 +32,185 @@ export default function VehicleExpenses() {
         }
     };
 
-
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setLoading(true);
                 const [vehRes, expRes] = await Promise.all([
                     api.get(`/api/vehicles/${id}`),
                     api.get(`/api/expenses/${id}`, { params: { page: 1, limit: 1000 } }),
                 ]);
-                const veh = vehRes.data;
-                const expensesFromApi = Array.isArray(expRes.data?.data)
-                    ? expRes.data.data
-                    : [];
-                setVehicle(veh);
-                setExpenses([...expensesFromApi].reverse()); // + récent en haut
+                setVehicle(vehRes.data);
+                const list = Array.isArray(expRes.data?.data) ? expRes.data.data : [];
+                setExpenses([...list].reverse()); // Recent first
             } catch (err) {
                 console.error('Erreur chargement données', err);
+            } finally {
+                setLoading(false);
             }
         };
         fetchData();
     }, [id]);
 
-    const filtered = filter === 'all' ? expenses : expenses.filter(e => e.type === filter);
+    const filtered = useMemo(() => {
+        if (filter === 'all') return expenses;
+        return expenses.filter(e => e.type === filter);
+    }, [expenses, filter]);
+
+    const renderTypeBadge = (type) => {
+        const style = typeBadges[type] || { label: 'Divers', bg: 'bg-slate-100', text: 'text-slate-600' };
+        return (
+            <span
+                className={clsx(
+                    'inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold',
+                    style.bg,
+                    style.text
+                )}
+            >
+                <span className="w-2 h-2 rounded-full bg-current" />
+                {style.label}
+            </span>
+        );
+    };
 
     return (
         <PageTransition>
-            <div className="max-w-3xl mx-auto mt-10 px-4">
-                <button
-                    onClick={() => navigate(`/vehicle/${id}`)}
-                    className="mb-4 text-sm text-blue-600 hover:underline"
-                >
-                    ← Retour au véhicule
-                </button>
-
-                <div className="flex justify-between items-center mb-6">
-                    <div>
-                        <h1 className="text-2xl font-bold">{vehicle?.name}</h1>
-                        <p className="text-gray-500 text-sm">{vehicle?.brand} {vehicle?.model}</p>
-                    </div>
-                    <button
-                        onClick={() => navigate(`/vehicle/${id}/add-expense`)}
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                    >
-                        + Ajouter une dépense
-                    </button>
-                </div>
-
-                <div className="mb-4">
-                    <label className="text-sm font-semibold mr-2">Filtrer :</label>
-                    <select
-                        value={filter}
-                        onChange={(e) => setFilter(e.target.value)}
-                        className="border px-2 py-1 rounded"
-                    >
-                        <option value="all">Toutes</option>
-                        <option value="fuel">Essence</option>
-                        <option value="maintenance">Entretien</option>
-                        <option value="repair">Réparation</option>
-                    </select>
-                </div>
-
-                {filtered.length === 0 ? (
-                    <p className="text-gray-600">Aucune dépense enregistrée.</p>
-                ) : (
-                    <ul className="space-y-3">
-                        {filtered.map((exp) => (
-                            <li
-                                key={exp._id}
-                                className="bg-white p-3 rounded shadow-sm border-l-4 border-indigo-500"
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 text-slate-800 p-8">
+                <div className="max-w-5xl mx-auto space-y-8">
+                    {/* Header */}
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <button
+                                onClick={() => navigate('/')}
+                                className="text-slate-500 hover:text-slate-800 font-medium flex items-center gap-2 mb-2 transition-colors"
                             >
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <div className="font-medium">
-                                            {exp.label} — {exp.amount} €
-                                        </div>
-                                        <div className="text-sm text-gray-500">
-                                            {exp.type} • {new Date(exp.date).toLocaleDateString()} • {exp.km} km
-                                        </div>
-                                    </div>
-                                    <div className="flex space-x-2">
-                                        <button
-                                            onClick={() => setEditExpense(exp)}
-                                            className="text-blue-600 text-sm hover:underline"
-                                        >
-                                            Modifier
-                                        </button>
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                                Retour
+                            </button>
+                            <h1 className="text-3xl font-bold text-slate-900">
+                                Historique des dépenses
+                            </h1>
+                            {vehicle && (
+                                <p className="text-slate-500 font-medium">
+                                    {vehicle.brand} {vehicle.model} • {vehicle.plate}
+                                </p>
+                            )}
+                        </div>
+                        <button
+                            onClick={() => navigate(`/vehicle/${id}/add-expense`)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 font-semibold flex items-center gap-2"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v12m6-6H6" /></svg>
+                            Ajouter une dépense
+                        </button>
+                    </div>
 
-                                        <button
-                                            onClick={() => handleDelete(exp._id)}
-                                            className="text-red-600 text-sm hover:underline"
-                                        >
-                                            Supprimer
-                                        </button>
-                                    </div>
+                    {/* Content */}
+                    <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 overflow-hidden">
+                        <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row gap-4 justify-between items-center">
+                            <div className="flex gap-2 p-1 bg-slate-100 rounded-xl">
+                                {['all', 'fuel', 'maintenance', 'repair'].map((f) => (
+                                    <button
+                                        key={f}
+                                        onClick={() => setFilter(f)}
+                                        className={clsx(
+                                            'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
+                                            filter === f
+                                                ? 'bg-white text-slate-900 shadow-sm'
+                                                : 'text-slate-500 hover:text-slate-700'
+                                        )}
+                                    >
+                                        {f === 'all' ? 'Tout' : typeBadges[f]?.label || f}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="text-sm font-bold text-slate-500">
+                                {filtered.length} dépense{filtered.length > 1 ? 's' : ''}
+                            </div>
+                        </div>
+
+                        {loading ? (
+                            <div className="p-12 text-center text-slate-500 animate-pulse">Chargement de l'historique...</div>
+                        ) : filtered.length === 0 ? (
+                            <div className="p-24 text-center flex flex-col items-center">
+                                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 text-slate-300">
+                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
                                 </div>
-                            </li>
-                        ))}
-                    </ul>
-
-                )}
-                {editExpense && (
-                    <EditExpenseModal
-                        expense={editExpense}
-                        onClose={() => setEditExpense(null)}
-                        onSave={async (updated) => {
-                            try {
-                                const res = await api.put(
-                                    `/api/expenses/${updated._id}`,
-                                    updated
-                                );
-                                setExpenses((prev) =>
-                                    prev.map((e) => (e._id === updated._id ? res.data : e))
-                                );
-                                setEditExpense(null);
-                            } catch (err) {
-                                alert("Erreur lors de la mise à jour");
-                            }
-                        }}
-                    />
-                )}
+                                <p className="text-slate-500 font-medium">Aucune dépense trouvée pour ce filtre.</p>
+                            </div>
+                        ) : (
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left text-sm">
+                                    <thead className="bg-slate-50/50 text-slate-500 uppercase tracking-wider text-xs font-bold border-b border-slate-100">
+                                        <tr>
+                                            <th className="px-6 py-4">Date</th>
+                                            <th className="px-6 py-4">Type</th>
+                                            <th className="px-6 py-4">Description</th>
+                                            <th className="px-6 py-4">Kilométrage</th>
+                                            <th className="px-6 py-4 text-right">Montant</th>
+                                            <th className="px-6 py-4 text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100">
+                                        {filtered.map((exp) => (
+                                            <tr key={exp._id} className="hover:bg-blue-50/30 transition-colors group">
+                                                <td className="px-6 py-4 text-slate-500 font-medium whitespace-nowrap">
+                                                    {formatDate(exp.date)}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    {renderTypeBadge(exp.type)}
+                                                </td>
+                                                <td className="px-6 py-4 font-medium text-slate-700">
+                                                    {exp.label || '—'}
+                                                    {exp.notes && <p className="text-xs text-slate-400 font-normal mt-0.5 truncate max-w-xs">{exp.notes}</p>}
+                                                </td>
+                                                <td className="px-6 py-4 text-slate-500 font-mono text-xs bg-slate-50/50 rounded">
+                                                    {exp.km ? `${exp.km} km` : '—'}
+                                                </td>
+                                                <td className="px-6 py-4 text-right font-bold text-slate-900">
+                                                    {formatEuro(exp.amount)}
+                                                </td>
+                                                <td className="px-6 py-4 text-right space-x-2">
+                                                    <button
+                                                        onClick={() => setEditExpense(exp)}
+                                                        className="text-slate-400 hover:text-blue-600 transition-colors"
+                                                        title="Modifier"
+                                                    >
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(exp._id)}
+                                                        className="text-slate-400 hover:text-red-600 transition-colors"
+                                                        title="Supprimer"
+                                                    >
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
+
+            {editExpense && (
+                <EditExpenseModal
+                    expense={editExpense}
+                    onClose={() => setEditExpense(null)}
+                    onSave={async (updated) => {
+                        try {
+                            const res = await api.put(`/api/expenses/${updated._id}`, updated);
+                            setExpenses((prev) => prev.map((e) => (e._id === updated._id ? res.data : e)));
+                            setEditExpense(null);
+                        } catch (err) {
+                            alert("Erreur lors de la mise à jour");
+                        }
+                    }}
+                />
+            )}
         </PageTransition>
     );
 }
