@@ -7,7 +7,7 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.5.2",
     "express-session": "^1.18.2",
-    "express-validator": "^7.2.1",
+    "express-validator": "^7.3.2",
     "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.2.0",
@@ -21,7 +21,7 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
-    "jest": "^29.7.0",
+    "jest": "^30.4.2",
     "supertest": "^6.3.3"
   },
   "scripts": {
