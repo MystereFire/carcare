@@ -3,8 +3,14 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const { MaintenanceTask, Vehicle } = require('../models');
 
+/**
+ * @route   POST /api/maintenance/:vehicleId
+ * @desc    Create a new maintenance task for a vehicle
+ * @access  Private
+ */
 router.post('/:vehicleId', auth, async (req, res) => {
   try {
+    // Ensure the vehicle exists and belongs to the logged-in user
     const vehicle = await Vehicle.findOne({ where: { _id: req.params.vehicleId, userId: req.user._id } });
     if (!vehicle) return res.status(404).json({ error: 'Véhicule introuvable' });
     
@@ -28,6 +34,11 @@ router.post('/:vehicleId', auth, async (req, res) => {
   }
 });
 
+/**
+ * @route   GET /api/maintenance/:vehicleId
+ * @desc    Retrieve all maintenance tasks of a vehicle
+ * @access  Private
+ */
 router.get('/:vehicleId', auth, async (req, res) => {
   try {
     const tasks = await MaintenanceTask.findAll({
@@ -39,6 +50,11 @@ router.get('/:vehicleId', auth, async (req, res) => {
   }
 });
 
+/**
+ * @route   PATCH /api/maintenance/:taskId
+ * @desc    Update a specific maintenance task
+ * @access  Private
+ */
 router.patch('/:taskId', auth, async (req, res) => {
   try {
     const task = await MaintenanceTask.findOne({ where: { _id: req.params.taskId, userId: req.user._id } });
@@ -64,6 +80,11 @@ router.patch('/:taskId', auth, async (req, res) => {
   }
 });
 
+/**
+ * @route   DELETE /api/maintenance/:taskId
+ * @desc    Delete a specific maintenance task
+ * @access  Private
+ */
 router.delete('/:taskId', auth, async (req, res) => {
   try {
     const deleted = await MaintenanceTask.findOne({ where: { _id: req.params.taskId, userId: req.user._id } });
@@ -75,10 +96,17 @@ router.delete('/:taskId', auth, async (req, res) => {
   }
 });
 
+/**
+ * @route   POST /api/maintenance/:taskId/complete
+ * @desc    Log task accomplishment with current date and mileage
+ * @access  Private
+ */
 router.post('/:taskId/complete', auth, async (req, res) => {
   try {
     const task = await MaintenanceTask.findOne({ where: { _id: req.params.taskId, userId: req.user._id } });
     if (!task) return res.status(404).json({ error: 'Tâche introuvable' });
+    
+    // Save completion logs
     task.lastDoneKm = req.body.doneKm;
     task.lastDoneDate = req.body.doneDate ? new Date(req.body.doneDate) : null;
     await task.save();
