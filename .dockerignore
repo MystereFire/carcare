@@ -1,0 +1,29 @@
+# Ignorer les dépendances locales
+node_modules
+client/node_modules
+server/node_modules
+
+# Fichiers d'environnement (ne pas inclure en build)
+.env
+*.env
+
+# Fichiers temporaires / journaux
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dossiers inutiles
+uploads
+coverage
+dist
+build
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# IDEs / éditeurs
+.vscode
+.idea
+*.swp

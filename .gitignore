@@ -1,0 +1,8 @@
+# Ignore node_modules in all subdirectories
+**/node_modules/
+
+# Environment configurations
+backend/.env
+backend/.env.production
+frontend/.env
+frontend/.env.production

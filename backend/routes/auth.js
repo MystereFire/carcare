@@ -1,0 +1,119 @@
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { body } = require('express-validator');
+const validate = require('../middleware/validate');
+const auth = require('../middleware/auth');
+const { User } = require('../models');
+const passport = require('passport');
+
+router.post(
+  '/register',
+  [
+    body('email').isEmail().withMessage('Email invalide'),
+    body('password').isLength({ min: 6 }).withMessage('Mot de passe trop court'),
+    body('name').notEmpty().withMessage('Nom requis'),
+  ],
+  validate,
+  async (req, res, next) => {
+    try {
+      const { email, password, name } = req.body;
+      if (await User.findOne({ where: { email } })) {
+        return res.status(409).json({ error: 'Email déjà utilisé' });
+      }
+      const passwordHash = await bcrypt.hash(password, 10);
+      const user = await User.create({ email, passwordHash, name });
+      res.status(201).json({ message: 'User created' });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.post(
+  '/login',
+  [body('email').isEmail(), body('password').notEmpty()],
+  validate,
+  async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+      const user = await User.findOne({ where: { email } });
+      if (
+        !user ||
+        user.provider === 'google' ||
+        !user.passwordHash ||
+        !(await bcrypt.compare(password, user.passwordHash))
+      ) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: '1h',
+      });
+      res.json({ token });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// Récupère les informations du profil de l'utilisateur connecté
+router.get('/me', auth, async (req, res, next) => {
+  try {
+    const user = await User.findByPk(req.user._id, {
+      attributes: { exclude: ['passwordHash'] },
+    });
+    res.json(user);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Modification du mot de passe
+router.put(
+  '/password',
+  auth,
+  [
+    body('currentPassword').notEmpty().withMessage('Mot de passe actuel requis'),
+    body('newPassword')
+      .isLength({ min: 6 })
+      .withMessage('Nouveau mot de passe trop court'),
+  ],
+  validate,
+  async (req, res, next) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      const user = await User.findByPk(req.user._id);
+
+      if (!user || !(await bcrypt.compare(currentPassword, user.passwordHash))) {
+        return res.status(401).json({ error: 'Mot de passe actuel incorrect' });
+      }
+
+      user.passwordHash = await bcrypt.hash(newPassword, 10);
+      await user.save();
+      res.json({ message: 'Mot de passe modifié' });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.get(
+  '/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { session: false }),
+  (req, res) => {
+    const token = jwt.sign({ _id: req.user._id }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+    const defaultFrontendUrl = 'http://' + 'localhost' + ':5173';
+    const frontendUrl = process.env.FRONTEND_URL || defaultFrontendUrl;
+    res.redirect(`${frontendUrl}/oauth2?token=${token}`);
+  }
+);
+
+module.exports = router;

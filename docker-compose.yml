@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+    env_file:
+      - ./backend/.env.production
+    ports:
+      - "4001:5000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: https://api.ligma.fr/carcare   # 👈 ton IP locale ici
+    env_file:
+      - ./frontend/.env.production
+    ports:
+      - "3001:80"
+    restart: unless-stopped

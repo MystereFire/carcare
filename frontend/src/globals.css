@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: 9 13 22;
+    --fg: 248 250 252;
+    --muted: 30 41 59;
+    --border: 51 65 85;
+    --accent: 99 102 241;
+    --success: 16 185 129;
+    --warning: 245 158 11;
+    --danger: 239 68 68;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #070a13;
+    color: #f8fafc;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.05) 0px, transparent 40%),
+      radial-gradient(at 50% 100%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
+    background-attachment: fixed;
+    @apply antialiased min-h-screen;
+  }
+
+  input:-webkit-autofill {
+    -webkit-text-fill-color: #f8fafc;
+    box-shadow: 0 0 0 1000px #070a13 inset;
+  }
+}
+
+@layer utilities {
+  @keyframes blob {
+    0% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(20px, -20px) scale(1.1); }
+    66% { transform: translate(-15px, 15px) scale(0.9); }
+    100% { transform: translate(0px, 0px) scale(1); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+  }
+
+  .animate-blob {
+    animation: blob 15s infinite ease-in-out;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 3s infinite ease-in-out;
+  }
+
+  /* Glassmorphism Sport */
+  .glass {
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+  }
+
+  .glass-card {
+    background: linear-gradient(135deg, rgba(20, 30, 54, 0.6) 0%, rgba(10, 15, 30, 0.7) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.6);
+  }
+
+  .glass-card-hover {
+    @apply transition-all duration-300;
+  }
+  .glass-card-hover:hover {
+    transform: translateY(-4px);
+    border-color: rgba(99, 102, 241, 0.25);
+    box-shadow: 0 30px 60px -15px rgba(99, 102, 241, 0.15), 0 0 20px -5px rgba(99, 102, 241, 0.1);
+  }
+
+  .premium-gradient {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
+  }
+
+  .sporty-gradient-blue {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  }
+
+  .sporty-gradient-green {
+    background: linear-gradient(135deg, #065f46 0%, #10b981 100%);
+  }
+
+  .sporty-gradient-red {
+    background: linear-gradient(135deg, #991b1b 0%, #ef4444 100%);
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl;
+  }
+
+  /* Compteur / Speedometer font vibe */
+  .speed-font {
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.05em;
+  }
+
+  /* Custom inputs style */
+  .sporty-input {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    @apply w-full h-12 px-4 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200;
+  }
+
+  .sporty-label {
+    @apply block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
