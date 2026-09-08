@@ -111,7 +111,7 @@ export default function VehicleExpenses() {
 
     return (
         <PageTransition>
-            <div className="min-h-screen bg-[#070a13] text-slate-100 p-8">
+            <div className="min-h-screen bg-[#080b10] text-slate-100 p-8">
                 <div className="max-w-5xl mx-auto space-y-8">
                     {/* Header */}
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -142,7 +142,7 @@ export default function VehicleExpenses() {
                     </div>
 
                     {/* Content */}
-                    <div className="glass-card rounded-3xl border border-white/5 shadow-2xl overflow-hidden">
+                    <div className="glass-card rounded-lg border border-white/5 shadow-2xl overflow-hidden">
                         <div className="p-6 border-b border-white/5 bg-slate-900/20 backdrop-blur-sm flex flex-col sm:flex-row gap-4 justify-between items-center">
                             <div className="flex gap-2 p-1 bg-white/5 border border-white/5 rounded-xl">
                                 {['all', 'fuel', 'maintenance', 'repair'].map((f) => (

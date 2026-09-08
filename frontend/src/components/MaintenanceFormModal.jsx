@@ -81,7 +81,7 @@ export default function MaintenanceFormModal({ isOpen, onClose, vehicleId, initi
         onClick={() => onClose(false)}
       />
 
-      <div className="relative w-full max-w-lg bg-slate-900/90 border border-white/5 rounded-3xl shadow-2xl transform transition-all overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-lg app-surface rounded-lg shadow-2xl transform transition-all overflow-hidden flex flex-col max-h-[90vh]">
         <div className="px-6 py-5 border-b border-white/5 bg-slate-950/20 flex justify-between items-center sticky top-0 z-10">
           <h2 className="text-xl font-black text-slate-100 tracking-tight">
             {initialData ? 'Modifier la tâche' : 'Nouvelle tâche'}

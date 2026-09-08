@@ -1,5 +1,5 @@
 export const chartColors = {
-  fuel: '#3B82F6',
+  fuel: '#14B8A6',
   maintenance: '#10B981',
   repair: '#F59E0B',
   other: '#EF4444',
@@ -15,7 +15,7 @@ export const baseChartOptions = {
   },
   stroke: { width: 3, curve: 'smooth' },
   markers: { size: 0, hover: { size: 3 } },
-  grid: { borderColor: '#E5E7EB', strokeDashArray: 3 },
+  grid: { borderColor: 'rgba(148, 163, 184, 0.18)', strokeDashArray: 3 },
   dataLabels: { enabled: false },
   xaxis: {
     type: 'datetime',
@@ -32,6 +32,7 @@ export const baseChartOptions = {
   },
   legend: {
     position: 'bottom',
+    labels: { colors: '#CBD5E1' },
   },
   noData: { text: 'Aucune donnée sur la période' },
   colors: [chartColors.fuel, chartColors.maintenance, chartColors.repair, chartColors.other],

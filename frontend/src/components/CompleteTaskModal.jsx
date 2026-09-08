@@ -39,7 +39,7 @@ export default function CompleteTaskModal({ isOpen, onClose, task, vehicle, onOp
         onClick={() => onClose(false)}
       />
 
-      <div className="relative w-full max-w-sm bg-slate-900/90 border border-white/5 rounded-3xl shadow-2xl transform transition-all overflow-hidden text-slate-100">
+      <div className="relative w-full max-w-sm app-surface rounded-lg shadow-2xl transform transition-all overflow-hidden text-slate-100">
         <div className="px-6 py-5 border-b border-white/5 bg-slate-950/20 flex justify-between items-center">
           <h2 className="text-xl font-black text-slate-100 tracking-tight">
             Marquer comme fait

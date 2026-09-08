@@ -295,7 +295,7 @@ export default function Dashboard() {
       acc += percent;
       const color =
         key === 'fuel'
-          ? '#3b82f6'
+          ? '#14b8a6'
           : key === 'maintenance'
             ? '#f59e0b'
             : '#ef4444';
@@ -330,18 +330,18 @@ export default function Dashboard() {
   return (
     <>
       <PageTransition>
-        <div className="min-h-screen bg-[#070a13] text-slate-100">
+        <div className="min-h-screen bg-[#080b10] text-slate-100">
           <div className="flex">
-            <aside className="hidden lg:flex w-72 flex-col m-4 rounded-3xl bg-slate-900/60 backdrop-blur-2xl border border-white/5 shadow-2xl sticky top-4 h-[calc(100vh-2rem)]">
+            <aside className="hidden lg:flex w-72 flex-col m-4 rounded-lg app-panel backdrop-blur-2xl sticky top-4 h-[calc(100vh-2rem)]">
               <div className="p-8 flex items-center gap-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/30">
+                <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-teal-500/20">
                   C
                 </div>
                 <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-slate-100 to-slate-400 tracking-tight">CarCare</span>
               </div>
               <nav className="flex-1 px-4 space-y-2 mt-2 flex flex-col">
                 <button
-                  className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/20 font-semibold shadow-md shadow-indigo-500/5 transition-all duration-200"
+                  className="w-full flex items-center gap-3 px-4 py-3.5 rounded-lg bg-teal-500/12 text-teal-300 border border-teal-400/20 font-semibold shadow-md shadow-teal-500/5 transition-all duration-200"
                   onClick={() => navigate('/')}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -418,7 +418,7 @@ export default function Dashboard() {
                 <div className="p-4 mt-auto">
                   <button
                     onClick={handleAddVehicleFromProfile}
-                    className="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl border border-dashed border-white/10 text-slate-300 hover:bg-white/5 hover:border-white/20 transition-all duration-200 font-semibold"
+                    className="w-full inline-flex items-center justify-center px-4 py-3 rounded-lg border border-dashed border-white/10 text-slate-300 hover:bg-white/5 hover:border-white/20 transition-all duration-200 font-semibold"
                   >
                     + Ajouter un véhicule
                   </button>
@@ -427,7 +427,7 @@ export default function Dashboard() {
             </aside>
 
             <div className="flex-1 flex flex-col h-[calc(100vh-2rem)] overflow-y-auto scrollbar-hide">
-              <header className="px-8 py-6 flex flex-col md:flex-row md:items-center md:justify-between sticky top-0 z-10 bg-slate-900/80 backdrop-blur-md border-b border-white/5 mb-6 rounded-b-3xl lg:rounded-none lg:bg-transparent lg:border-none lg:backdrop-blur-none lg:static">
+              <header className="px-8 py-6 flex flex-col md:flex-row md:items-center md:justify-between sticky top-0 z-10 bg-slate-950/80 backdrop-blur-md border-b border-white/5 mb-6 rounded-b-lg lg:rounded-none lg:bg-transparent lg:border-none lg:backdrop-blur-none lg:static">
                 <div>
                   <h1 className="text-3xl font-black text-slate-100 flex items-center gap-3">
                     {selectedVehicle ? (
@@ -476,7 +476,7 @@ export default function Dashboard() {
                   <button
                     onClick={handleAddExpense}
                     disabled={!selectedId}
-                    className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-6 py-2.5 rounded-xl flex items-center gap-2 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/35 transition-all transform hover:-translate-y-0.5 font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="bg-gradient-to-r from-teal-500 via-blue-600 to-amber-500 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 shadow-lg shadow-teal-500/15 hover:shadow-teal-500/25 transition-all transform hover:-translate-y-0.5 font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v12m6-6H6" />
@@ -488,7 +488,7 @@ export default function Dashboard() {
 
               <div className="px-8 pb-8 space-y-8">
                 {error && (
-                  <div className="rounded-2xl border border-amber-500/20 bg-amber-950/20 backdrop-blur-sm px-6 py-4 text-amber-300 shadow-sm flex items-center gap-3">
+                  <div className="rounded-lg border border-amber-500/20 bg-amber-950/20 backdrop-blur-sm px-6 py-4 text-amber-300 shadow-sm flex items-center gap-3">
                     <svg className="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                     {error}
                   </div>
@@ -499,13 +499,13 @@ export default function Dashboard() {
                     {[1, 2, 3].map((i) => (
                       <div
                         key={i}
-                        className="h-72 rounded-3xl bg-slate-900/40 border border-white/5 shadow-lg animate-pulse"
+                        className="h-72 rounded-lg bg-slate-900/40 border border-white/5 shadow-lg animate-pulse"
                       />
                     ))}
                   </div>
                 ) : vehicles.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-24 text-center glass-card rounded-3xl shadow-xl border border-white/5">
-                    <div className="w-20 h-20 rounded-2xl bg-white/5 text-indigo-400 flex items-center justify-center mb-6 shadow-inner">
+                  <div className="flex flex-col items-center justify-center py-24 text-center glass-card rounded-lg shadow-xl border border-white/5">
+                    <div className="w-20 h-20 rounded-lg bg-white/5 text-teal-300 flex items-center justify-center mb-6 shadow-inner">
                       <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
                       </svg>
@@ -517,7 +517,7 @@ export default function Dashboard() {
                     </p>
                     <button
                       onClick={handleAddVehicle}
-                      className="mt-8 inline-flex items-center rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-3 text-white hover:shadow-lg hover:shadow-indigo-500/20 hover:-translate-y-0.5 transition-all font-semibold"
+                      className="mt-8 inline-flex items-center rounded-lg bg-gradient-to-r from-teal-500 via-blue-600 to-amber-500 px-6 py-3 text-white hover:shadow-lg hover:shadow-teal-500/20 hover:-translate-y-0.5 transition-all font-semibold"
                     >
                       + Ajouter un véhicule
                     </button>
@@ -525,11 +525,11 @@ export default function Dashboard() {
                 ) : (
                   <>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                      <div className="glass-card p-8 rounded-3xl col-span-2 flex flex-col sm:flex-row justify-between relative overflow-hidden group glass-card-hover">
+                      <div className="glass-card p-8 rounded-lg col-span-2 flex flex-col sm:flex-row justify-between relative overflow-hidden group glass-card-hover">
                         <div className="z-10 flex flex-col justify-between h-full space-y-8">
                           <div>
                             <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+                              <span className="w-2 h-2 rounded-full bg-teal-400"></span>
                               Kilométrage actuel
                             </p>
                             <div className="flex flex-wrap items-baseline gap-3">
@@ -539,7 +539,7 @@ export default function Dashboard() {
                               </p>
                               <button
                                 onClick={handleQuickOdometerUpdate}
-                                className="text-indigo-400 hover:text-indigo-300 text-xs font-bold px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all"
+                                className="text-teal-300 hover:text-teal-200 text-xs font-bold px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-all"
                                 title="Mettre a jour rapidement le kilometrage"
                               >
                                 Mettre à jour
@@ -553,19 +553,19 @@ export default function Dashboard() {
                             </div>
                           </div>
                           <div className="flex flex-wrap gap-3">
-                            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-white/5 text-slate-300 border border-white/10 shadow-sm">
+                            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold bg-white/5 text-slate-300 border border-white/10 shadow-sm">
                               <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                               Contrôle Tech. OK
                             </span>
-                            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-white/5 text-slate-300 border border-white/10 shadow-sm">
+                            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold bg-white/5 text-slate-300 border border-white/10 shadow-sm">
                               <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                               Entretien à venir
                             </span>
                           </div>
                         </div>
                         <div className="relative w-full sm:w-80 mt-8 sm:mt-0 flex items-center justify-center">
-                          <div className="absolute w-64 h-64 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob" />
-                          <div className="absolute w-64 h-64 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000" style={{ top: '-20px', right: '-20px' }} />
+                          <div className="absolute inset-x-8 bottom-5 h-10 rounded-full bg-black/35 blur-xl" />
+                          <div className="absolute inset-x-10 bottom-8 h-px bg-gradient-to-r from-transparent via-teal-300/50 to-transparent" />
                           <img
                             src={vehicleImage}
                             alt={selectedVehicle?.name || 'Véhicule'}
@@ -577,9 +577,9 @@ export default function Dashboard() {
                           />
                         </div>
                       </div>
-                      <div className="premium-gradient rounded-3xl p-8 text-white flex flex-col justify-between shadow-2xl shadow-indigo-500/10 relative overflow-hidden glass-card-hover group">
-                        <div className="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-700" />
-                        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/20 to-transparent" />
+                      <div className="premium-gradient rounded-lg p-8 text-white flex flex-col justify-between shadow-2xl shadow-teal-500/10 relative overflow-hidden glass-card-hover group">
+                        <div className="absolute inset-0 opacity-20 app-texture" />
+                        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/24 to-transparent" />
 
                         <div className="relative z-10">
                           <div className="flex justify-between items-start mb-8">
@@ -590,7 +590,7 @@ export default function Dashboard() {
                               </p>
                               <p className="text-5xl font-black speed-font tracking-tight">{formatEuro(totals.monthly || 0)}</p>
                             </div>
-                            <div className="bg-white/20 backdrop-blur-md p-3 rounded-2xl shadow-inner border border-white/10">
+                            <div className="bg-white/20 backdrop-blur-md p-3 rounded-lg shadow-inner border border-white/10">
                               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                               </svg>
@@ -619,7 +619,7 @@ export default function Dashboard() {
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-3 text-xs text-white/90 bg-white/10 backdrop-blur-md p-3 rounded-xl border border-white/10">
+                          <div className="flex items-center gap-3 text-xs text-white/90 bg-white/10 backdrop-blur-md p-3 rounded-lg border border-white/10">
                             <svg className="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
@@ -630,13 +630,13 @@ export default function Dashboard() {
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                      <div className="glass-card p-8 rounded-3xl col-span-2 glass-card-hover">
+                      <div className="glass-card p-8 rounded-lg col-span-2 glass-card-hover">
                         <div className="flex justify-between items-center mb-8">
                           <h3 className="font-bold text-xl text-slate-100 flex items-center gap-2">
-                            <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>
+                            <svg className="w-5 h-5 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>
                             Évolution des dépenses
                           </h3>
-                          <div className="flex bg-white/5 p-1 rounded-xl border border-white/5">
+                          <div className="flex bg-white/5 p-1 rounded-lg border border-white/5">
                             <span className="px-4 py-1.5 text-xs font-bold bg-white/5 text-slate-300 rounded-lg transition">
                               3 derniers mois
                             </span>
@@ -647,8 +647,8 @@ export default function Dashboard() {
                             <AreaChart data={monthlySeries} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                               <defs>
                                 <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                                  <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.32} />
+                                  <stop offset="95%" stopColor="#14b8a6" stopOpacity={0} />
                                 </linearGradient>
                               </defs>
                               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
@@ -662,19 +662,19 @@ export default function Dashboard() {
                               <Tooltip
                                 formatter={(value) => [formatEuro(value), 'Dépenses']}
                                 contentStyle={{
-                                  backgroundColor: '#0f172a',
-                                  borderRadius: '12px',
-                                  border: '1px solid rgba(255,255,255,0.08)',
-                                  boxShadow: '0 20px 45px -10px rgba(0, 0, 0, 0.7)',
+                                  backgroundColor: '#0b111a',
+                                  borderRadius: '8px',
+                                  border: '1px solid rgba(148,163,184,0.18)',
+                                  boxShadow: '0 18px 40px -22px rgba(0, 0, 0, 0.85)',
                                 }}
                                 itemStyle={{ color: '#f8fafc', fontWeight: 'bold' }}
                                 labelStyle={{ color: '#64748b', marginBottom: '4px' }}
-                                cursor={{ stroke: '#6366f1', strokeWidth: 2 }}
+                                cursor={{ stroke: '#14b8a6', strokeWidth: 2 }}
                               />
                               <Area
                                 type="monotone"
                                 dataKey="total"
-                                stroke="#6366f1"
+                                stroke="#14b8a6"
                                 strokeWidth={3}
                                 fillOpacity={1}
                                 fill="url(#colorTotal)"
@@ -684,9 +684,9 @@ export default function Dashboard() {
                         </div>
                       </div>
 
-                      <div className="glass-card p-8 rounded-3xl flex flex-col items-center justify-center glass-card-hover">
+                      <div className="glass-card p-8 rounded-lg flex flex-col items-center justify-center glass-card-hover">
                         <h3 className="font-bold text-xl text-slate-100 w-full mb-6 flex items-center gap-2">
-                          <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>
+                          <svg className="w-5 h-5 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>
                           Répartition
                         </h3>
                         <div className="relative w-56 h-56">
@@ -702,7 +702,7 @@ export default function Dashboard() {
                         </div>
                         <div className="mt-8 w-full space-y-4">
                           {[
-                            { key: 'fuel', color: 'bg-indigo-500', label: 'Carburant' },
+                            { key: 'fuel', color: 'bg-teal-500', label: 'Carburant' },
                             { key: 'maintenance', color: 'bg-amber-500', label: 'Entretien' },
                             { key: 'repair', color: 'bg-red-500', label: 'Réparation' },
                           ].map((item) => (
@@ -722,15 +722,15 @@ export default function Dashboard() {
                       </div>
                     </div>
 
-                    <div className="glass-card rounded-3xl overflow-hidden border border-white/5">
+                    <div className="glass-card rounded-lg overflow-hidden border border-white/5">
                       <div className="p-8 border-b border-white/5 flex justify-between items-center bg-slate-900/20 backdrop-blur-sm">
                         <h3 className="font-bold text-xl text-slate-100 flex items-center gap-2">
-                          <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                          <svg className="w-5 h-5 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                           Historique récent
                         </h3>
                         <button
                           onClick={() => selectedId && navigate(`/vehicle/${selectedId}/expenses`)}
-                          className="text-indigo-400 text-sm font-bold hover:text-indigo-300 hover:underline disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                          className="text-teal-300 text-sm font-bold hover:text-teal-200 hover:underline disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
                           disabled={!selectedId}
                         >
                           Voir tout
@@ -768,7 +768,7 @@ export default function Dashboard() {
                                   <td className="px-8 py-5 text-slate-400 font-medium">
                                     {exp.date ? formatDate(exp.date) : '—'}
                                   </td>
-                                  <td className="px-8 py-5 font-semibold text-slate-200 group-hover:text-indigo-400 transition-colors">
+                                  <td className="px-8 py-5 font-semibold text-slate-200 group-hover:text-teal-300 transition-colors">
                                     {exp.label || 'Dépense'}
                                   </td>
                                   <td className="px-8 py-5 text-slate-400">
@@ -796,7 +796,7 @@ export default function Dashboard() {
                           </div>
                           <button
                             onClick={handleAddVehicle}
-                            className="text-indigo-400 text-sm font-bold hover:text-indigo-300 hover:bg-white/5 border border-white/5 px-3 py-1.5 rounded-lg transition-all"
+                            className="text-teal-300 text-sm font-bold hover:text-teal-200 hover:bg-white/5 border border-white/5 px-3 py-1.5 rounded-lg transition-all"
                           >
                             + Ajouter
                           </button>
@@ -810,9 +810,9 @@ export default function Dashboard() {
                                 key={veh._id}
                                 onClick={() => handleSelect(veh._id)}
                                 className={clsx(
-                                  'group relative overflow-hidden rounded-3xl text-left transition-all duration-300 border focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-500/30',
+                                  'group relative overflow-hidden rounded-lg text-left transition-all duration-300 border focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-500/30',
                                   isSelected
-                                    ? 'ring-4 ring-indigo-500/20 border-indigo-500 shadow-xl shadow-indigo-500/10 scale-[1.02]'
+                                    ? 'ring-4 ring-teal-500/20 border-teal-400 shadow-xl shadow-teal-500/10 scale-[1.02]'
                                     : 'bg-slate-900/60 border-white/5 hover:shadow-2xl hover:-translate-y-1 hover:border-white/20'
                                 )}
                               >

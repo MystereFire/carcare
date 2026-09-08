@@ -20,7 +20,7 @@ import OAuthCallback from './pages/OAuthCallback';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col bg-[#070a13] text-slate-100">
+      <div className="min-h-screen flex flex-col bg-[#080b10] text-slate-100">
         <main className="flex-grow">
           <Routes>
             <Route

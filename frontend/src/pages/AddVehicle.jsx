@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import api from '../../src/api';
+import clsx from 'clsx';
 import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
 
@@ -69,12 +70,10 @@ export default function AddVehicle() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-[#070a13] text-slate-100 flex items-center justify-center p-6 relative overflow-hidden">
-        {/* Ambient background glows */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/5 rounded-full blur-3xl animate-blob" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/5 rounded-full blur-3xl animate-blob" style={{ animationDelay: '4s' }} />
+      <div className="min-h-screen bg-[#080b10] text-slate-100 flex items-center justify-center p-6 relative overflow-hidden">
+        <div className="absolute inset-0 app-texture opacity-70" />
 
-        <div className="w-full max-w-2xl bg-slate-900/60 backdrop-blur-2xl border border-white/5 rounded-3xl shadow-2xl p-8 flex flex-col relative z-10">
+        <div className="w-full max-w-2xl app-surface rounded-lg p-8 flex flex-col relative z-10">
           {/* Back button */}
           <button
             type="button"
@@ -88,7 +87,7 @@ export default function AddVehicle() {
           </button>
 
           {/* Title */}
-          <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-slate-100 to-slate-350 mb-6 tracking-tight">
+          <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-slate-100 to-slate-300 mb-6 tracking-tight">
             Ajouter un véhicule
           </h2>
 
@@ -213,7 +212,7 @@ export default function AddVehicle() {
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest">
                   Photo du Véhicule
                 </label>
-                <div className="relative group border border-dashed border-white/10 hover:border-indigo-500/40 hover:bg-white/5 rounded-2xl p-6 transition-all cursor-pointer flex flex-col items-center justify-center min-h-[140px]">
+                <div className="relative group border border-dashed border-white/10 hover:border-indigo-500/40 hover:bg-white/5 rounded-lg p-6 transition-all cursor-pointer flex flex-col items-center justify-center min-h-[140px]">
                   <input
                     type="file"
                     accept="image/*"
@@ -227,7 +226,7 @@ export default function AddVehicle() {
                         alt="Prévisualisation"
                         className="h-28 object-contain rounded-xl shadow-lg border border-white/5 bg-slate-950/40"
                       />
-                      <span className="text-xs text-slate-350 font-semibold bg-white/5 px-3 py-1 rounded-full border border-white/10">
+                      <span className="text-xs text-slate-300 font-semibold bg-white/5 px-3 py-1 rounded-full border border-white/10">
                         {file.name}
                       </span>
                     </div>
@@ -288,7 +287,7 @@ export default function AddVehicle() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/35 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-200"
+              className="w-full bg-gradient-to-r from-teal-500 via-blue-600 to-amber-500 text-white font-bold py-3.5 rounded-lg shadow-lg shadow-teal-500/15 hover:shadow-teal-500/25 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-200"
             >
               {submitting ? (
                 <>

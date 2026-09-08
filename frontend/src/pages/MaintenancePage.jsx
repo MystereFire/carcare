@@ -90,7 +90,7 @@ export default function MaintenancePage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-[#070a13] text-slate-100 p-8">
+      <div className="min-h-screen bg-[#080b10] text-slate-100 p-8">
         <div className="max-w-5xl mx-auto space-y-8">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -117,7 +117,7 @@ export default function MaintenancePage() {
           </div>
 
           {/* Filters & Search */}
-          <div className="glass-card p-4 rounded-2xl border border-white/5 shadow-2xl flex flex-col sm:flex-row gap-4 justify-between items-center">
+          <div className="glass-card p-4 rounded-lg border border-white/5 shadow-2xl flex flex-col sm:flex-row gap-4 justify-between items-center">
             <div className="flex gap-2 p-1 bg-white/5 border border-white/5 rounded-xl overflow-x-auto max-w-full">
               {[
                 { label: 'Tous', value: 'ALL' },
@@ -154,8 +154,8 @@ export default function MaintenancePage() {
 
           {/* Technical Inspection Card */}
           {inspectionTasks.length ? (
-            <div className="glass-card border border-indigo-500/10 shadow-indigo-500/5 rounded-2xl p-6 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="glass-card border border-indigo-500/10 shadow-indigo-500/5 rounded-lg p-6 relative overflow-hidden group">
+              <div className="absolute inset-y-0 right-0 w-1 bg-teal-400/35" />
               <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div className="flex items-start gap-4">
                   <div className="p-3 bg-white/5 border border-white/5 rounded-xl shadow-sm text-indigo-400">
@@ -179,7 +179,7 @@ export default function MaintenancePage() {
               </div>
             </div>
           ) : (
-            <div className="glass-card border border-white/5 border-dashed rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="glass-card border border-white/5 border-dashed rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-white/5 rounded-xl text-slate-500">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
@@ -201,10 +201,10 @@ export default function MaintenancePage() {
           {/* Tasks List */}
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map(i => <div key={i} className="h-40 bg-slate-900/40 animate-pulse rounded-2xl border border-white/5" />)}
+              {[1, 2, 3].map(i => <div key={i} className="h-40 bg-slate-900/40 animate-pulse rounded-lg border border-white/5" />)}
             </div>
           ) : filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 glass-card rounded-3xl border border-white/5">
+            <div className="flex flex-col items-center justify-center py-20 glass-card rounded-lg border border-white/5">
               <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 text-slate-500">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
               </div>
@@ -216,7 +216,7 @@ export default function MaintenancePage() {
               {filtered.map((t) => (
                 <div
                   key={t._id}
-                  className="glass-card rounded-3xl p-6 shadow-xl border border-white/5 flex flex-col h-full relative overflow-hidden group glass-card-hover"
+                  className="glass-card rounded-lg p-6 shadow-xl border border-white/5 flex flex-col h-full relative overflow-hidden group glass-card-hover"
                 >
                   <div className={clsx("absolute top-0 left-0 w-1.5 h-full", t.status === 'OK' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : t.status === 'SOON' ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]')} />
 

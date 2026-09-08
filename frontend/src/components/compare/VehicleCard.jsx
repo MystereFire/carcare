@@ -14,8 +14,8 @@ export default function VehicleCard({ vehicle, index, bestMap }) {
   };
 
   return (
-    <div className="glass-card border border-white/5 shadow-2xl p-6 rounded-3xl space-y-4 relative overflow-hidden group">
-      <div className="relative h-32 overflow-hidden rounded-2xl bg-slate-950/20 border border-white/5">
+    <div className="glass-card border border-white/5 shadow-2xl p-6 rounded-lg space-y-4 relative overflow-hidden group">
+      <div className="relative h-32 overflow-hidden rounded-lg bg-slate-950/20 border border-white/5">
         <img
           src={imgSrc}
           alt={`Photo ${vehicle.brand} ${vehicle.model}`}

@@ -71,7 +71,7 @@ export default function AddExpense({ vehicleId: vehicleIdProp, onClose }) {
   return (
     <PageTransition>
       <div className="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-md flex items-center justify-center overflow-y-auto p-4">
-        <div className="relative w-full max-w-2xl bg-slate-900/90 border border-white/5 rounded-3xl shadow-2xl overflow-hidden">
+        <div className="relative w-full max-w-2xl app-surface rounded-lg shadow-2xl overflow-hidden">
           <button
             onClick={handleCancel}
             className="absolute top-4 right-4 text-slate-400 hover:text-slate-200 rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"

@@ -6,31 +6,51 @@
 
 @layer base {
   :root {
-    --bg: 9 13 22;
+    --bg: 8 11 16;
     --fg: 248 250 252;
-    --muted: 30 41 59;
-    --border: 51 65 85;
-    --accent: 99 102 241;
+    --muted: 24 31 42;
+    --border: 58 70 87;
+    --accent: 20 184 166;
     --success: 16 185 129;
     --warning: 245 158 11;
     --danger: 239 68 68;
   }
 
+  html {
+    color-scheme: dark;
+  }
+
+  ::selection {
+    background: rgba(20, 184, 166, 0.28);
+    color: #f8fafc;
+  }
+
   body {
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
-    background-color: #070a13;
+    background-color: #080b10;
     color: #f8fafc;
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.05) 0px, transparent 40%),
-      radial-gradient(at 50% 100%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
+    background-image:
+      linear-gradient(135deg, rgba(20, 184, 166, 0.09), transparent 28%),
+      linear-gradient(205deg, rgba(245, 158, 11, 0.06), transparent 24%),
+      linear-gradient(180deg, rgba(15, 23, 42, 0.2), rgba(8, 11, 16, 0.92)),
+      linear-gradient(rgba(148, 163, 184, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148, 163, 184, 0.028) 1px, transparent 1px);
+    background-size: auto, auto, auto, 44px 44px, 44px 44px;
     background-attachment: fixed;
     @apply antialiased min-h-screen;
   }
 
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   input:-webkit-autofill {
     -webkit-text-fill-color: #f8fafc;
-    box-shadow: 0 0 0 1000px #070a13 inset;
+    box-shadow: 0 0 0 1000px #0b111a inset;
   }
 }
 
@@ -47,6 +67,11 @@
     50% { opacity: 0.8; transform: scale(1.05); }
   }
 
+  @keyframes shimmer {
+    0% { transform: translateX(-120%); }
+    100% { transform: translateX(120%); }
+  }
+
   .animate-blob {
     animation: blob 15s infinite ease-in-out;
   }
@@ -55,38 +80,65 @@
     animation: pulse-glow 3s infinite ease-in-out;
   }
 
-  /* Glassmorphism Sport */
+  .app-surface {
+    background:
+      linear-gradient(145deg, rgba(15, 23, 42, 0.84), rgba(8, 13, 20, 0.94)),
+      linear-gradient(90deg, rgba(20, 184, 166, 0.08), rgba(245, 158, 11, 0.05));
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    box-shadow: 0 18px 48px -30px rgba(0, 0, 0, 0.78);
+  }
+
+  .app-panel {
+    background:
+      linear-gradient(180deg, rgba(15, 23, 42, 0.78), rgba(8, 11, 16, 0.88)),
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 18px);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 24px 60px -42px rgba(0, 0, 0, 0.9);
+  }
+
+  .app-texture {
+    background:
+      linear-gradient(120deg, transparent 0 42%, rgba(20, 184, 166, 0.08) 42% 43%, transparent 43% 100%),
+      linear-gradient(300deg, transparent 0 48%, rgba(245, 158, 11, 0.07) 48% 49%, transparent 49% 100%);
+  }
+
   .glass {
-    background: rgba(15, 23, 42, 0.45);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+    background: rgba(12, 18, 28, 0.72);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 0.5rem !important;
+    box-shadow: 0 18px 45px -32px rgba(0, 0, 0, 0.82);
   }
 
   .glass-card {
-    background: linear-gradient(135deg, rgba(20, 30, 54, 0.6) 0%, rgba(10, 15, 30, 0.7) 100%);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.6);
+    background:
+      linear-gradient(145deg, rgba(15, 23, 42, 0.78), rgba(9, 13, 20, 0.92)),
+      linear-gradient(90deg, rgba(20, 184, 166, 0.045), rgba(245, 158, 11, 0.035));
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(148, 163, 184, 0.13);
+    border-radius: 0.5rem !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 20px 50px -36px rgba(0, 0, 0, 0.88);
   }
 
   .glass-card-hover {
     @apply transition-all duration-300;
   }
   .glass-card-hover:hover {
-    transform: translateY(-4px);
-    border-color: rgba(99, 102, 241, 0.25);
-    box-shadow: 0 30px 60px -15px rgba(99, 102, 241, 0.15), 0 0 20px -5px rgba(99, 102, 241, 0.1);
+    transform: translateY(-2px);
+    border-color: rgba(20, 184, 166, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 24px 58px -38px rgba(20, 184, 166, 0.34);
   }
 
   .premium-gradient {
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
+    background:
+      linear-gradient(135deg, rgba(13, 148, 136, 0.98) 0%, rgba(37, 99, 235, 0.95) 58%, rgba(245, 158, 11, 0.95) 100%),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.16), transparent 42%);
   }
 
   .sporty-gradient-blue {
-    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, #0f766e 0%, #2563eb 100%);
   }
 
   .sporty-gradient-green {
@@ -104,18 +156,45 @@
   /* Compteur / Speedometer font vibe */
   .speed-font {
     font-family: 'Outfit', sans-serif;
-    letter-spacing: -0.05em;
+    letter-spacing: 0;
   }
 
   /* Custom inputs style */
   .sporty-input {
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    @apply w-full h-12 px-4 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200;
+    background: rgba(8, 13, 20, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+    @apply w-full h-12 px-4 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-400/70 transition-all duration-200;
+  }
+
+  .sporty-input.pl-11 {
+    padding-left: 3rem;
+  }
+
+  .sporty-input.pr-11 {
+    padding-right: 3rem;
   }
 
   .sporty-label {
-    @apply block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2;
+    @apply block text-xs font-bold uppercase tracking-wide text-slate-400 mb-2;
+  }
+
+  .text-xxs {
+    font-size: 0.6875rem;
+    line-height: 0.875rem;
+  }
+
+  .text-slate-350 {
+    color: rgb(203 213 225);
+  }
+
+  .placeholder-slate-650::placeholder {
+    color: rgb(71 85 105);
+  }
+
+  .tracking-tight,
+  .tracking-tighter {
+    letter-spacing: 0 !important;
   }
   
   .scrollbar-hide::-webkit-scrollbar {

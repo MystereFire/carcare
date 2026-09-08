@@ -30,7 +30,7 @@ export default function EditExpenseModal({ expense, onClose, onSave }) {
 
     return (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-            <div className="bg-slate-900/90 border border-white/5 rounded-3xl p-8 w-full max-w-md shadow-2xl text-slate-100">
+            <div className="app-surface rounded-lg p-8 w-full max-w-md shadow-2xl text-slate-100">
                 <h2 className="text-xl font-black text-slate-100 mb-6 tracking-tight">Modifier la dépense</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-1">

@@ -161,7 +161,7 @@ export default function CompareVehicles() {
 
   return (
     <PageTransition>
-      <div className="bg-[#070a13] min-h-screen py-10 text-slate-100">
+      <div className="bg-[#080b10] min-h-screen py-10 text-slate-100">
         <div className="max-w-5xl mx-auto px-4 space-y-8">
           <div>
             <button
@@ -197,7 +197,7 @@ export default function CompareVehicles() {
 
               <ComparisonBarChart metrics1={chartMetrics1} metrics2={chartMetrics2} />
 
-              <div className="glass-card p-8 rounded-3xl border border-white/5 text-sm w-full max-w-md mx-auto shadow-2xl">
+              <div className="glass-card p-8 rounded-lg border border-white/5 text-sm w-full max-w-md mx-auto shadow-2xl">
                 <h3 className="font-black text-lg mb-4 text-center text-slate-100">Récapitulatif</h3>
                 <CompareSummary rows={summaryRows} />
                 {bestId && (

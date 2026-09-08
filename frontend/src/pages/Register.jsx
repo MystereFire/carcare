@@ -67,14 +67,13 @@ export default function Register() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-[#070a13] flex flex-col justify-center items-center relative overflow-hidden px-4">
-        {/* Animated Background Spheres */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl animate-blob" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl animate-blob" style={{ animationDelay: '4s' }} />
+      <div className="min-h-screen bg-[#080b10] flex flex-col justify-center items-center relative overflow-hidden px-4">
+        <div className="absolute inset-0 app-texture opacity-80" />
 
         <main className="w-full max-w-md z-10 py-10">
-          <div className="glass-card rounded-3xl p-8 space-y-6 border border-white/5 relative">
-            <div className="absolute -top-10 left-1/2 -translate-x-1/2 p-4 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-xl shadow-indigo-500/20">
+          <div className="glass-card p-8 space-y-6 border border-white/5 relative overflow-hidden">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-teal-400 via-blue-500 to-amber-400" />
+            <div className="absolute -top-8 left-1/2 -translate-x-1/2 p-4 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg shadow-xl shadow-teal-500/15">
               <svg
                 className="w-8 h-8 text-white"
                 viewBox="0 0 24 24"
@@ -102,7 +101,7 @@ export default function Register() {
             <button
               type="button"
               onClick={() => (window.location.href = `${API_URL}/api/auth/google`)}
-              className="w-full h-12 flex items-center justify-center gap-3 border border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 rounded-xl transition duration-200"
+              className="w-full h-12 flex items-center justify-center gap-3 border border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 rounded-lg transition duration-200 shadow-sm"
             >
               <img src={GoogleIcon} alt="" className="w-5 h-5" />
               <span className="font-semibold text-sm">S’inscrire avec Google</span>
@@ -280,7 +279,7 @@ export default function Register() {
                     type="checkbox"
                     checked={form.terms}
                     onChange={handleChange}
-                    className="rounded border-white/10 bg-slate-900/60 text-indigo-600 focus:ring-indigo-500/50"
+                  className="rounded border-white/10 bg-slate-900/60 text-teal-500 focus:ring-teal-500/50"
                   />
                   <span className="ml-2">J’accepte les Conditions Générales</span>
                 </label>
@@ -294,7 +293,7 @@ export default function Register() {
               <button
                 type="submit"
                 disabled={isDisabled}
-                className="w-full h-12 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/35 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full h-12 rounded-lg bg-gradient-to-r from-teal-500 via-blue-600 to-amber-500 text-white font-bold shadow-lg shadow-teal-500/15 hover:shadow-teal-500/25 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {isLoading ? (
                   <svg
@@ -325,7 +324,7 @@ export default function Register() {
 
             <p className="text-center text-sm text-slate-400">
               Déjà inscrit ?{' '}
-              <Link to="/login" className="text-indigo-400 hover:text-indigo-300 font-semibold transition">
+              <Link to="/login" className="text-teal-300 hover:text-teal-200 font-semibold transition">
                 Connectez-vous
               </Link>
             </p>

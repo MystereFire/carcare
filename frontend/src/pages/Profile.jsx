@@ -81,9 +81,9 @@ export default function Profile() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-[#070a13] text-slate-100 py-10">
+      <div className="min-h-screen bg-[#080b10] text-slate-100 py-10">
         <div className="max-w-6xl mx-auto px-4 space-y-8">
-          <div className="glass-card rounded-3xl p-6 border border-white/5 shadow-2xl flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="glass-card rounded-lg p-6 border border-white/5 shadow-2xl flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-indigo-600/20 text-indigo-400 border border-indigo-500/20 font-bold flex items-center justify-center text-xl shadow-md shadow-indigo-500/5">
                 {user?.name ? user.name.slice(0, 1).toUpperCase() : 'U'}
@@ -108,7 +108,7 @@ export default function Profile() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="glass-card rounded-3xl p-6 border border-white/5 lg:col-span-2 space-y-6">
+            <div className="glass-card rounded-lg p-6 border border-white/5 lg:col-span-2 space-y-6">
               <h2 className="text-xl font-black text-slate-100">Sécurité</h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -156,7 +156,7 @@ export default function Profile() {
               </form>
             </div>
 
-            <div className="glass-card rounded-3xl p-6 border border-white/5 flex flex-col justify-between">
+            <div className="glass-card rounded-lg p-6 border border-white/5 flex flex-col justify-between">
               <div>
                 <p className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-1">Résumé</p>
                 <h3 className="text-xl font-black text-slate-100 mb-6">Mes données</h3>
@@ -170,7 +170,7 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="glass-card rounded-3xl p-6 border border-white/5 shadow-2xl">
+          <div className="glass-card rounded-lg p-6 border border-white/5 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <p className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-1">Garage</p>
@@ -199,7 +199,7 @@ export default function Profile() {
                   return (
                     <div
                       key={veh._id}
-                      className="glass-card rounded-2xl border border-white/5 overflow-hidden flex flex-col group"
+                      className="glass-card rounded-lg border border-white/5 overflow-hidden flex flex-col group"
                     >
                       <div className="relative h-32 overflow-hidden">
                         <img
