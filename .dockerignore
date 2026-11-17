@@ -1,29 +1,16 @@
-# Ignorer les dépendances locales
-node_modules
-client/node_modules
-server/node_modules
-
-# Fichiers d'environnement (ne pas inclure en build)
-.env
-*.env
-
-# Fichiers temporaires / journaux
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Dossiers inutiles
+.git
+**/node_modules
+**/.npm-cache
+**/.env*
+data
 uploads
+test-results
+playwright-report
 coverage
 dist
 build
-
-# OS-specific
+*.log
 .DS_Store
 Thumbs.db
-
-# IDEs / éditeurs
 .vscode
 .idea
-*.swp

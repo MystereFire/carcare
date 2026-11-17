@@ -1,8 +1,15 @@
-# Ignore node_modules in all subdirectories
 **/node_modules/
-
-# Environment configurations
-backend/.env
-backend/.env.production
-frontend/.env
-frontend/.env.production
+**/.npm-cache/
+.env
+.env.*
+!.env.example
+/dist/
+/data/
+/uploads/
+/coverage/
+/test-results/
+/playwright-report/
+/artifacts/
+*.log
+.DS_Store
+Thumbs.db

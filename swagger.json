@@ -2,12 +2,12 @@
   "openapi": "3.0.0",
   "info": {
     "title": "CarCare API",
-    "version": "1.0.0",
-    "description": "API documentation for the CarCare backend"
+    "version": "2.0.0",
+    "description": "API de l’application CarCare"
   },
   "servers": [
     {
-      "url": "http://localhost:5000/api"
+      "url": "/api"
     }
   ],
   "components": {
