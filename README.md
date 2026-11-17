@@ -15,6 +15,8 @@ Ouvrez **http://localhost:5000**, puis créez votre compte et votre premier véh
 
 Les données sont enregistrées dans `data/carcare.sqlite`, les photos dans `uploads/`. Ces dossiers sont créés automatiquement. Sans `JWT_SECRET`, une clé de développement temporaire est créée : un redémarrage nécessite alors une nouvelle connexion.
 
+Le serveur de développement écoute sur `127.0.0.1` par défaut. Définissez `HOST` explicitement pour autoriser un accès réseau. Vite ne sert pas les dossiers de données, le code serveur ni les fichiers de configuration sensibles.
+
 ## Configuration unique
 
 Copiez `.env.example` vers `.env` pour personnaliser le port ou fixer une clé de session. Aucune configuration n’est obligatoire en développement.
@@ -22,7 +24,7 @@ Copiez `.env.example` vers `.env` pour personnaliser le port ou fixer une clé d
 | Variable | Utilité |
 | --- | --- |
 | `PORT` | Port HTTP, `5000` par défaut |
-| `HOST` | Interface d’écoute HTTP, `0.0.0.0` par défaut ; `127.0.0.1` pour un accès uniquement local |
+| `HOST` | Interface d’écoute HTTP : `127.0.0.1` en développement, `0.0.0.0` en production ; Docker conserve `0.0.0.0` |
 | `JWT_SECRET` | Clé de signature des sessions ; obligatoire en production |
 | `DATABASE_URL` | Facultatif : connexion PostgreSQL à la place de SQLite |
 | `SQLITE_PATH` | Facultatif : emplacement du fichier SQLite ; `:memory:` pour une base temporaire sans fichier |
@@ -37,7 +39,9 @@ Avec Google, configurez la redirection autorisée vers `http://localhost:5000/ap
 ## Production
 
 ```sh
+npm ci
 npm run build
+npm prune --omit=dev --omit=optional
 npm start
 ```
 
@@ -89,6 +93,15 @@ Si Chrome est déjà installé, aucun téléchargement de navigateur n’est né
 Documentation API : **http://localhost:5000/api-docs**. État du serveur et de la base : **http://localhost:5000/health**.
 
 La PWA installe l’interface et met en cache ses fichiers statiques. La consultation et l’écriture de données personnelles nécessitent une connexion au serveur ; les réponses API ne sont pas mises en cache.
+
+## Dépendances et sécurité
+
+```sh
+npm run audit
+npm run audit:production
+```
+
+Le premier audit couvre l’ensemble des dépendances. Le second correspond à l’installation de production ci-dessus et au Dockerfile, qui retirent les outils de développement et de compilation optionnels après le build. Les correctifs appliqués, les tests de compatibilité et l’alerte Picomatch restant sans version corrigée sont détaillés dans [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md).
 
 ## Depuis l’ancienne structure
 

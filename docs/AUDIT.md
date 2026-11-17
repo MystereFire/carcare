@@ -26,9 +26,11 @@ Les tests serveur couvrent les routes et les régressions métier ; les tests de
 
 ## Limites de vérification
 
-Résultat final après nettoyage et revue des configurations : **61 tests serveur, 7 tests métier et 31 tests navigateur réussis**. La compilation de production est également passée. Un essai dans Chrome avec le véritable serveur de production, sans réponses API simulées, a vérifié l’inscription, la connexion, la création de véhicule, l’ajout d’une dépense, le tableau de bord, le rechargement d’une page et l’affichage mobile. Les serveurs et bases temporaires de ces essais ont été arrêtés et nettoyés.
+Résultat final après correction des dépendances : **66 tests serveur, 7 tests métier et 31 tests navigateur réussis**. La compilation de production est également passée. Un essai dans Chrome avec le véritable serveur de production, sans réponses API simulées, a vérifié l’inscription, la connexion, la création de véhicule, l’ajout d’une dépense, le tableau de bord, le rechargement d’une page et l’affichage mobile. Les serveurs et bases temporaires de ces essais ont été arrêtés et nettoyés.
 
 La configuration valide les ports, les origines publiques, le proxy et les paramètres Google/SMTP. Le lancement de développement impose son mode et les tests navigateur utilisent un serveur dédié avec SQLite en mémoire. Les anciens projets, caches et captures temporaires ont été supprimés ; la base locale et les photos sont conservées hors du suivi Git.
+
+Les correctifs de dépendances publiés sont appliqués. Une installation de production isolée, sans dépendances de développement ou optionnelles, contient 252 paquets et remonte zéro alerte npm ; SQLite natif, les UUID et transactions Sequelize, le chargement du pilote PostgreSQL et la composition e-mail y ont été vérifiés. L’audit complet reste à 51 alertes élevées liées au seul avis Picomatch sans correctif publié. Les périmètres, versions et limites sont détaillés dans [DEPENDENCIES.md](DEPENDENCIES.md).
 
 - La connexion réelle à Google n’a pas été validée avec un compte et des identifiants OAuth configurés. Le parcours de retour et ses erreurs sont testables localement.
 - La base PostgreSQL de production n’a pas été connectée pour cet audit. Les tests automatisés utilisent une base SQLite isolée ; une exécution sur l’instance PostgreSQL cible reste nécessaire avant exploitation de ses données.

@@ -6,7 +6,7 @@ RUN npm ci
 COPY . .
 ARG VITE_GOOGLE_AUTH_ENABLED=false
 ENV VITE_GOOGLE_AUTH_ENABLED=$VITE_GOOGLE_AUTH_ENABLED
-RUN npm run build && npm prune --omit=dev
+RUN npm run build && npm prune --omit=dev --omit=optional
 
 FROM node:24-bookworm-slim AS runtime
 ENV NODE_ENV=production

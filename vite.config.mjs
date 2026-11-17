@@ -30,5 +30,24 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    fs: {
+      strict: true,
+      deny: [
+        // Extending this list replaces Vite's defaults, so retain all of them.
+        '.env',
+        '.env.*',
+        '*.{crt,pem,key,p12,pfx,cer,der}',
+        '.npmrc',
+        '.yarnrc.yml',
+        '**/.git/**',
+        '**/data/**',
+        '**/server/**',
+        '**/.qa/**',
+        '**/.npm-cache/**',
+        '**/.npmrc',
+      ],
+    },
+  },
   build: { outDir: 'dist' },
 });
